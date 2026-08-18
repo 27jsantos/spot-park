@@ -7,6 +7,8 @@ const BODY_TYPES = {
   van: { label: "Minivan", width: 6.6, length: 17.5 },
 };
 
+const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #DADEE5", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
+
 export default function VehicleProfile({ onSave, onBack }) {
   const [year, setYear] = useState("");
   const [make, setMake] = useState("");
@@ -24,41 +26,45 @@ export default function VehicleProfile({ onSave, onBack }) {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: "40px auto", fontFamily: "sans-serif", padding: 16 }}>
-      <button onClick={onBack} style={{ marginBottom: 16 }}>← Back</button>
-      <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Vehicle</h1>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <label>
-          Year
-          <input value={year} onChange={(e) => setYear(e.target.value)} placeholder="2021" style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }} />
-        </label>
-
-        <label>
-          Make
-          <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Ford" style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }} />
-        </label>
-
-        <label>
-          Model
-          <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="F-150" style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }} />
-        </label>
-
-        <label>
-          Body type
-          <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }}>
-            {Object.entries(BODY_TYPES).map(([id, v]) => (
-              <option key={id} value={id}>{v.label}</option>
-            ))}
-          </select>
-        </label>
-
-        <button
-          onClick={handleSave}
-          style={{ background: "#2f7d3c", color: "white", border: "none", padding: "12px 20px", borderRadius: 8, marginTop: 8 }}
-        >
-          Save Vehicle
+    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
+          ← Back
         </button>
+        <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Vehicle</h1>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <label style={{ fontSize: 13, color: "#5A6178" }}>
+            Year
+            <input value={year} onChange={(e) => setYear(e.target.value)} placeholder="2021" style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#5A6178" }}>
+            Make
+            <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Ford" style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#5A6178" }}>
+            Model
+            <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="F-150" style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#5A6178" }}>
+            Body type
+            <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} style={inputStyle}>
+              {Object.entries(BODY_TYPES).map(([id, v]) => (
+                <option key={id} value={id}>{v.label}</option>
+              ))}
+            </select>
+          </label>
+
+          <button
+            onClick={handleSave}
+            style={{ background: "#2F6FED", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 8 }}
+          >
+            Save Vehicle
+          </button>
+        </div>
       </div>
     </div>
   );

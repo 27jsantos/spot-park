@@ -4,7 +4,7 @@ import { supabase } from "./supabaseClient";
 export default function Auth({ onLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState("login"); // "login" or "signup"
+  const [mode, setMode] = useState("login");
   const [message, setMessage] = useState("");
 
   async function handleSubmit(e) {
@@ -24,41 +24,43 @@ export default function Auth({ onLoggedIn }) {
   }
 
   return (
-    <div style={{ maxWidth: 360, margin: "80px auto", fontFamily: "sans-serif", padding: 16 }}>
-      <h1 style={{ fontSize: 22, marginBottom: 16 }}>Spot Park</h1>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: 10, border: "1px solid #ccc", borderRadius: 6 }}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: 10, border: "1px solid #ccc", borderRadius: 6 }}
-          required
-        />
-        <button
-          type="submit"
-          style={{ background: "#2f7d3c", color: "white", border: "none", padding: 12, borderRadius: 6, fontWeight: "bold" }}
-        >
-          {mode === "signup" ? "Sign Up" : "Log In"}
-        </button>
-      </form>
+    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <div style={{ maxWidth: 360, margin: "0 auto", padding: "80px 24px" }}>
+        <h1 style={{ fontSize: 24, marginBottom: 20, color: "#1E2233" }}>Spot Park</h1>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ padding: 12, border: "1px solid #DADEE5", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ padding: 12, border: "1px solid #DADEE5", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+            required
+          />
+          <button
+            type="submit"
+            style={{ background: "#2F6FED", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 4 }}
+          >
+            {mode === "signup" ? "Sign Up" : "Log In"}
+          </button>
+        </form>
 
-      {message && <div style={{ marginTop: 12, fontSize: 13, color: "#a33030" }}>{message}</div>}
+        {message && <div style={{ marginTop: 12, fontSize: 13, color: "#a33030" }}>{message}</div>}
 
-      <div style={{ marginTop: 16, fontSize: 13 }}>
-        {mode === "login" ? (
-          <>Don't have an account? <a href="#" onClick={() => setMode("signup")}>Sign up</a></>
-        ) : (
-          <>Already have an account? <a href="#" onClick={() => setMode("login")}>Log in</a></>
-        )}
+        <div style={{ marginTop: 16, fontSize: 13, color: "#5A6178" }}>
+          {mode === "login" ? (
+            <>Don't have an account? <a href="#" onClick={() => setMode("signup")} style={{ color: "#2F6FED", fontWeight: 700 }}>Sign up</a></>
+          ) : (
+            <>Already have an account? <a href="#" onClick={() => setMode("login")} style={{ color: "#2F6FED", fontWeight: 700 }}>Log in</a></>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ const FIT_COPY = {
   bad: { label: "Not recommended for your", color: "#a33030", bg: "#fbe6e6" },
 };
 
-const page = { minHeight: "100vh", background: "#E8ECF5", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" };
+const page = { minHeight: "100vh", background: "#C7CDD6, fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" };
 const card = { maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" };
 
 export default function App() {
@@ -98,7 +98,7 @@ export default function App() {
           <h1 style={{ fontSize: 22, margin: 0 }}>Spot Park</h1>
           <button
             onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-            style={{ background: "none", border: "1px solid #C7CEDD", color: "#5A6178", fontSize: 12, padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}
+            style={{ background: "#FFFFFF", border: "1px solid #DADEE5", color: "#5A6178", fontSize: 12, padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}
           >
             Log out
           </button>
@@ -106,28 +106,28 @@ export default function App() {
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "16px 0" }}>
           <span style={{ color: "#5A6178" }}>Driving: <strong style={{ color: "#1E2233" }}>{vehicle.label}</strong></span>
-          <button onClick={() => setEditingVehicle(true)} style={{ background: "#FFFFFF", border: "1px solid #C7CEDD", color: "#1E2233", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
+          <button onClick={() => setEditingVehicle(true)} style={{ background: "#FFFFFF", border: "1px solid #DADEE5", color: "#1E2233", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
             Edit
           </button>
         </div>
 
         <button
           onClick={() => setAddingSpace(true)}
-          style={{ width: "100%", background: "#FFC738", color: "#412402", border: "none", padding: 12, borderRadius: 10, marginBottom: 10, fontWeight: 700, cursor: "pointer" }}
+          style={{ width: "100%", background: "#2F6FED", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 10, marginBottom: 10, fontWeight: 700, cursor: "pointer" }}
         >
           + List a Space
         </button>
 
         <button
           onClick={() => setViewingDashboard(true)}
-          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #C7CEDD", padding: 12, borderRadius: 10, marginBottom: 10, cursor: "pointer" }}
+          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #DADEE5", padding: 12, borderRadius: 10, marginBottom: 10, cursor: "pointer" }}
         >
           My Host Dashboard
         </button>
 
         <button
           onClick={() => setViewingReservations(true)}
-          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #C7CEDD", padding: 12, borderRadius: 10, marginBottom: 20, cursor: "pointer" }}
+          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #DADEE5", padding: 12, borderRadius: 10, marginBottom: 20, cursor: "pointer" }}
         >
           My Reservations
         </button>
@@ -141,7 +141,7 @@ export default function App() {
             <div
               key={s.id}
               onClick={() => setSelectedSpace(s)}
-              style={{ background: "#FFFFFF", border: "1px solid #C7CEDD", borderRadius: 14, padding: 14, marginBottom: 10, cursor: "pointer" }}
+              style={{ background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 14, padding: 14, marginBottom: 10, cursor: "pointer" }}
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <strong>{s.name}</strong>
