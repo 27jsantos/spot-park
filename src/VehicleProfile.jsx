@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { supabase } from "./supabaseClient";
 const BODY_TYPES = {
   sedan: { label: "Sedan", width: 6.0, length: 15.5 },
   suv: { label: "SUV", width: 6.5, length: 16.8 },
@@ -15,15 +15,19 @@ export default function VehicleProfile({ onSave, onBack }) {
   const [model, setModel] = useState("");
   const [bodyType, setBodyType] = useState("suv");
 
-  function handleSave() {
+ async function handleSave() {
     const dims = BODY_TYPES[bodyType];
-    onSave({
+    const vehicle = {
       id: bodyType,
       label: `${year} ${make} ${model}`.trim() || dims.label,
       width: dims.width,
       length: dims.length,
-    });
+    };
+
+    await supabase.auth.updateUser({ data: { vehicle } });
+    onSave(vehicle);
   }
+  
 
   return (
     <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>

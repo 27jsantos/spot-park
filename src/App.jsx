@@ -38,9 +38,13 @@ export default function App() {
   const [spaces, setSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session ? data.session.user : null);
+      const sessionUser = data.session ? data.session.user : null;
+      setUser(sessionUser);
+      if (sessionUser?.user_metadata?.vehicle) {
+        setVehicle(sessionUser.user_metadata.vehicle);
+      }
       setCheckingSession(false);
     });
   }, []);
