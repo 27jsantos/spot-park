@@ -98,7 +98,7 @@ export default function App() {
           <h1 style={{ fontSize: 22, margin: 0 }}>Spot Park</h1>
           <button
             onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-            style={{ background: "#FFFFFF", border: "1px solid #DADEE5", color: "#5A6178", fontSize: 12, padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}
+            style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", color: "#5A6178", fontSize: 12, padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}
           >
             Log out
           </button>
@@ -106,7 +106,7 @@ export default function App() {
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "16px 0" }}>
           <span style={{ color: "#5A6178" }}>Driving: <strong style={{ color: "#1E2233" }}>{vehicle.label}</strong></span>
-          <button onClick={() => setEditingVehicle(true)} style={{ background: "#FFFFFF", border: "1px solid #DADEE5", color: "#1E2233", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
+          <button onClick={() => setEditingVehicle(true)} style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", color: "#1E2233", padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
             Edit
           </button>
         </div>
@@ -120,14 +120,14 @@ export default function App() {
 
         <button
           onClick={() => setViewingDashboard(true)}
-          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #DADEE5", padding: 12, borderRadius: 10, marginBottom: 10, cursor: "pointer" }}
+          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #B4BBC7", padding: 12, borderRadius: 10, marginBottom: 10, cursor: "pointer" }}
         >
           My Host Dashboard
         </button>
 
         <button
           onClick={() => setViewingReservations(true)}
-          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #DADEE5", padding: 12, borderRadius: 10, marginBottom: 20, cursor: "pointer" }}
+          style={{ width: "100%", background: "#FFFFFF", color: "#1E2233", border: "1px solid #B4BBC7", padding: 12, borderRadius: 10, marginBottom: 20, cursor: "pointer" }}
         >
           My Reservations
         </button>
@@ -139,11 +139,14 @@ export default function App() {
           const c = FIT_COPY[status];
           return (
             <div
-              key={s.id}
-              onClick={() => setSelectedSpace(s)}
-              style={{ background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 14, padding: 14, marginBottom: 10, cursor: "pointer" }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+  key={s.id}
+  onClick={() => setSelectedSpace(s)}
+  style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 14, padding: 14, marginBottom: 10, cursor: "pointer" }}
+>
+  {s.photo_url && (
+    <img src={s.photo_url} alt={s.name} style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8, marginBottom: 8 }} />
+  )}
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <strong>{s.name}</strong>
                 <span>${s.price}/hr</span>
               </div>

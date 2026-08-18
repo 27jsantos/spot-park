@@ -41,11 +41,14 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
-        <div style={{ height: 160, background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 12, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6178", fontSize: 13 }}>
-          Photo coming soon
-        </div>
-
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
+       {space.photo_url ? (
+  <img src={space.photo_url} alt={space.name} style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 12, marginBottom: 16 }} />
+) : (
+  <div style={{ height: 160, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6178", fontSize: 13 }}>
+    Photo coming soon
+  </div>
+)}
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
           ← Back
         </button>
 
@@ -63,7 +66,7 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
           <div>Space size: {space.width}' wide × {space.length}' deep</div>
         </div>
 
-        <div style={{ background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 12, padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <strong>${space.price}/hr</strong>
           <button
             onClick={handleReserve}

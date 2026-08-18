@@ -7,7 +7,7 @@ const BODY_TYPES = {
   van: { label: "Minivan", width: 6.6, length: 17.5 },
 };
 
-const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #DADEE5", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
+const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #B4BBC7", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
 
 export default function VehicleProfile({ onSave, onBack }) {
   const [year, setYear] = useState("");
@@ -28,7 +28,7 @@ export default function VehicleProfile({ onSave, onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #DADEE5", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Vehicle</h1>
