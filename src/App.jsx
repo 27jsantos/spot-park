@@ -23,7 +23,7 @@ const FIT_COPY = {
   bad: { label: "Not recommended for your", color: "#a33030", bg: "#fbe6e6" },
 };
 
-const page = { minHeight: "100vh", background: "#C7CDD6, fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" };
+const page = { minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" };
 const card = { maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" };
 
 export default function App() {
