@@ -34,7 +34,7 @@ export default function VehicleProfile({ onSave, onBack }) {
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Vehicle</h1>
+        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF" }}>My Vehicle</h1>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>

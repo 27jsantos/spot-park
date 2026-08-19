@@ -40,7 +40,7 @@ export default function MyReservations({ onBack }) {
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Reservations</h1>
+        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF" }}>My Reservations</h1>
 
         {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
 
