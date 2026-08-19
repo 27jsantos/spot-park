@@ -104,7 +104,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: "#8791A0", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#C7CDD6", borderRadius: 24, overflow: "hidden", border: "1px solid #B4BBC7", height: "fit-content" }}>
 
         <div style={{ position: "relative", height: 190, background: "linear-gradient(180deg,#DCE1E7 0%,#CBD1D9 100%)", overflow: "hidden" }}>
