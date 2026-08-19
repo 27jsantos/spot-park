@@ -10,7 +10,6 @@ export default function Auth({ onLoggedIn }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setMessage("");
-
     if (mode === "signup") {
       const { data, error } = await supabase.auth.signUp({ email, password });
       if (error) setMessage(error.message);
@@ -24,16 +23,16 @@ export default function Auth({ onLoggedIn }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
-      <div style={{ maxWidth: 360, margin: "0 auto", padding: "80px 24px" }}>
-        <h1 style={{ fontSize: 24, marginBottom: 20, color: "#1E2233" }}>Spot Park</h1>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }}>
+      <div style={{ width: 360, background: "#0d2c64", borderRadius: 24, padding: 32, color: "#FFFFFF" }}>
+        <h1 style={{ fontSize: 24, marginBottom: 20 }}>Spot Park</h1>
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ padding: 12, border: "1px solid #B4BBC7", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+            style={{ padding: 12, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
             required
           />
           <input
@@ -41,24 +40,24 @@ export default function Auth({ onLoggedIn }) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: 12, border: "1px solid #B4BBC7", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+            style={{ padding: 12, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
             required
           />
           <button
             type="submit"
-            style={{ background: "#2F6FED", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 4 }}
+            style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 4 }}
           >
             {mode === "signup" ? "Sign Up" : "Log In"}
           </button>
         </form>
 
-        {message && <div style={{ marginTop: 12, fontSize: 13, color: "#a33030" }}>{message}</div>}
+        {message && <div style={{ marginTop: 12, fontSize: 13, color: "#FCA5A5" }}>{message}</div>}
 
-        <div style={{ marginTop: 16, fontSize: 13, color: "#5A6178" }}>
+        <div style={{ marginTop: 16, fontSize: 13, color: "#B7C4DC" }}>
           {mode === "login" ? (
-            <>Don't have an account? <a href="#" onClick={() => setMode("signup")} style={{ color: "#2F6FED", fontWeight: 700 }}>Sign up</a></>
+            <>Don't have an account? <a href="#" onClick={() => setMode("signup")} style={{ color: "#8FB4FF", fontWeight: 700 }}>Sign up</a></>
           ) : (
-            <>Already have an account? <a href="#" onClick={() => setMode("login")} style={{ color: "#2F6FED", fontWeight: 700 }}>Log in</a></>
+            <>Already have an account? <a href="#" onClick={() => setMode("login")} style={{ color: "#8FB4FF", fontWeight: 700 }}>Log in</a></>
           )}
         </div>
       </div>

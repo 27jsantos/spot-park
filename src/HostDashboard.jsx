@@ -33,33 +33,33 @@ export default function HostDashboard({ onBack }) {
   const totalPossibleEarnings = mySpaces.reduce((sum, s) => sum + s.price, 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Host Dashboard</h1>
 
-        <div style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+        <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: "#5A6178" }}>Your listed spaces</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{mySpaces.length}</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>{mySpaces.length}</div>
           <div style={{ fontSize: 13, color: "#5A6178", marginTop: 8 }}>Combined hourly rate</div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>${totalPossibleEarnings}/hr</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${totalPossibleEarnings}/hr</div>
         </div>
 
-        {loading && <div style={{ color: "#5A6178" }}>Loading...</div>}
+        {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
 
         {!loading && mySpaces.length === 0 && (
-          <div style={{ color: "#5A6178", fontSize: 14 }}>
+          <div style={{ color: "#B7C4DC", fontSize: 14 }}>
             You haven't listed any spaces yet. Go back and tap "+ List a Space" to add one.
           </div>
         )}
 
         {!loading && mySpaces.map((s) => (
-          <div key={s.id} style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+          <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <strong>{s.name}</strong>
+                <strong style={{ color: "#1E2233" }}>{s.name}</strong>
                 <div style={{ fontSize: 13, color: "#5A6178", marginTop: 4 }}>
                   ${s.price}/hr · {s.hours} · {s.width}' × {s.length}'
                 </div>

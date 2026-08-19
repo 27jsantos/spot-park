@@ -13,7 +13,6 @@ export default function MyReservations({ onBack }) {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-
     if (error) console.error(error);
     else setReservations(data);
     setLoading(false);
@@ -36,26 +35,26 @@ export default function MyReservations({ onBack }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#9AA3B0", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #8791A0", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 16 }}>My Reservations</h1>
 
-        {loading && <div style={{ color: "#5A6178" }}>Loading...</div>}
+        {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
 
         {!loading && reservations.length === 0 && (
-          <div style={{ color: "#5A6178", fontSize: 14 }}>
+          <div style={{ color: "#B7C4DC", fontSize: 14 }}>
             You haven't reserved a space yet.
           </div>
         )}
 
         {!loading && reservations.map((r) => (
-          <div key={r.id} style={{ background: "#FFFFFF", border: "1px solid #8791A0", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+          <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <div>
-                <strong>{r.space_name}</strong>
+                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
                 <div style={{ fontSize: 12, color: "#5A6178", marginTop: 4 }}>
                   ${r.price}/hr · Reserved {new Date(r.created_at).toLocaleDateString()}
                 </div>

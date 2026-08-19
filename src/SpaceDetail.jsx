@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { supabase } from "./supabaseClient";
 
 const FIT_COPY = {
-  good: { label: "Good fit for your", color: "#2f7d3c", bg: "#e5f4e7" },
-  tight: { label: "Tight fit for your", color: "#946200", bg: "#fdf1d8" },
-  bad: { label: "Not recommended for your", color: "#a33030", bg: "#fbe6e6" },
+  good: { label: "Good fit for your", ring: "#639922", bg: "#EAF3DE", text: "#3B6D11" },
+  tight: { label: "Tight fit for your", ring: "#EF9F27", bg: "#FAEEDA", text: "#854F0B" },
+  bad: { label: "Not recommended for your", ring: "#E24B4A", bg: "#FCEBEB", text: "#791F1F" },
 };
 
 function fitStatus(space, vehicle) {
@@ -13,6 +13,22 @@ function fitStatus(space, vehicle) {
   if (wClear < 0.5 || lClear < 1) return "bad";
   if (wClear < 1.5 || lClear < 2.5) return "tight";
   return "good";
+}
+
+function FitVisual({ space, vehicle, status }) {
+  const c = FIT_COPY[status];
+  const wScale = 160 / space.width;
+  const vw = vehicle.width * wScale;
+  const vl = (vehicle.length / space.length) * 220;
+  return (
+    <div style={{ display: "flex", justifyContent: "center", padding: "16px 0" }}>
+      <svg width="180" height="240" viewBox="0 0 180 240">
+        <rect x="10" y="10" width="160" height="220" rx="4" fill="none" stroke="#3B4F73" strokeWidth="2" strokeDasharray="6 5" />
+        <rect x={90 - vw / 2} y={125 - vl / 2} width={vw} height={vl} rx={vw / 3} fill={c.ring} opacity="0.9" />
+        <rect x={90 - vw / 2 + 6} y={125 - vl / 2 + 10} width={vw - 12} height={vl * 0.28} rx="4" fill="#FFFFFF" opacity="0.5" />
+      </svg>
+    </div>
+  );
 }
 
 export default function SpaceDetail({ space, vehicle, onBack }) {
@@ -39,49 +55,59 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#C7CDD6", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: 24, color: "#1E2233" }}>
-       {space.photo_url ? (
-  <img src={space.photo_url} alt={space.name} style={{ width: "100%", height: 200, objectFit: "cover", borderRadius: 12, marginBottom: 16 }} />
-) : (
-  <div style={{ height: 160, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6178", fontSize: 13 }}>
-    Photo coming soon
-  </div>
-)}
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 6, padding: "5px 10px", color: "#1E2233", cursor: "pointer" }}>
-          ← Back
-        </button>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        <h1 style={{ fontSize: 20, marginBottom: 4 }}>{space.name}</h1>
-        <div style={{ fontSize: 13, color: "#5A6178", marginBottom: 12 }}>
-          {space.distance} mi away · ⭐ {space.rating}
-        </div>
-
-        <span style={{ background: c.bg, color: c.color, fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 700 }}>
-          {c.label} {vehicle.label.toLowerCase()}
-        </span>
-
-        <div style={{ margin: "16px 0", fontSize: 13, color: "#5A6178" }}>
-          <div>Available: {space.hours}</div>
-          <div>Space size: {space.width}' wide × {space.length}' deep</div>
-        </div>
-
-        <div style={{ background: "#FFFFFF", border: "1px solid #B4BBC7", borderRadius: 12, padding: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <strong>${space.price}/hr</strong>
-          <button
-            onClick={handleReserve}
-            disabled={saving || reserved}
-            style={{ background: "#2F6FED", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
-          >
-            {reserved ? "Reserved ✓" : saving ? "Saving..." : "Reserve"}
-          </button>
-        </div>
-
-        {reserved && (
-          <div style={{ marginTop: 10, fontSize: 12, color: "#2f7d3c" }}>
-            Your reservation was saved to your account.
+        {space.photo_url ? (
+          <img src={space.photo_url} alt={space.name} style={{ width: "100%", height: 190, objectFit: "cover" }} />
+        ) : (
+          <div style={{ height: 190, background: "#3B4F73", display: "flex", alignItems: "center", justifyContent: "center", color: "#B7C4DC", fontSize: 13 }}>
+            Photo coming soon
           </div>
         )}
+
+        <div style={{ padding: 16, color: "#FFFFFF" }}>
+          <button onClick={onBack} style={{ marginBottom: 12, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
+            ← Back
+          </button>
+
+          <h1 style={{ fontSize: 19, margin: "0 0 4px" }}>{space.name}</h1>
+          <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
+            {space.distance} mi away · ⭐ {space.rating}
+          </div>
+
+          <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", background: c.bg, color: c.text, fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20, marginTop: 12 }}>
+              {c.label} {vehicle.label.toLowerCase()}
+            </div>
+            <FitVisual space={space} vehicle={vehicle} status={status} />
+            <div style={{ display: "flex", justifyContent: "space-around", fontSize: 12, color: "#5A6178" }}>
+              <div>{space.width}' wide</div>
+              <div>{space.length}' deep</div>
+            </div>
+          </div>
+
+          <div style={{ margin: "14px 0", fontSize: 13, color: "#B7C4DC" }}>
+            Available: {space.hours}
+          </div>
+
+          <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <strong style={{ color: "#1E2233" }}>${space.price}/hr</strong>
+            <button
+              onClick={handleReserve}
+              disabled={saving || reserved}
+              style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
+            >
+              {reserved ? "Reserved ✓" : saving ? "Saving..." : "Reserve"}
+            </button>
+          </div>
+
+          {reserved && (
+            <div style={{ marginTop: 10, fontSize: 12, color: "#B7C4DC", textAlign: "center" }}>
+              Your reservation was saved to your account.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
