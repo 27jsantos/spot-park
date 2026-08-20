@@ -25,7 +25,7 @@ export default function Auth({ onLoggedIn }) {
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }}>
       <div style={{ width: 360, background: "#0d2c64", borderRadius: 24, padding: 32, color: "#FFFFFF" }}>
-        <h1 style={{ fontSize: 24, marginBottom: 20 }}>Spot Park</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, fontWeight: 800 }}>Spot Park</h1>
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <input
             type="email"

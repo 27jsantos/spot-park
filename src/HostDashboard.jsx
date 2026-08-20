@@ -76,7 +76,7 @@ export default function HostDashboard({ onBack }) {
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF"}}>My Host Dashboard</h1>
+        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Host Dashboard</h1>
 
         <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: "#5A6178" }}>Your listed spaces</div>
