@@ -42,6 +42,7 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from("reservations").insert({
       user_id: user.id,
+      space_id: space.id,
       space_name: space.name,
       price: space.price,
     });
@@ -71,7 +72,7 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
             ← Back
           </button>
 
-          <h1 style={{ fontSize: 19, margin: "0 0 4px" }}>{space.name}</h1>
+          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800 }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
             {space.distance} mi away · ⭐ {space.rating}
           </div>

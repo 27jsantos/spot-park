@@ -3,18 +3,33 @@ import { supabase } from "./supabaseClient";
 
 export default function MyReservations({ onBack }) {
   const [reservations, setReservations] = useState([]);
+  const [myReviews, setMyReviews] = useState({});
   const [loading, setLoading] = useState(true);
+  const [ratingId, setRatingId] = useState(null);
+  const [stars, setStars] = useState(5);
+  const [comment, setComment] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function load() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
-    const { data, error } = await supabase
+
+    const { data: resData, error: resError } = await supabase
       .from("reservations")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    if (error) console.error(error);
-    else setReservations(data);
+    if (resError) console.error(resError);
+    else setReservations(resData);
+
+    const { data: reviewData } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("user_id", user.id);
+    const map = {};
+    (reviewData || []).forEach((r) => { map[r.space_id] = r; });
+    setMyReviews(map);
+
     setLoading(false);
   }
 
@@ -30,6 +45,31 @@ export default function MyReservations({ onBack }) {
       alert("Something went wrong cancelling this reservation.");
       console.error(error);
     } else {
+      load();
+    }
+  }
+
+  function startRating(res) {
+    setRatingId(res.id);
+    setStars(5);
+    setComment("");
+  }
+
+  async function submitRating(res) {
+    setSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from("reviews").insert({
+      space_id: res.space_id,
+      user_id: user.id,
+      rating: stars,
+      comment,
+    });
+    setSaving(false);
+    if (error) {
+      alert("Something went wrong saving your review.");
+      console.error(error);
+    } else {
+      setRatingId(null);
       load();
     }
   }
@@ -50,24 +90,78 @@ export default function MyReservations({ onBack }) {
           </div>
         )}
 
-        {!loading && reservations.map((r) => (
-          <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <div>
-                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                <div style={{ fontSize: 12, color: "#5A6178", marginTop: 4 }}>
-                  ${r.price}/hr · Reserved {new Date(r.created_at).toLocaleDateString()}
+        {!loading && reservations.map((r) => {
+          const myReview = r.space_id ? myReviews[r.space_id] : null;
+          return (
+            <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
+                  <div style={{ fontSize: 12, color: "#5A6178", marginTop: 4 }}>
+                    ${r.price}/hr · Reserved {new Date(r.created_at).toLocaleDateString()}
+                  </div>
                 </div>
+                <button
+                  onClick={() => handleCancel(r.id)}
+                  style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                >
+                  Cancel
+                </button>
               </div>
-              <button
-                onClick={() => handleCancel(r.id)}
-                style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-              >
-                Cancel
-              </button>
+
+              {r.space_id && (
+                myReview ? (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE", fontSize: 12, color: "#5A6178" }}>
+                    You rated this {"⭐".repeat(myReview.rating)}
+                    {myReview.comment && <div style={{ marginTop: 2 }}>"{myReview.comment}"</div>}
+                  </div>
+                ) : ratingId === r.id ? (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE" }}>
+                    <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <span
+                          key={n}
+                          onClick={() => setStars(n)}
+                          style={{ cursor: "pointer", fontSize: 20, color: n <= stars ? "#F5B301" : "#DDD" }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <textarea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      placeholder="Optional comment..."
+                      style={{ width: "100%", padding: 8, border: "1px solid #DDD", borderRadius: 6, fontSize: 12, resize: "none", minHeight: 50 }}
+                    />
+                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                      <button
+                        onClick={() => submitRating(r)}
+                        disabled={saving}
+                        style={{ flex: 1, background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 8, borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                      >
+                        {saving ? "Saving..." : "Submit Rating"}
+                      </button>
+                      <button
+                        onClick={() => setRatingId(null)}
+                        style={{ flex: 1, background: "#E5E7EB", color: "#1E2233", border: "none", padding: 8, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => startRating(r)}
+                    style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                  >
+                    Rate this space
+                  </button>
+                )
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
