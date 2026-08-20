@@ -63,6 +63,7 @@ export default function App() {
   const [viewingDashboard, setViewingDashboard] = useState(false);
   const [viewingReservations, setViewingReservations] = useState(false);
   const [spaces, setSpaces] = useState([]);
+  const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
@@ -104,6 +105,25 @@ export default function App() {
     const { data, error } = await supabase.from("spaces").select("*");
     if (error) console.error("Error loading spaces:", error);
     else setSpaces(data);
+
+    const { data: reviewData, error: reviewError } = await supabase.from("reviews").select("space_id, rating");
+    if (!reviewError && reviewData) {
+      const grouped = {};
+      reviewData.forEach((r) => {
+        if (!grouped[r.space_id]) grouped[r.space_id] = [];
+        grouped[r.space_id].push(r.rating);
+      });
+      const averages = {};
+      Object.keys(grouped).forEach((spaceId) => {
+        const nums = grouped[spaceId];
+        averages[spaceId] = {
+          avg: (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1),
+          count: nums.length,
+        };
+      });
+      setRatings(averages);
+    }
+
     setLoading(false);
   }
 
@@ -142,7 +162,14 @@ export default function App() {
   }
 
   if (selectedSpace) {
-    return <SpaceDetail space={selectedSpace} vehicle={vehicle} onBack={() => setSelectedSpace(null)} />;
+    return (
+      <SpaceDetail
+        space={selectedSpace}
+        vehicle={vehicle}
+        onBack={() => setSelectedSpace(null)}
+        ratingInfo={ratings[selectedSpace.id]}
+      />
+    );
   }
 
   const spacesWithLocation = spaces.filter((s) => s.latitude && s.longitude);
@@ -223,6 +250,7 @@ export default function App() {
           {!loading && spaces.map((s) => {
             const status = fitStatus(s, vehicle);
             const c = FIT_COPY[status];
+            const ratingInfo = ratings[s.id];
             return (
               <div
                 key={s.id}
@@ -236,7 +264,7 @@ export default function App() {
                     <span style={{ fontSize: 14, color: "#1E2233" }}>${s.price}/hr</span>
                   </div>
                   <div style={{ fontSize: 12, color: "#5A6178", margin: "3px 0" }}>
-                    {s.distance} mi · {s.hours} · ⭐ {s.rating}
+                    {s.distance} mi · {s.hours} · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count})` : "No ratings yet"}
                   </div>
                   <span style={{ background: c.bg, color: c.text, fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 700 }}>
                     {c.label} {vehicle.label.toLowerCase()}

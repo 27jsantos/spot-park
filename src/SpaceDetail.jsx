@@ -31,7 +31,7 @@ function FitVisual({ space, vehicle, status }) {
   );
 }
 
-export default function SpaceDetail({ space, vehicle, onBack }) {
+export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [reserved, setReserved] = useState(false);
   const [saving, setSaving] = useState(false);
   const status = fitStatus(space, vehicle);
@@ -74,7 +74,7 @@ export default function SpaceDetail({ space, vehicle, onBack }) {
 
           <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800 }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
-            {space.distance} mi away · ⭐ {space.rating}
+            {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
 
           <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px" }}>
