@@ -106,7 +106,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             ← Back
           </button>
 
-          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800 }}>{space.name}</h1>
+          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF" }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
             {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
