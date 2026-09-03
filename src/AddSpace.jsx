@@ -1,31 +1,84 @@
 import React, { useState } from "react";
 import { supabase } from "./supabaseClient";
 
-const BODY_TYPES = {
-  sedan: { label: "Sedan", width: 6.0, length: 15.5 },
-  suv: { label: "SUV", width: 6.5, length: 16.8 },
-  truck: { label: "Pickup truck", width: 6.7, length: 19.5 },
-  van: { label: "Minivan", width: 6.6, length: 17.5 },
-};
-
 const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
 
-export default function VehicleProfile({ onSave, onBack }) {
-  const [year, setYear] = useState("");
-  const [make, setMake] = useState("");
-  const [model, setModel] = useState("");
-  const [bodyType, setBodyType] = useState("suv");
+export default function AddSpace({ onBack, onSaved }) {
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [hours, setHours] = useState("");
+  const [width, setWidth] = useState("");
+  const [length, setLength] = useState("");
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [location, setLocation] = useState(null);
+  const [locating, setLocating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  async function handleSave() {
-    const dims = BODY_TYPES[bodyType];
-    const vehicle = {
-      id: bodyType,
-      label: `${year} ${make} ${model}`.trim() || dims.label,
-      width: dims.width,
-      length: dims.length,
-    };
-    await supabase.auth.updateUser({ data: { vehicle } });
-    onSave(vehicle);
+  function handlePhotoChange(e) {
+    const files = Array.from(e.target.files).slice(0, 5);
+    setPhotoFiles(files);
+    setPreviews(files.map((f) => URL.createObjectURL(f)));
+  }
+
+  function handleUseLocation() {
+    setLocating(true);
+    setError("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+      },
+      () => {
+        setError("Couldn't get your location. Check that location access is allowed for this site.");
+        setLocating(false);
+      }
+    );
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const photo_urls = [];
+    for (const file of photoFiles) {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from("space-photos").upload(filePath, file);
+      if (uploadError) {
+        setError(uploadError.message);
+        setSaving(false);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from("space-photos").getPublicUrl(filePath);
+      photo_urls.push(urlData.publicUrl);
+    }
+
+    const { error } = await supabase.from("spaces").insert({
+      name,
+      price: Number(price),
+      distance: 0.1,
+      hours,
+      width: Number(width),
+      length: Number(length),
+      rating: 5.0,
+      owner_id: user.id,
+      photo_url: photo_urls[0] || null,
+      photo_urls: photo_urls.length > 0 ? photo_urls : null,
+      latitude: location?.lat ?? null,
+      longitude: location?.lng ?? null,
+    });
+
+    setSaving(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      onSaved();
+    }
   }
 
   return (
@@ -34,36 +87,72 @@ export default function VehicleProfile({ onSave, onBack }) {
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Vehicle</h1>
+        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>List Your Space</h1>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
-            Year
-            <input value={year} onChange={(e) => setYear(e.target.value)} placeholder="2021" style={inputStyle} />
+            Photos (up to 5)
+            {previews.length > 0 ? (
+              <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+                {previews.map((p, i) => (
+                  <img key={i} src={p} alt={`Preview ${i + 1}`} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8 }} />
+                ))}
+              </div>
+            ) : (
+              <div style={{ ...inputStyle, height: 90, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6178" }}>
+                No photos selected
+              </div>
+            )}
+            <input type="file" accept="image/*" multiple onChange={handlePhotoChange} style={{ marginTop: 8 }} />
           </label>
+
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
-            Make
-            <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Ford" style={inputStyle} />
+            Location
+            <button
+              type="button"
+              onClick={handleUseLocation}
+              disabled={locating}
+              style={{ ...inputStyle, textAlign: "left", cursor: "pointer", color: location ? "#3B6D11" : "#5A6178" }}
+            >
+              {locating ? "Getting your location..." : location ? "📍 Location set" : "📍 Use my current location"}
+            </button>
           </label>
+
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
-            Model
-            <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="F-150" style={inputStyle} />
+            Space name
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Driveway on Oak St" required style={inputStyle} />
           </label>
+
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
-            Body type
-            <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} style={inputStyle}>
-              {Object.entries(BODY_TYPES).map(([id, v]) => (
-                <option key={id} value={id}>{v.label}</option>
-              ))}
-            </select>
+            Price per hour ($)
+            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="6" required style={inputStyle} />
           </label>
+
+          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+            Available hours
+            <input value={hours} onChange={(e) => setHours(e.target.value)} placeholder="5 PM – 11 PM" required style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+            Width (feet)
+            <input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="9.0" required style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+            Length (feet)
+            <input type="number" step="0.1" value={length} onChange={(e) => setLength(e.target.value)} placeholder="20.0" required style={inputStyle} />
+          </label>
+
+          {error && <div style={{ color: "#FCA5A5", fontSize: 13 }}>{error}</div>}
+
           <button
-            onClick={handleSave}
+            type="submit"
+            disabled={saving}
             style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 8 }}
           >
-            Save Vehicle
+            {saving ? "Saving..." : "List This Space"}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

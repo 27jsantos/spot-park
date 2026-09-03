@@ -31,6 +31,46 @@ function FitVisual({ space, vehicle, status }) {
   );
 }
 
+function PhotoGallery({ space }) {
+  const photos = space.photo_urls && space.photo_urls.length > 0 ? space.photo_urls : (space.photo_url ? [space.photo_url] : []);
+  const [index, setIndex] = useState(0);
+
+  if (photos.length === 0) {
+    return (
+      <div style={{ height: 190, background: "#3B4F73", display: "flex", alignItems: "center", justifyContent: "center", color: "#B7C4DC", fontSize: 13 }}>
+        Photo coming soon
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ position: "relative" }}>
+      <img src={photos[index]} alt={space.name} style={{ width: "100%", height: 190, objectFit: "cover" }} />
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={() => setIndex((index - 1 + photos.length) % photos.length)}
+            style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}
+          >
+            ‹
+          </button>
+          <button
+            onClick={() => setIndex((index + 1) % photos.length)}
+            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}
+          >
+            ›
+          </button>
+          <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5 }}>
+            {photos.map((_, i) => (
+              <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === index ? "#FFFFFF" : "rgba(255,255,255,0.5)" }} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [reserved, setReserved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -59,13 +99,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        {space.photo_url ? (
-          <img src={space.photo_url} alt={space.name} style={{ width: "100%", height: 190, objectFit: "cover" }} />
-        ) : (
-          <div style={{ height: 190, background: "#3B4F73", display: "flex", alignItems: "center", justifyContent: "center", color: "#B7C4DC", fontSize: 13 }}>
-            Photo coming soon
-          </div>
-        )}
+        <PhotoGallery space={space} />
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <button onClick={onBack} style={{ marginBottom: 12, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
