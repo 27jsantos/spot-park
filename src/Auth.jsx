@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { supabase } from "./supabaseClient";
+import TermsOfService from "./TermsOfService";
+import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function Auth({ onLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState("login");
   const [message, setMessage] = useState("");
+  const [viewingTerms, setViewingTerms] = useState(false);
+  const [viewingPrivacy, setViewingPrivacy] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -28,6 +32,9 @@ export default function Auth({ onLoggedIn }) {
       else onLoggedIn(data.user);
     }
   }
+
+  if (viewingTerms) return <TermsOfService onBack={() => setViewingTerms(false)} />;
+  if (viewingPrivacy) return <PrivacyPolicy onBack={() => setViewingPrivacy(false)} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }}>
@@ -98,6 +105,12 @@ export default function Auth({ onLoggedIn }) {
           {mode === "reset" && (
             <span>Remembered it? <a href="#" onClick={() => setMode("login")} style={{ color: "#8FB4FF", fontWeight: 700 }}>Back to log in</a></span>
           )}
+        </div>
+
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #3B4F73", fontSize: 11, color: "#9AA8C4" }}>
+          By using Spot Park, you agree to our{" "}
+          <a href="#" onClick={() => setViewingTerms(true)} style={{ color: "#8FB4FF" }}>Terms</a> and{" "}
+          <a href="#" onClick={() => setViewingPrivacy(true)} style={{ color: "#8FB4FF" }}>Privacy Policy</a>.
         </div>
       </div>
     </div>
