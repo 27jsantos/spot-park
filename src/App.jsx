@@ -67,6 +67,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
+  const [mapView, setMapView] = useState("street");
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -180,10 +181,17 @@ export default function App() {
 
         <div style={{ height: 220, position: "relative" }}>
           <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+            {mapView === "street" ? (
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+            ) : (
+              <TileLayer
+                attribution="Tiles &copy; Esri"
+                url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              />
+            )}
             <RecenterMap center={mapCenter} />
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]}>
@@ -206,6 +214,13 @@ export default function App() {
               style={{ border: "none", outline: "none", fontSize: 13, color: "#1E2233", flex: 1, background: "transparent" }}
             />
           </form>
+
+          <button
+            onClick={() => setMapView(mapView === "street" ? "satellite" : "street")}
+            style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+          >
+            {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
+          </button>
         </div>
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
