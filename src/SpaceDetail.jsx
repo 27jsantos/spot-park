@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "./supabaseClient";
+import { stripePromise } from "./stripeClient";
 
 const FIT_COPY = {
   good: { label: "Good fit for your", ring: "#639922", bg: "#EAF3DE", text: "#3B6D11" },
@@ -48,18 +50,8 @@ function PhotoGallery({ space }) {
       <img src={photos[index]} alt={space.name} style={{ width: "100%", height: 190, objectFit: "cover" }} />
       {photos.length > 1 && (
         <>
-          <button
-            onClick={() => setIndex((index - 1 + photos.length) % photos.length)}
-            style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}
-          >
-            ‹
-          </button>
-          <button
-            onClick={() => setIndex((index + 1) % photos.length)}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}
-          >
-            ›
-          </button>
+          <button onClick={() => setIndex((index - 1 + photos.length) % photos.length)} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}>‹</button>
+          <button onClick={() => setIndex((index + 1) % photos.length)} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}>›</button>
           <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 5 }}>
             {photos.map((_, i) => (
               <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === index ? "#FFFFFF" : "rgba(255,255,255,0.5)" }} />
@@ -71,27 +63,96 @@ function PhotoGallery({ space }) {
   );
 }
 
-export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
-  const [reserved, setReserved] = useState(false);
+function CheckoutForm({ space, onSuccess }) {
+  const stripe = useStripe();
+  const elements = useElements();
   const [saving, setSaving] = useState(false);
-  const status = fitStatus(space, vehicle);
-  const c = FIT_COPY[status];
+  const [error, setError] = useState("");
 
-  async function handleReserve() {
+  async function handlePay(e) {
+    e.preventDefault();
+    if (!stripe || !elements) return;
     setSaving(true);
+    setError("");
+
+    const { error: stripeError } = await stripe.confirmPayment({
+      elements,
+      redirect: "if_required",
+    });
+
+    if (stripeError) {
+      setError(stripeError.message);
+      setSaving(false);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await supabase.from("reservations").insert({
+    const { error: dbError } = await supabase.from("reservations").insert({
       user_id: user.id,
       space_id: space.id,
       space_name: space.name,
       price: space.price,
     });
+
     setSaving(false);
-    if (error) {
-      console.error(error);
-      alert("Something went wrong saving your reservation.");
+    if (dbError) {
+      setError("Payment succeeded but saving your reservation failed. Contact support.");
     } else {
-      setReserved(true);
+      onSuccess();
+    }
+  }
+
+  return (
+    <form onSubmit={handlePay} style={{ marginTop: 12 }}>
+      <PaymentElement />
+      {error && <div style={{ color: "#a33030", fontSize: 12, marginTop: 8 }}>{error}</div>}
+      <button
+        type="submit"
+        disabled={!stripe || saving}
+        style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 12 }}
+      >
+        {saving ? "Processing..." : `Pay $${space.price}`}
+      </button>
+    </form>
+  );
+}
+
+export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
+  const [reserved, setReserved] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [loadingPayment, setLoadingPayment] = useState(false);
+  const status = fitStatus(space, vehicle);
+  const c = FIT_COPY[status];
+
+  async function startPayment() {
+    setLoadingPayment(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const res = await fetch(
+        "https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/create-payment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ amount: space.price }),
+        }
+      );
+      const data = await res.json();
+      setLoadingPayment(false);
+
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+        setPaying(true);
+      } else {
+        alert("Error from server: " + JSON.stringify(data));
+      }
+    } catch (err) {
+      setLoadingPayment(false);
+      alert("Network/JS error: " + err.message);
     }
   }
 
@@ -126,22 +187,32 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             Available: {space.hours}
           </div>
 
-          <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <strong style={{ color: "#1E2233" }}>${space.price}/hr</strong>
-            <button
-              onClick={handleReserve}
-              disabled={saving || reserved}
-              style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
-            >
-              {reserved ? "Reserved ✓" : saving ? "Saving..." : "Reserve"}
-            </button>
-          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
+            {!paying && !reserved && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <strong style={{ color: "#1E2233" }}>${space.price}/hr</strong>
+                <button
+                  onClick={startPayment}
+                  disabled={loadingPayment}
+                  style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
+                >
+                  {loadingPayment ? "Loading..." : "Reserve"}
+                </button>
+              </div>
+            )}
 
-          {reserved && (
-            <div style={{ marginTop: 10, fontSize: 12, color: "#B7C4DC", textAlign: "center" }}>
-              Your reservation was saved to your account.
-            </div>
-          )}
+            {paying && clientSecret && (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <CheckoutForm space={space} onSuccess={() => { setPaying(false); setReserved(true); }} />
+              </Elements>
+            )}
+
+            {reserved && (
+              <div style={{ textAlign: "center", color: "#3B6D11", fontWeight: 700 }}>
+                Payment successful — reserved ✓
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
