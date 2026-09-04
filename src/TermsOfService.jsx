@@ -11,19 +11,19 @@ export default function TermsOfService({ onBack }) {
         <p style={{ fontSize: 12, color: "#B7C4DC", marginBottom: 16 }}>Last updated: {new Date().toLocaleDateString()}</p>
 
         <div style={{ fontSize: 13, color: "#E4E8F2", lineHeight: 1.6, display: "flex", flexDirection: "column", gap: 14 }}>
-          <p><strong>1. What Spot Park is.</strong> Spot Park is a marketplace connecting people who have unused parking spaces ("Hosts") with people looking to park a vehicle ("Drivers"). Spot Park is currently in early testing. Reservations made through the app are not yet processed with real payment — no money is currently charged or transferred.</p>
+          <p><strong>1. What Spot Aura is.</strong> Spot Aura is a marketplace connecting people who have unused parking spaces ("Hosts") with people looking to park a vehicle ("Drivers"). Spot Aura is currently in early testing.</p>
 
           <p><strong>2. Your account.</strong> You must provide accurate information when creating an account. You're responsible for keeping your login credentials secure and for all activity under your account.</p>
 
-          <p><strong>3. Listings.</strong> Hosts are solely responsible for the accuracy of their listings, including space dimensions, availability, and photos. Spot Park does not inspect or verify listed spaces.</p>
+          <p><strong>3. Listings.</strong> Hosts are solely responsible for the accuracy of their listings, including space dimensions, availability, and photos. Spot Aura does not inspect or verify listed spaces.</p>
 
-          <p><strong>4. Arrangements between users.</strong> Any agreement to park in or rent out a space is between the Driver and Host directly. Spot Park is not a party to that arrangement and is not responsible for disputes, property damage, towing, tickets, or any other outcome of a parking arrangement made through the app.</p>
+          <p><strong>4. Arrangements between users.</strong> Any agreement to park in or rent out a space is between the Driver and Host directly. Spot Aura is not a party to that arrangement and is not responsible for disputes, property damage, towing, tickets, or any other outcome of a parking arrangement made through the app.</p>
 
-          <p><strong>5. Prohibited conduct.</strong> You agree not to use Spot Park for unlawful purposes, to list a space you don't have the right to offer, or to misrepresent your vehicle or a listing.</p>
+          <p><strong>5. Prohibited conduct.</strong> You agree not to use Spot Aura for unlawful purposes, to list a space you don't have the right to offer, or to misrepresent your vehicle or a listing.</p>
 
-          <p><strong>6. Changes.</strong> Spot Park is actively being developed and these terms, along with the app's features, may change as it evolves.</p>
+          <p><strong>6. Changes.</strong> Spot Aura is actively being developed and these terms, along with the app's features, may change as it evolves.</p>
 
-          <p><strong>7. No warranty.</strong> Spot Park is provided "as is" during this testing phase, without warranties of any kind.</p>
+          <p><strong>7. No warranty.</strong> Spot Aura is provided "as is" during this testing phase, without warranties of any kind.</p>
 
           <p><strong>8. Contact.</strong> Questions about these terms can be sent to the app's listed contact email.</p>
 

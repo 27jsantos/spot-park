@@ -221,11 +221,17 @@ export default function App() {
           >
             {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
           </button>
+
+          {!loading && spacesWithLocation.length === 0 && (
+            <div style={{ position: "absolute", bottom: 10, left: 10, right: 90, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+              No spaces near you yet — be the first to list one!
+            </div>
+          )}
         </div>
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 18, fontWeight: 800 }}>Spot Park</span>
+            <span style={{ fontSize: 18, fontWeight: 800 }}>Spot Aura</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => setUser(null))}
               style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", borderRadius: 6, cursor: "pointer" }}

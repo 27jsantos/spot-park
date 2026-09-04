@@ -39,7 +39,7 @@ export default function Auth({ onLoggedIn }) {
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", alignItems: "center", padding: 20 }}>
       <div style={{ width: 360, background: "#0d2c64", borderRadius: 24, padding: 32, color: "#FFFFFF" }}>
-        <h1 style={{ fontSize: 24, marginBottom: 20, fontWeight: 800, color: "#FFFFFF" }}>Spot Park</h1>
+        <h1 style={{ fontSize: 24, marginBottom: 20, fontWeight: 800, color: "#FFFFFF" }}>Spot Aura</h1>
 
         {mode === "reset" ? (
           <>
@@ -108,7 +108,7 @@ export default function Auth({ onLoggedIn }) {
         </div>
 
         <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #3B4F73", fontSize: 11, color: "#9AA8C4" }}>
-          By using Spot Park, you agree to our{" "}
+          By using Spot Aura, you agree to our{" "}
           <a href="#" onClick={() => setViewingTerms(true)} style={{ color: "#8FB4FF" }}>Terms</a> and{" "}
           <a href="#" onClick={() => setViewingPrivacy(true)} style={{ color: "#8FB4FF" }}>Privacy Policy</a>.
         </div>
