@@ -109,3 +109,10 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+.date-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #3B4F73;
+  border-radius: 6px;
+  font-size: 13px;
+}

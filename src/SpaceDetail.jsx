@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "./supabaseClient";
 import { stripePromise } from "./stripeClient";
@@ -92,6 +94,8 @@ function CheckoutForm({ space, onSuccess }) {
       space_id: space.id,
       space_name: space.name,
       price: space.price,
+      booking_type: "hourly",
+      status: "confirmed",
     });
 
     setSaving(false);
@@ -117,9 +121,100 @@ function CheckoutForm({ space, onSuccess }) {
   );
 }
 
+function LongTermRequest({ space, onSubmitted }) {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const days = startDate && endDate ? Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1) : 0;
+  const total = days * (space.daily_price || 0);
+
+  async function handleRequest() {
+    if (!startDate || !endDate) {
+      setError("Please select both a start and end date.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error: dbError } = await supabase.from("reservations").insert({
+      user_id: user.id,
+      space_id: space.id,
+      space_name: space.name,
+      price: total,
+      start_date: startDate.toISOString().split("T")[0],
+      end_date: endDate.toISOString().split("T")[0],
+      booking_type: "long_term",
+      status: "pending",
+      owner_id: space.owner_id,
+    });
+
+    setSaving(false);
+    if (dbError) {
+      setError("Something went wrong sending your request.");
+      console.error(dbError);
+    } else {
+      onSubmitted();
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 11, color: "#5A6178" }}>Start date</label>
+          <DatePicker
+            selected={startDate}
+            onChange={setStartDate}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            minDate={new Date()}
+            placeholderText="Select"
+            className="date-input"
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ fontSize: 11, color: "#5A6178" }}>End date</label>
+          <DatePicker
+            selected={endDate}
+            onChange={setEndDate}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate || new Date()}
+            placeholderText="Select"
+            className="date-input"
+          />
+        </div>
+      </div>
+
+      {days > 0 && (
+        <div style={{ fontSize: 13, color: "#1E2233", marginBottom: 10 }}>
+          {days} day{days === 1 ? "" : "s"} × ${space.daily_price}/day = <strong>${total.toFixed(2)}</strong>
+        </div>
+      )}
+
+      {error && <div style={{ color: "#a33030", fontSize: 12, marginBottom: 8 }}>{error}</div>}
+
+      <button
+        onClick={handleRequest}
+        disabled={saving}
+        style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
+      >
+        {saving ? "Sending..." : "Send Request to Host"}
+      </button>
+    </div>
+  );
+}
+
 export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [reserved, setReserved] = useState(false);
+  const [requested, setRequested] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [mode, setMode] = useState("hourly");
   const [clientSecret, setClientSecret] = useState(null);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const status = fitStatus(space, vehicle);
@@ -129,7 +224,6 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
     setLoadingPayment(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-
       const res = await fetch(
         "https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/create-payment",
         {
@@ -187,8 +281,27 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             Available: {space.hours}
           </div>
 
+          {!reserved && !requested && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <button
+                onClick={() => setMode("hourly")}
+                style={{ flex: 1, background: mode === "hourly" ? "#3B6FE0" : "#FFFFFF", color: mode === "hourly" ? "#FFFFFF" : "#1E2233", border: "1px solid #3B4F73", padding: 8, borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+              >
+                Hourly
+              </button>
+              {space.daily_price && (
+                <button
+                  onClick={() => setMode("long_term")}
+                  style={{ flex: 1, background: mode === "long_term" ? "#3B6FE0" : "#FFFFFF", color: mode === "long_term" ? "#FFFFFF" : "#1E2233", border: "1px solid #3B4F73", padding: 8, borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                >
+                  Long-term
+                </button>
+              )}
+            </div>
+          )}
+
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
-            {!paying && !reserved && (
+            {mode === "hourly" && !paying && !reserved && !requested && (
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <strong style={{ color: "#1E2233" }}>${space.price}/hr</strong>
                 <button
@@ -201,10 +314,23 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               </div>
             )}
 
-            {paying && clientSecret && (
+            {mode === "hourly" && paying && clientSecret && (
               <Elements stripe={stripePromise} options={{ clientSecret }}>
                 <CheckoutForm space={space} onSuccess={() => { setPaying(false); setReserved(true); }} />
               </Elements>
+            )}
+
+            {mode === "long_term" && !requested && !reserved && (
+              <>
+                <div style={{ color: "#1E2233", fontWeight: 700, marginBottom: 4 }}>${space.daily_price}/day</div>
+                <LongTermRequest space={space} onSubmitted={() => setRequested(true)} />
+              </>
+            )}
+
+            {requested && (
+              <div style={{ textAlign: "center", color: "#854F0B", fontWeight: 700 }}>
+                Request sent — waiting on the host to approve
+              </div>
             )}
 
             {reserved && (

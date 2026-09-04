@@ -6,6 +6,7 @@ const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4,
 export default function AddSpace({ onBack, onSaved }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [dailyPrice, setDailyPrice] = useState("");
   const [hours, setHours] = useState("");
   const [width, setWidth] = useState("");
   const [length, setLength] = useState("");
@@ -61,6 +62,7 @@ export default function AddSpace({ onBack, onSaved }) {
     const { error } = await supabase.from("spaces").insert({
       name,
       price: Number(price),
+      daily_price: dailyPrice ? Number(dailyPrice) : null,
       distance: 0.1,
       hours,
       width: Number(width),
@@ -126,6 +128,11 @@ export default function AddSpace({ onBack, onSaved }) {
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
             Price per hour ($)
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="6" required style={inputStyle} />
+          </label>
+
+          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+            Price per day for long-term stays ($) — optional
+            <input type="number" value={dailyPrice} onChange={(e) => setDailyPrice(e.target.value)} placeholder="20" style={inputStyle} />
           </label>
 
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>

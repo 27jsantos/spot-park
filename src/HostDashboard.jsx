@@ -5,6 +5,7 @@ const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, 
 
 export default function HostDashboard({ onBack }) {
   const [mySpaces, setMySpaces] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -13,9 +14,19 @@ export default function HostDashboard({ onBack }) {
   async function load() {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
+
     const { data, error } = await supabase.from("spaces").select("*").eq("owner_id", user.id);
     if (error) console.error(error);
     else setMySpaces(data);
+
+    const { data: reqData, error: reqError } = await supabase
+      .from("reservations")
+      .select("*")
+      .eq("owner_id", user.id)
+      .eq("status", "pending");
+    if (reqError) console.error(reqError);
+    else setRequests(reqData || []);
+
     setLoading(false);
   }
 
@@ -24,11 +35,24 @@ export default function HostDashboard({ onBack }) {
   }, []);
 
   async function handleDelete(id) {
-    const confirmed = window.confirm("Remove this space from Spot Park?");
+    const confirmed = window.confirm("Remove this space from Spot Aura?");
     if (!confirmed) return;
     const { error } = await supabase.from("spaces").delete().eq("id", id);
     if (error) {
       alert("Something went wrong deleting this space.");
+      console.error(error);
+    } else {
+      load();
+    }
+  }
+
+  async function handleRequestDecision(id, decision) {
+    const { error } = await supabase
+      .from("reservations")
+      .update({ status: decision })
+      .eq("id", id);
+    if (error) {
+      alert("Something went wrong updating this request.");
       console.error(error);
     } else {
       load();
@@ -84,6 +108,34 @@ export default function HostDashboard({ onBack }) {
           <div style={{ fontSize: 13, color: "#5A6178", marginTop: 8 }}>Combined hourly rate</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${totalPossibleEarnings}/hr</div>
         </div>
+
+        {requests.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>Pending Requests ({requests.length})</h2>
+            {requests.map((r) => (
+              <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
+                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>
+                  {r.start_date} → {r.end_date} · ${r.price} total
+                </div>
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button
+                    onClick={() => handleRequestDecision(r.id, "confirmed")}
+                    style={{ flex: 1, background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 8, borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleRequestDecision(r.id, "declined")}
+                    style={{ flex: 1, background: "#fbe6e6", color: "#a33030", border: "none", padding: 8, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
 
