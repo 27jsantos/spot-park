@@ -3,6 +3,19 @@ import { supabase } from "./supabaseClient";
 
 const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 6, background: "#FFFFFF", color: "#1E2233", fontSize: 13 };
 
+function notifyByEmail(email, subject, message) {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    fetch("https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/send-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ email, subject, message }),
+    }).catch((err) => console.error("Notification failed:", err));
+  });
+}
+
 export default function HostDashboard({ onBack }) {
   const [mySpaces, setMySpaces] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -46,16 +59,26 @@ export default function HostDashboard({ onBack }) {
     }
   }
 
-  async function handleRequestDecision(id, decision) {
+  async function handleRequestDecision(request, decision) {
     const { error } = await supabase
       .from("reservations")
       .update({ status: decision })
-      .eq("id", id);
+      .eq("id", request.id);
+
     if (error) {
       alert("Something went wrong updating this request.");
       console.error(error);
-    } else {
-      load();
+      return;
+    }
+
+    load();
+
+    if (request.user_email) {
+      const subject = decision === "confirmed" ? "Your request was approved!" : "Your request was declined";
+      const message = decision === "confirmed"
+        ? `Good news — your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was approved. Log in to Spot Aura to complete payment.`
+        : `Your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was declined by the host.`;
+      notifyByEmail(request.user_email, subject, message);
     }
   }
 
@@ -120,13 +143,13 @@ export default function HostDashboard({ onBack }) {
                 </div>
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <button
-                    onClick={() => handleRequestDecision(r.id, "confirmed")}
+                    onClick={() => handleRequestDecision(r, "confirmed")}
                     style={{ flex: 1, background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 8, borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
                   >
                     Approve
                   </button>
                   <button
-                    onClick={() => handleRequestDecision(r.id, "declined")}
+                    onClick={() => handleRequestDecision(r, "declined")}
                     style={{ flex: 1, background: "#fbe6e6", color: "#a33030", border: "none", padding: 8, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     Decline

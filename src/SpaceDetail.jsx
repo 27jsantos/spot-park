@@ -19,6 +19,19 @@ function fitStatus(space, vehicle) {
   return "good";
 }
 
+function notifyByEmail(email, subject, message) {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    fetch("https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/send-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ email, subject, message }),
+    }).catch((err) => console.error("Notification failed:", err));
+  });
+}
+
 function FitVisual({ space, vehicle, status }) {
   const c = FIT_COPY[status];
   const wScale = 160 / space.width;
@@ -141,6 +154,7 @@ function LongTermRequest({ space, onSubmitted }) {
     const { data: { user } } = await supabase.auth.getUser();
     const { error: dbError } = await supabase.from("reservations").insert({
       user_id: user.id,
+      user_email: user.email,
       space_id: space.id,
       space_name: space.name,
       price: total,
