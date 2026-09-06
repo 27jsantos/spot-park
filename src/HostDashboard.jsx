@@ -24,6 +24,7 @@ export default function HostDashboard({ onBack }) {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
+  const [duplicatingId, setDuplicatingId] = useState(null);
 
   async function load() {
     setLoading(true);
@@ -54,6 +55,22 @@ export default function HostDashboard({ onBack }) {
     const { error } = await supabase.from("spaces").delete().eq("id", id);
     if (error) {
       alert("Something went wrong deleting this space.");
+      console.error(error);
+    } else {
+      load();
+    }
+  }
+
+  async function handleDuplicate(space) {
+    setDuplicatingId(space.id);
+    const { id, created_at, ...rest } = space;
+    const { error } = await supabase.from("spaces").insert({
+      ...rest,
+      name: `${space.name} (copy)`,
+    });
+    setDuplicatingId(null);
+    if (error) {
+      alert("Something went wrong duplicating this space.");
       console.error(error);
     } else {
       load();
@@ -220,12 +237,19 @@ export default function HostDashboard({ onBack }) {
                     ${s.price}/hr · {s.hours} · {s.width}' × {s.length}'
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
                   <button
                     onClick={() => startEditing(s)}
                     style={{ background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleDuplicate(s)}
+                    disabled={duplicatingId === s.id}
+                    style={{ background: "#E5EEEA", color: "#2C5E3F", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                  >
+                    {duplicatingId === s.id ? "Copying..." : "Duplicate"}
                   </button>
                   <button
                     onClick={() => handleDelete(s.id)}
