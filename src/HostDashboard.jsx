@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
+import MessageThread from "./MessageThread";
 
 const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 6, background: "#FFFFFF", color: "#1E2233", fontSize: 13 };
 
@@ -155,6 +156,7 @@ export default function HostDashboard({ onBack }) {
                     Decline
                   </button>
                 </div>
+                <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
               </div>
             ))}
           </div>

@@ -69,6 +69,7 @@ export default function AddSpace({ onBack, onSaved }) {
       length: Number(length),
       rating: 5.0,
       owner_id: user.id,
+      owner_email: user.email,
       photo_url: photo_urls[0] || null,
       photo_urls: photo_urls.length > 0 ? photo_urls : null,
       latitude: location?.lat ?? null,

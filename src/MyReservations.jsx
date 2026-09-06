@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "./supabaseClient";
 import { stripePromise } from "./stripeClient";
+import MessageThread from "./MessageThread";
 
 function PayForm({ reservation, onPaid }) {
   const stripe = useStripe();
@@ -225,6 +226,10 @@ export default function MyReservations({ onBack }) {
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <PayForm reservation={r} onPaid={() => { setPayingId(null); load(); }} />
                 </Elements>
+              )}
+
+              {r.owner_id && (
+                <MessageThread reservationId={r.id} recipientId={r.owner_id} recipientEmail={r.owner_email} />
               )}
 
               {r.space_id && (r.status === "paid" || !r.status) && (

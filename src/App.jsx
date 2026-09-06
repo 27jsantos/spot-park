@@ -179,8 +179,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        <div style={{ height: 220, position: "relative" }}>
-          <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+<div style={{ height: 220, position: "relative", overflow: "hidden" }}>          <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
