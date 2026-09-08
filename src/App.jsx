@@ -8,7 +8,10 @@ import Auth from "./Auth";
 import AddSpace from "./AddSpace";
 import HostDashboard from "./HostDashboard";
 import MyReservations from "./MyReservations";
+import AdminDashboard from "./AdminDashboard";
 import { supabase } from "./supabaseClient";
+
+const ADMIN_USER_ID = "95827d6e-d632-4807-bb8e-90c693998120";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -62,6 +65,7 @@ export default function App() {
   const [addingSpace, setAddingSpace] = useState(false);
   const [viewingDashboard, setViewingDashboard] = useState(false);
   const [viewingReservations, setViewingReservations] = useState(false);
+  const [viewingAdmin, setViewingAdmin] = useState(false);
   const [spaces, setSpaces] = useState([]);
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -149,6 +153,7 @@ export default function App() {
 
   if (viewingDashboard) return <HostDashboard onBack={() => setViewingDashboard(false)} />;
   if (viewingReservations) return <MyReservations onBack={() => setViewingReservations(false)} />;
+  if (viewingAdmin) return <AdminDashboard onBack={() => setViewingAdmin(false)} />;
 
   if (editingVehicle) {
     return (
@@ -174,12 +179,14 @@ export default function App() {
   }
 
   const spacesWithLocation = spaces.filter((s) => s.latitude && s.longitude);
+  const isAdmin = user.id === ADMIN_USER_ID;
 
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-<div style={{ height: 220, position: "relative", overflow: "hidden" }}>          <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+        <div style={{ height: 220, position: "relative" }}>
+          <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -230,7 +237,7 @@ export default function App() {
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 18, fontWeight: 800 }}>Spot Aura</span>
+            <span style={{ fontSize: 22, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Spot Aura</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => setUser(null))}
               style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", borderRadius: 6, cursor: "pointer" }}
@@ -260,10 +267,18 @@ export default function App() {
           </button>
           <button
             onClick={() => setViewingReservations(true)}
-            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: isAdmin ? 8 : 16, fontSize: 13, cursor: "pointer" }}
           >
             My Reservations
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => setViewingAdmin(true)}
+              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
+            >
+              ⚙ Admin Dashboard
+            </button>
+          )}
 
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
