@@ -9,6 +9,8 @@ import AddSpace from "./AddSpace";
 import HostDashboard from "./HostDashboard";
 import MyReservations from "./MyReservations";
 import AdminDashboard from "./AdminDashboard";
+import PrivacyPolicy from "./PrivacyPolicy";
+import TermsOfService from "./TermsOfService";
 import { supabase } from "./supabaseClient";
 
 const ADMIN_USER_ID = "95827d6e-d632-4807-bb8e-90c693998120";
@@ -66,6 +68,8 @@ export default function App() {
   const [viewingDashboard, setViewingDashboard] = useState(false);
   const [viewingReservations, setViewingReservations] = useState(false);
   const [viewingAdmin, setViewingAdmin] = useState(false);
+  const [viewingPrivacy, setViewingPrivacy] = useState(false);
+  const [viewingTerms, setViewingTerms] = useState(false);
   const [spaces, setSpaces] = useState([]);
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -185,6 +189,8 @@ export default function App() {
   if (viewingDashboard) return <HostDashboard onBack={() => setViewingDashboard(false)} />;
   if (viewingReservations) return <MyReservations onBack={() => setViewingReservations(false)} />;
   if (viewingAdmin) return <AdminDashboard onBack={() => setViewingAdmin(false)} />;
+  if (viewingPrivacy) return <PrivacyPolicy onBack={() => setViewingPrivacy(false)} />;
+  if (viewingTerms) return <TermsOfService onBack={() => setViewingTerms(false)} />;
 
   if (editingVehicle) {
     return (
@@ -347,6 +353,12 @@ export default function App() {
             >
               Delete my account
             </button>
+          </div>
+
+          <div style={{ textAlign: "center", paddingTop: 10, fontSize: 11, color: "#9AA8C4" }}>
+            <a href="#" onClick={(e) => { e.preventDefault(); setViewingPrivacy(true); }} style={{ color: "#8FB4FF" }}>Privacy Policy</a>
+            {" · "}
+            <a href="#" onClick={(e) => { e.preventDefault(); setViewingTerms(true); }} style={{ color: "#8FB4FF" }}>Terms</a>
           </div>
         </div>
       </div>

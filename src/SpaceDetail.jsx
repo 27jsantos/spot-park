@@ -11,6 +11,20 @@ const FIT_COPY = {
   bad: { label: "Not recommended for your", ring: "#E24B4A", bg: "#FCEBEB", text: "#791F1F" },
 };
 
+// White input style used by every date/time box
+const dateInputStyle = {
+  display: "block",
+  width: "100%",
+  boxSizing: "border-box",
+  padding: 8,
+  marginTop: 2,
+  border: "1px solid #B4BBC7",
+  borderRadius: 8,
+  background: "#FFFFFF",
+  color: "#1E2233",
+  fontSize: 13,
+};
+
 function fitStatus(space, vehicle) {
   const wClear = space.width - vehicle.width;
   const lClear = space.length - vehicle.length;
@@ -161,7 +175,7 @@ function LongTermRequest({ space, onSubmitted }) {
             endDate={endDate}
             minDate={new Date()}
             placeholderText="Select"
-            className="date-input"
+            customInput={<input style={dateInputStyle} />}
           />
         </div>
         <div style={{ flex: 1 }}>
@@ -174,7 +188,7 @@ function LongTermRequest({ space, onSubmitted }) {
             endDate={endDate}
             minDate={startDate || new Date()}
             placeholderText="Select"
-            className="date-input"
+            customInput={<input style={dateInputStyle} />}
           />
         </div>
       </div>
@@ -258,6 +272,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
 
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+      <style>{".react-datepicker-wrapper{width:100%;display:block}"}</style>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
         <PhotoGallery space={space} />
@@ -320,7 +335,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
                       dateFormat="MMM d, h:mm aa"
                       minDate={new Date()}
                       placeholderText="Select"
-                      className="date-input"
+                      customInput={<input style={dateInputStyle} />}
                     />
                   </div>
                   <div style={{ flex: 1 }}>
@@ -328,7 +343,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
                     <select
                       value={hours}
                       onChange={(e) => setHours(Number(e.target.value))}
-                      style={{ display: "block", width: "100%", padding: 8, marginTop: 2, border: "1px solid #B4BBC7", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+                      style={{ ...dateInputStyle, height: 34 }}
                     >
                       {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => (
                         <option key={n} value={n}>{n}</option>
