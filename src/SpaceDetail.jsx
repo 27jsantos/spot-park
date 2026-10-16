@@ -65,7 +65,7 @@ function PhotoGallery({ space }) {
   );
 }
 
-function CheckoutForm({ space, onSuccess }) {
+function CheckoutForm({ total, onSuccess }) {
   const stripe = useStripe();
   const elements = useElements();
   const [saving, setSaving] = useState(false);
@@ -82,31 +82,14 @@ function CheckoutForm({ space, onSuccess }) {
       redirect: "if_required",
     });
 
+    setSaving(false);
     if (stripeError) {
       setError(stripeError.message);
-      setSaving(false);
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error: dbError } = await supabase.from("reservations").insert({
-      user_id: user.id,
-      user_email: user.email,
-      space_id: space.id,
-      space_name: space.name,
-      price: space.price,
-      booking_type: "hourly",
-      status: "confirmed",
-      owner_id: space.owner_id,
-      owner_email: space.owner_email,
-    });
-
-    setSaving(false);
-    if (dbError) {
-      setError("Payment succeeded but saving your reservation failed. Contact support.");
-    } else {
-      onSuccess();
-    }
+    // Stripe confirms the payment to our server, which creates the reservation
+    onSuccess();
   }
 
   return (
@@ -118,7 +101,7 @@ function CheckoutForm({ space, onSuccess }) {
         disabled={!stripe || saving}
         style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 12, borderRadius: 8, fontWeight: 700, cursor: "pointer", marginTop: 12 }}
       >
-        {saving ? "Processing..." : `Pay $${space.price}`}
+        {saving ? "Processing..." : `Pay $${total.toFixed(2)}`}
       </button>
     </form>
   );
@@ -222,10 +205,24 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [mode, setMode] = useState("hourly");
   const [clientSecret, setClientSecret] = useState(null);
   const [loadingPayment, setLoadingPayment] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [hours, setHours] = useState(1);
+  const [timeError, setTimeError] = useState("");
   const status = fitStatus(space, vehicle);
   const c = FIT_COPY[status];
 
+  const total = Number(space.price) * hours;
+
   async function startPayment() {
+    if (!startTime) {
+      setTimeError("Please pick a start time.");
+      return;
+    }
+    if (startTime < new Date()) {
+      setTimeError("Start time must be in the future.");
+      return;
+    }
+    setTimeError("");
     setLoadingPayment(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -237,7 +234,11 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ amount: space.price }),
+          body: JSON.stringify({
+            space_id: space.id,
+            hours,
+            start_time: startTime.toISOString(),
+          }),
         }
       );
       const data = await res.json();
@@ -307,12 +308,45 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
 
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
             {mode === "hourly" && !paying && !reserved && !requested && (
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <strong style={{ color: "#1E2233" }}>${space.price}/hr</strong>
+              <div>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                  <div style={{ flex: 2 }}>
+                    <label style={{ fontSize: 11, color: "#5A6178" }}>Start time</label>
+                    <DatePicker
+                      selected={startTime}
+                      onChange={setStartTime}
+                      showTimeSelect
+                      timeIntervals={30}
+                      dateFormat="MMM d, h:mm aa"
+                      minDate={new Date()}
+                      placeholderText="Select"
+                      className="date-input"
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 11, color: "#5A6178" }}>Hours</label>
+                    <select
+                      value={hours}
+                      onChange={(e) => setHours(Number(e.target.value))}
+                      style={{ display: "block", width: "100%", padding: 8, marginTop: 2, border: "1px solid #B4BBC7", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
+                    >
+                      {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: 13, color: "#1E2233", marginBottom: 10 }}>
+                  {hours} hour{hours === 1 ? "" : "s"} × ${space.price}/hr = <strong>${total.toFixed(2)}</strong>
+                </div>
+
+                {timeError && <div style={{ color: "#a33030", fontSize: 12, marginBottom: 8 }}>{timeError}</div>}
+
                 <button
                   onClick={startPayment}
                   disabled={loadingPayment}
-                  style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
+                  style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "10px 20px", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
                 >
                   {loadingPayment ? "Loading..." : "Reserve"}
                 </button>
@@ -321,7 +355,10 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
 
             {mode === "hourly" && paying && clientSecret && (
               <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <CheckoutForm space={space} onSuccess={() => { setPaying(false); setReserved(true); }} />
+                <CheckoutForm
+                  total={total}
+                  onSuccess={() => { setPaying(false); setReserved(true); }}
+                />
               </Elements>
             )}
 
@@ -341,6 +378,9 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             {reserved && (
               <div style={{ textAlign: "center", color: "#3B6D11", fontWeight: 700 }}>
                 Payment successful — reserved ✓
+                <div style={{ fontSize: 11, fontWeight: 400, marginTop: 4 }}>
+                  It may take a few seconds to show in My Reservations.
+                </div>
               </div>
             )}
           </div>

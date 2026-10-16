@@ -136,6 +136,37 @@ export default function App() {
     if (user) loadSpaces();
   }, [user]);
 
+  async function handleDeleteAccount() {
+    const sure = window.confirm(
+      "Delete your account?\n\nThis permanently deletes your account, your listed spaces, reservations, reviews and messages. This can't be undone."
+    );
+    if (!sure) return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        "https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/delete-account",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        alert("Couldn't delete account: " + (data.error || "Please try again."));
+        return;
+      }
+      alert("Your account and data have been deleted.");
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
+  }
+
   if (checkingSession) return null;
   if (!user) return <Auth onLoggedIn={(u) => setUser(u)} />;
 
@@ -308,6 +339,15 @@ export default function App() {
               </div>
             );
           })}
+
+          <div style={{ textAlign: "center", paddingTop: 8 }}>
+            <button
+              onClick={handleDeleteAccount}
+              style={{ background: "none", border: "none", color: "#FF8A8A", fontSize: 12, textDecoration: "underline", cursor: "pointer" }}
+            >
+              Delete my account
+            </button>
+          </div>
         </div>
       </div>
     </div>
