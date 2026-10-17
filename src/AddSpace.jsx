@@ -14,6 +14,8 @@ export default function AddSpace({ onBack, onSaved }) {
   const [previews, setPreviews] = useState([]);
   const [location, setLocation] = useState(null);
   const [locating, setLocating] = useState(false);
+  const [address, setAddress] = useState("");
+  const [foundAddress, setFoundAddress] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,12 +25,37 @@ export default function AddSpace({ onBack, onSaved }) {
     setPreviews(files.map((f) => URL.createObjectURL(f)));
   }
 
+  async function findAddress() {
+    const text = address.trim();
+    if (!text) return null;
+    setLocating(true);
+    setError("");
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(text)}`);
+      const results = await res.json();
+      setLocating(false);
+      if (results.length > 0) {
+        const found = { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon) };
+        setLocation(found);
+        setFoundAddress(results[0].display_name);
+        return found;
+      }
+      setError("Couldn't find that address. Try adding the city and state.");
+      return null;
+    } catch (err) {
+      setLocating(false);
+      setError("Couldn't look up that address. Check your connection and try again.");
+      return null;
+    }
+  }
+
   function handleUseLocation() {
     setLocating(true);
     setError("");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setFoundAddress("Your current location");
         setLocating(false);
       },
       () => {
@@ -42,6 +69,15 @@ export default function AddSpace({ onBack, onSaved }) {
     e.preventDefault();
     setSaving(true);
     setError("");
+
+    let spotLocation = location;
+    if (!spotLocation && address.trim()) {
+      spotLocation = await findAddress();
+      if (!spotLocation) {
+        setSaving(false);
+        return;
+      }
+    }
 
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -72,8 +108,8 @@ export default function AddSpace({ onBack, onSaved }) {
       owner_email: user.email,
       photo_url: photo_urls[0] || null,
       photo_urls: photo_urls.length > 0 ? photo_urls : null,
-      latitude: location?.lat ?? null,
-      longitude: location?.lng ?? null,
+      latitude: spotLocation?.lat ?? null,
+      longitude: spotLocation?.lng ?? null,
     });
 
     setSaving(false);
@@ -110,15 +146,34 @@ export default function AddSpace({ onBack, onSaved }) {
           </label>
 
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
-            Location
+            Address
+            <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+              <input
+                value={address}
+                onChange={(e) => { setAddress(e.target.value); setLocation(null); setFoundAddress(""); }}
+                placeholder="123 Oak St, Boston, MA"
+                style={{ ...inputStyle, marginTop: 0, flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={findAddress}
+                disabled={locating || !address.trim()}
+                style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", borderRadius: 8, padding: "0 12px", fontWeight: 700, cursor: "pointer" }}
+              >
+                {locating ? "..." : "Find"}
+              </button>
+            </div>
             <button
               type="button"
               onClick={handleUseLocation}
               disabled={locating}
-              style={{ ...inputStyle, textAlign: "left", cursor: "pointer", color: location ? "#3B6D11" : "#5A6178" }}
+              style={{ background: "none", border: "none", color: "#B7C4DC", textDecoration: "underline", cursor: "pointer", padding: 0, marginTop: 8, fontSize: 13 }}
             >
-              {locating ? "Getting your location..." : location ? "📍 Location set" : "📍 Use my current location"}
+              or use my current location
             </button>
+            {location && (
+              <div style={{ color: "#86EFAC", marginTop: 6, fontSize: 12 }}>📍 Location set: {foundAddress}</div>
+            )}
           </label>
 
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
