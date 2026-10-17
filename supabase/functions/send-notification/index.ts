@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Spot Aura <onboarding@resend.dev>",
+        from: "Park Aura <onboarding@resend.dev>",
         to: email,
         subject: subject,
         text: message,

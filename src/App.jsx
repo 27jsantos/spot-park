@@ -274,7 +274,7 @@ export default function App() {
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 22, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Spot Aura</span>
+            <span style={{ fontSize: 22, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Park Aura</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => setUser(null))}
               style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", borderRadius: 6, cursor: "pointer" }}

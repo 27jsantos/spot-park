@@ -52,8 +52,8 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
             },
             body: JSON.stringify({
               email: recipientEmail,
-              subject: "New message on Spot Aura",
-              message: `You have a new message about your booking: "${text.trim()}". Log in to Spot Aura to reply.`,
+              subject: "New message on Park Aura",
+              message: `You have a new message about your booking: "${text.trim()}". Log in to Park Aura to reply.`,
             }),
           }).catch((err) => console.error("Notification failed:", err));
         });

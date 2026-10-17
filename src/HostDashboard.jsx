@@ -50,7 +50,7 @@ export default function HostDashboard({ onBack }) {
   }, []);
 
   async function handleDelete(id) {
-    const confirmed = window.confirm("Remove this space from Spot Aura?");
+    const confirmed = window.confirm("Remove this space from Park Aura?");
     if (!confirmed) return;
     const { error } = await supabase.from("spaces").delete().eq("id", id);
     if (error) {
@@ -94,7 +94,7 @@ export default function HostDashboard({ onBack }) {
     if (request.user_email) {
       const subject = decision === "confirmed" ? "Your request was approved!" : "Your request was declined";
       const message = decision === "confirmed"
-        ? `Good news — your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was approved. Log in to Spot Aura to complete payment.`
+        ? `Good news — your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was approved. Log in to Park Aura to complete payment.`
         : `Your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was declined by the host.`;
       notifyByEmail(request.user_email, subject, message);
     }

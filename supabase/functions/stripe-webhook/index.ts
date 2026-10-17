@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
     const pi = event.data.object;
     const m = pi.metadata || {};
 
-    // Ignore payments that did not come from a Spot Aura booking
+    // Ignore payments that did not come from a Park Aura booking
     if (m.space_id && m.user_id) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL");
       const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
