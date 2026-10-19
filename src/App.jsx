@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from "rea
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SpaceDetail from "./SpaceDetail";
+import AddressInput from "./AddressInput";
 import VehicleProfile from "./VehicleProfile";
 import Auth from "./Auth";
 import AddSpace from "./AddSpace";
@@ -251,11 +252,13 @@ export default function App() {
             style={{ position: "absolute", top: 16, left: 16, right: 16, background: "#FFFFFF", borderRadius: 12, padding: "10px 12px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}
           >
             <span style={{ fontSize: 14 }}>🔍</span>
-            <input
+            <AddressInput
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={setSearchText}
+              onPick={(r) => { setSearchText(r.label); setMapCenter([r.lat, r.lng]); }}
               placeholder="Search an address"
-              style={{ border: "none", outline: "none", fontSize: 13, color: "#1E2233", flex: 1, background: "transparent" }}
+              containerStyle={{ flex: 1 }}
+              inputStyle={{ border: "none", outline: "none", fontSize: 13, color: "#1E2233", width: "100%", background: "transparent" }}
             />
           </form>
 

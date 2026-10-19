@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { supabase } from "./supabaseClient";
+import AddressInput from "./AddressInput";
 
 const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
 
@@ -148,11 +149,13 @@ export default function AddSpace({ onBack, onSaved }) {
           <label style={{ fontSize: 13, color: "#B7C4DC" }}>
             Address
             <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-              <input
+              <AddressInput
                 value={address}
-                onChange={(e) => { setAddress(e.target.value); setLocation(null); setFoundAddress(""); }}
+                onChange={(t) => { setAddress(t); setLocation(null); setFoundAddress(""); }}
+                onPick={(r) => { setAddress(r.label); setLocation({ lat: r.lat, lng: r.lng }); setFoundAddress(r.label); }}
                 placeholder="123 Oak St, Boston, MA"
-                style={{ ...inputStyle, marginTop: 0, flex: 1 }}
+                containerStyle={{ flex: 1 }}
+                inputStyle={{ ...inputStyle, marginTop: 0 }}
               />
               <button
                 type="button"
