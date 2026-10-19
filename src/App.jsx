@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SpaceDetail from "./SpaceDetail";
@@ -223,7 +223,7 @@ export default function App() {
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
         <div style={{ height: 220, position: "relative" }}>
-          <MapContainer center={mapCenter} zoom={13} style={{ height: "100%", width: "100%" }}>
+          <MapContainer center={mapCenter} zoom={13} zoomControl={false} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -235,6 +235,7 @@ export default function App() {
                 url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
               />
             )}
+            <ZoomControl position="bottomleft" />
             <RecenterMap center={mapCenter} />
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]}>
@@ -266,7 +267,7 @@ export default function App() {
           </button>
 
           {!loading && spacesWithLocation.length === 0 && (
-            <div style={{ position: "absolute", bottom: 10, left: 10, right: 90, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 10, left: 56, right: 90, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
               No spaces near you yet — be the first to list one!
             </div>
           )}
