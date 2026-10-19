@@ -19,7 +19,13 @@ export default function PayoutsCard() {
     setError("");
     const { data, error } = await supabase.functions.invoke("connect-onboard", { body: { action: "link" } });
     if (error || !data?.url) {
-      setError("Couldn't start payout setup. Please try again.");
+      let msg = "Couldn't start payout setup. Please try again.";
+      try {
+        const body = await error?.context?.json?.();
+        if (body?.error) msg = "Couldn't start payout setup: " + body.error;
+      } catch (e) {}
+      if (data?.error) msg = "Couldn't start payout setup: " + data.error;
+      setError(msg);
       return;
     }
     window.location.href = data.url;
