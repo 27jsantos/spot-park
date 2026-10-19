@@ -77,6 +77,25 @@ Deno.serve(async (req) => {
       "metadata[user_id]": user.id,
       "metadata[user_email]": user.email,
     });
+    // If the host has finished payout setup, send them 80% and keep 20%
+    if (space.owner_id) {
+      const hostRes = await fetch(
+        `${supabaseUrl}/rest/v1/host_accounts?user_id=eq.${encodeURIComponent(space.owner_id)}&select=stripe_account_id`,
+        { headers: { apikey: serviceKey!, Authorization: `Bearer ${serviceKey}` } }
+      );
+      const hostRows = await hostRes.json();
+      if (hostRes.ok && Array.isArray(hostRows) && hostRows.length > 0) {
+        const acctId = hostRows[0].stripe_account_id;
+        const acctRes = await fetch(`https://api.stripe.com/v1/accounts/${acctId}`, {
+          headers: { Authorization: `Bearer ${Deno.env.get("STRIPE_SECRET_KEY")}` },
+        });
+        const acct = await acctRes.json();
+        if (acctRes.ok && acct.charges_enabled && acct.payouts_enabled) {
+          params.set("transfer_data[destination]", acctId);
+          params.set("application_fee_amount", String(Math.round(cents * 0.2)));
+        }
+      }
+    }
     if (space.owner_id) params.set("metadata[owner_id]", String(space.owner_id));
     if (space.owner_email) params.set("metadata[owner_email]", String(space.owner_email));
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import MessageThread from "./MessageThread";
+import PayoutsCard from "./PayoutsCard";
 
 const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 6, background: "#FFFFFF", color: "#1E2233", fontSize: 13 };
 
@@ -142,6 +143,8 @@ export default function HostDashboard({ onBack }) {
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Host Dashboard</h1>
+
+        <PayoutsCard />
 
         <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 13, color: "#5A6178" }}>Your listed spaces</div>
