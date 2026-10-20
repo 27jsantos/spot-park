@@ -32,18 +32,19 @@ export async function countUnreadFor(userId, reservationId) {
 
 export async function unreadSummary(userId) {
   const seen = getSeen(userId);
-  const { data: msgs } = await supabase.from("messages").select("id, reservation_id").eq("recipient_id", userId);
-  const unread = (msgs || []).filter((m) => m.id > (seen[m.reservation_id] || 0));
+  const { data: msgs } = await supabase.from("messages").select("id, reservation_id, sender_id").eq("recipient_id", userId);
+  const unread = (msgs || []).filter((m) => m.sender_id !== userId && m.id > (seen[m.reservation_id] || 0));
   if (unread.length === 0) return { host: 0, driver: 0 };
   const ids = [...new Set(unread.map((m) => m.reservation_id))];
-  const { data: res } = await supabase.from("reservations").select("id, owner_id").in("id", ids);
+  const { data: res } = await supabase.from("reservations").select("id, owner_id, user_id").in("id", ids);
   const ownerOf = {};
-  (res || []).forEach((r) => { ownerOf[r.id] = r.owner_id; });
+  const driverOf = {};
+  (res || []).forEach((r) => { ownerOf[r.id] = r.owner_id; driverOf[r.id] = r.user_id; });
   let host = 0;
   let driver = 0;
   unread.forEach((m) => {
     if (ownerOf[m.reservation_id] === userId) host += 1;
-    else driver += 1;
+    else if (driverOf[m.reservation_id] === userId && ownerOf[m.reservation_id]) driver += 1;
   });
   return { host, driver };
 }
