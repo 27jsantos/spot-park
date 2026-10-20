@@ -174,6 +174,19 @@ function LongTermRequest({ space, onSubmitted }) {
       setError("Something went wrong sending your request.");
       console.error(dbError);
     } else {
+      if (space.owner_email) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          fetch("https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/send-notification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({
+              email: space.owner_email,
+              subject: "New long-term request on Park Aura",
+              message: `Someone requested a long-term stay at "${space.name}". Log in to Park Aura and open My Host Dashboard to approve or decline.`,
+            }),
+          }).catch(() => {});
+        });
+      }
       onSubmitted();
     }
   }

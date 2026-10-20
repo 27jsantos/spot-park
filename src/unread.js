@@ -77,3 +77,18 @@ export async function loadHostReviews(userId) {
   const reviews = (data || []).map((r) => ({ ...r, space_name: nameOf[r.space_id] }));
   return { reviews, newCount: reviews.filter((r) => r.id > seen).length, seen };
 }
+
+// Requests waiting for the host to answer, and approved requests waiting for the driver to pay
+export async function requestCounts(userId) {
+  const { data: pending } = await supabase.from("reservations").select("id").eq("owner_id", userId).eq("status", "pending");
+  const { data: toPay } = await supabase
+    .from("reservations")
+    .select("id, payment_intent_id")
+    .eq("user_id", userId)
+    .eq("status", "confirmed")
+    .eq("booking_type", "long_term");
+  return {
+    requests: (pending || []).length,
+    toPay: (toPay || []).filter((r) => !r.payment_intent_id).length,
+  };
+}
