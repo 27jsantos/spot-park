@@ -215,13 +215,13 @@ export default function HostDashboard({ onBack }) {
         {reviews.length > 0 && (
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>
-              Reviews{reviews.filter((r) => r.id > reviewSeen).length > 0 ? `  ·  ${reviews.filter((r) => r.id > reviewSeen).length} New` : ""}
+              Reviews{reviews.filter((r) => r.id > reviewSeen).length > 0 && <span style={{ color: "#FFD60A" }}>{`  ·  ${reviews.filter((r) => r.id > reviewSeen).length} New`}</span>}
             </div>
             {reviews.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
                 <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>
-                  {"⭐".repeat(r.rating)}{r.id > reviewSeen ? "  ·  NEW" : ""}
+                  {"⭐".repeat(r.rating)}{r.id > reviewSeen && <span style={{ color: "#D92D20", fontWeight: 800 }}>{"  ·  NEW"}</span>}
                 </div>
                 {r.comment && <div style={{ fontSize: 13, color: "#1E2233" }}>"{r.comment}"</div>}
               </div>

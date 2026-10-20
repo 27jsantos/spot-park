@@ -361,15 +361,18 @@ export default function App() {
             onClick={() => setViewingDashboard(true)}
             style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
           >
-            My Host Dashboard{newHost > 0 ? `  ·  ${newHost} New` : ""}{newReviews > 0 ? `  ·  ${newReviews} New ${newReviews === 1 ? "Review" : "Reviews"}` : ""}
-            {newRequests > 0 && <div style={{ fontSize: 12, color: "#FCD34D", marginTop: 2 }}>{newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}
+            My Host Dashboard
+            {newHost > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newHost} New {newHost === 1 ? "Message" : "Messages"}</div>}
+            {newReviews > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newReviews} New {newReviews === 1 ? "Review" : "Reviews"}</div>}
+            {newRequests > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}
           </button>
           <button
             onClick={() => setViewingReservations(true)}
             style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: isAdmin ? 8 : 16, fontSize: 13, cursor: "pointer" }}
           >
-            My Reservations{newDriver > 0 ? `  ·  ${newDriver} New` : ""}
-            {toPay > 0 && <div style={{ fontSize: 12, color: "#FCD34D", marginTop: 2 }}>{toPay} Approved — Ready To Pay</div>}
+            My Reservations
+            {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
+            {toPay > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{toPay} Approved — Ready To Pay</div>}
           </button>
           {isAdmin && (
             <button

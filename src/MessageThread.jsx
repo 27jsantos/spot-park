@@ -109,7 +109,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
         onClick={() => setOpen(true)}
         style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
       >
-        💬 Messages{unread > 0 ? `  ·  ${unread} New` : ""}
+        💬 Messages{unread > 0 && <span style={{ color: "#D92D20", fontWeight: 800 }}>{`  ·  ${unread} New`}</span>}
       </button>
     );
   }
