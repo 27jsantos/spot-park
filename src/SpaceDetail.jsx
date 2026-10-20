@@ -35,15 +35,31 @@ function fitStatus(space, vehicle) {
 
 function FitVisual({ space, vehicle, status }) {
   const c = FIT_COPY[status];
-  const wScale = 160 / space.width;
-  const vw = vehicle.width * wScale;
-  const vl = (vehicle.length / space.length) * 220;
+  const sw = Number(space.width) || 1;
+  const sl = Number(space.length) || 1;
+  // One scale for both directions so the space and the car keep their real proportions
+  const scale = Math.min(160 / sw, 220 / sl, 160 / vehicle.width, 220 / vehicle.length) ;
+  const spaceW = sw * scale;
+  const spaceL = sl * scale;
+  const vw = vehicle.width * scale;
+  const vl = vehicle.length * scale;
+  const sx = 90 - spaceW / 2;
+  const sy = 120 - spaceL / 2;
+  const vx = 90 - vw / 2;
+  const vy = 120 - vl / 2;
+  const wheelW = Math.max(vw * 0.12, 2);
+  const wheelL = Math.max(vl * 0.16, 4);
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "16px 0" }}>
       <svg width="180" height="240" viewBox="0 0 180 240">
-        <rect x="10" y="10" width="160" height="220" rx="4" fill="none" stroke="#3B4F73" strokeWidth="2" strokeDasharray="6 5" />
-        <rect x={90 - vw / 2} y={125 - vl / 2} width={vw} height={vl} rx={vw / 3} fill={c.ring} opacity="0.9" />
-        <rect x={90 - vw / 2 + 6} y={125 - vl / 2 + 10} width={vw - 12} height={vl * 0.28} rx="4" fill="#FFFFFF" opacity="0.5" />
+        <rect x={sx} y={sy} width={spaceW} height={spaceL} rx="4" fill="none" stroke="#3B4F73" strokeWidth="2" strokeDasharray="6 5" />
+        <rect x={vx - wheelW / 2} y={vy + vl * 0.14} width={wheelW} height={wheelL} rx="2" fill="#1E2233" />
+        <rect x={vx + vw - wheelW / 2} y={vy + vl * 0.14} width={wheelW} height={wheelL} rx="2" fill="#1E2233" />
+        <rect x={vx - wheelW / 2} y={vy + vl * 0.7} width={wheelW} height={wheelL} rx="2" fill="#1E2233" />
+        <rect x={vx + vw - wheelW / 2} y={vy + vl * 0.7} width={wheelW} height={wheelL} rx="2" fill="#1E2233" />
+        <rect x={vx} y={vy} width={vw} height={vl} rx={Math.min(vw, vl) / 3} fill={c.ring} opacity="0.95" />
+        <rect x={vx + vw * 0.12} y={vy + vl * 0.2} width={vw * 0.76} height={vl * 0.18} rx="3" fill="#FFFFFF" opacity="0.55" />
+        <rect x={vx + vw * 0.12} y={vy + vl * 0.72} width={vw * 0.76} height={vl * 0.12} rx="3" fill="#FFFFFF" opacity="0.35" />
       </svg>
     </div>
   );
