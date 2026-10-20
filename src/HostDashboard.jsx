@@ -204,16 +204,6 @@ export default function HostDashboard({ onBack }) {
                 <div style={{ fontSize: 12, color: "#5A6178", marginBottom: 6 }}>
                   {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved" : r.status === "declined" ? "Declined" : ""}
                 </div>
-                {r.status === "confirmed" && (
-                  <button onClick={() => handleRequestDecision(r, "declined")} style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
-                    Decline
-                  </button>
-                )}
-                {r.status === "declined" && (
-                  <button onClick={() => handleRequestDecision(r, "confirmed")} style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-                    Approve
-                  </button>
-                )}
                 {r.user_id !== r.owner_id && (
                   <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
                 )}
