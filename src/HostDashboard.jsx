@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import MessageThread from "./MessageThread";
+import { loadHostReviews, markReviewsSeen } from "./unread";
 import PayoutsCard from "./PayoutsCard";
 
 const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 6, background: "#FFFFFF", color: "#1E2233", fontSize: 13 };
@@ -22,6 +23,8 @@ export default function HostDashboard({ onBack }) {
   const [mySpaces, setMySpaces] = useState([]);
   const [requests, setRequests] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewSeen, setReviewSeen] = useState(0);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -46,6 +49,11 @@ export default function HostDashboard({ onBack }) {
       setRequests((reqData || []).filter((r) => r.status === "pending"));
       setBookings((reqData || []).filter((r) => r.status !== "pending"));
     }
+
+    const rv = await loadHostReviews(user.id);
+    setReviews(rv.reviews);
+    setReviewSeen((prev) => Math.max(prev, rv.seen));
+    if (rv.reviews.length) markReviewsSeen(user.id, Math.max(...rv.reviews.map((r) => r.id)));
 
     setLoading(false);
   }
@@ -209,6 +217,23 @@ export default function HostDashboard({ onBack }) {
                 {r.user_id !== r.owner_id && (
                   <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
                 )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {reviews.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>
+              Reviews{reviews.filter((r) => r.id > reviewSeen).length > 0 ? `  ·  ${reviews.filter((r) => r.id > reviewSeen).length} New` : ""}
+            </div>
+            {reviews.map((r) => (
+              <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
+                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>
+                  {"⭐".repeat(r.rating)}{r.id > reviewSeen ? "  ·  NEW" : ""}
+                </div>
+                {r.comment && <div style={{ fontSize: 13, color: "#1E2233" }}>"{r.comment}"</div>}
               </div>
             ))}
           </div>

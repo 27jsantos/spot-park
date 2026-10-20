@@ -47,3 +47,32 @@ export async function unreadSummary(userId) {
   });
   return { host, driver };
 }
+
+const rkey = (userId) => `park_aura_seen_reviews_${userId}`;
+
+export function getSeenReviews(userId) {
+  try {
+    return Number(localStorage.getItem(rkey(userId))) || 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+export function markReviewsSeen(userId, maxId) {
+  try {
+    if (getSeenReviews(userId) >= maxId) return;
+    localStorage.setItem(rkey(userId), String(maxId));
+  } catch (e) {}
+}
+
+export async function loadHostReviews(userId) {
+  const { data: spaces } = await supabase.from("spaces").select("id, name").eq("owner_id", userId);
+  const ids = (spaces || []).map((s) => s.id);
+  if (ids.length === 0) return { reviews: [], newCount: 0, seen: 0 };
+  const nameOf = {};
+  spaces.forEach((s) => { nameOf[s.id] = s.name; });
+  const { data } = await supabase.from("reviews").select("*").in("space_id", ids).order("id", { ascending: false });
+  const seen = getSeenReviews(userId);
+  const reviews = (data || []).map((r) => ({ ...r, space_name: nameOf[r.space_id] }));
+  return { reviews, newCount: reviews.filter((r) => r.id > seen).length, seen };
+}

@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from "rea
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SpaceDetail from "./SpaceDetail";
-import { unreadSummary } from "./unread";
+import { unreadSummary, loadHostReviews } from "./unread";
 import AddressInput from "./AddressInput";
 import VehicleProfile from "./VehicleProfile";
 import Auth from "./Auth";
@@ -71,13 +71,15 @@ export default function App() {
   const [viewingReservations, setViewingReservations] = useState(false);
   const [newHost, setNewHost] = useState(0);
   const [newDriver, setNewDriver] = useState(0);
+  const [newReviews, setNewReviews] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     let alive = true;
     async function check() {
       const s = await unreadSummary(user.id);
-      if (alive) { setNewHost(s.host); setNewDriver(s.driver); }
+      const rv = await loadHostReviews(user.id);
+      if (alive) { setNewHost(s.host); setNewDriver(s.driver); setNewReviews(rv.newCount); }
     }
     check();
     const t = setInterval(check, 8000);
@@ -319,7 +321,7 @@ export default function App() {
             onClick={() => setViewingDashboard(true)}
             style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
           >
-            My Host Dashboard{newHost > 0 ? `  ·  ${newHost} New` : ""}
+            My Host Dashboard{newHost > 0 ? `  ·  ${newHost} New` : ""}{newReviews > 0 ? `  ·  ${newReviews} New ${newReviews === 1 ? "Review" : "Reviews"}` : ""}
           </button>
           <button
             onClick={() => setViewingReservations(true)}
