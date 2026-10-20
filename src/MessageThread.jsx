@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
+import { countUnreadFor, markSeen } from "./unread";
 
 export default function MessageThread({ reservationId, recipientId, recipientEmail }) {
   const [messages, setMessages] = useState([]);
@@ -8,6 +9,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
   const [myId, setMyId] = useState(null);
   const [open, setOpen] = useState(false);
   const [blocked, setBlocked] = useState([]);
+  const [unread, setUnread] = useState(0);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -18,7 +20,12 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
       .eq("reservation_id", reservationId)
       .order("id", { ascending: true });
     if (error) console.error(error);
-    else setMessages(data || []);
+    else {
+      setMessages(data || []);
+      const incoming = (data || []).filter((x) => x.recipient_id === user.id).map((x) => x.id);
+      if (incoming.length) markSeen(user.id, reservationId, Math.max(...incoming));
+      setUnread(0);
+    }
     const { data: b } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
     setBlocked((b || []).map((x) => x.blocked_id));
   }
@@ -35,6 +42,20 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
     if (error) alert("Could not block this user.");
     else setBlocked([...blocked, userId]);
   }
+
+  useEffect(() => {
+    if (open) return;
+    let alive = true;
+    async function check() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const n = await countUnreadFor(user.id, reservationId);
+      if (alive) setUnread(n);
+    }
+    check();
+    const t = setInterval(check, 8000);
+    return () => { alive = false; clearInterval(t); };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -88,7 +109,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
         onClick={() => setOpen(true)}
         style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
       >
-        💬 Messages
+        💬 Messages{unread > 0 ? `  ·  ${unread} New` : ""}
       </button>
     );
   }
