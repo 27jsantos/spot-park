@@ -24,6 +24,21 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
+const redPin = L.divIcon({
+  className: "",
+  html: '<svg width="30" height="42" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg"><path d="M15 1C7.3 1 1 7.2 1 14.8 1 25 15 41 15 41s14-16 14-26.2C29 7.2 22.7 1 15 1z" fill="#FF3B30" stroke="#B3261E" stroke-width="1.5"/><circle cx="15" cy="14.5" r="5.5" fill="#FFFFFF" opacity="0.9"/></svg>',
+  iconSize: [30, 42],
+  iconAnchor: [15, 41],
+  popupAnchor: [0, -38],
+});
+
+const blueDot = L.divIcon({
+  className: "",
+  html: '<div style="width:16px;height:16px;border-radius:50%;background:#007AFF;border:3px solid #FFFFFF;box-shadow:0 0 0 2px rgba(0,122,255,0.35)"></div>',
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
+});
+
 const DEFAULT_VEHICLE = { id: "suv", label: "SUV", width: 6.5, length: 16.8 };
 const DEFAULT_CENTER = [40.6546, -73.5594];
 
@@ -94,6 +109,7 @@ export default function App() {
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
   const [mapView, setMapView] = useState("street");
+  const [userPos, setUserPos] = useState(null);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -233,6 +249,18 @@ export default function App() {
     );
   }
 
+  function goToMyLocation() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const p = [pos.coords.latitude, pos.coords.longitude];
+        setUserPos(p);
+        setMapCenter(p);
+      },
+      () => alert("Could not get your location. Check that location access is allowed for this site.")
+    );
+  }
+
   const spacesWithLocation = spaces.filter((s) => s.latitude && s.longitude);
   const isAdmin = user.id === ADMIN_USER_ID;
 
@@ -255,8 +283,9 @@ export default function App() {
             )}
             <ZoomControl position="bottomleft" />
             <RecenterMap center={mapCenter} />
+            {userPos && <Marker position={userPos} icon={blueDot} />}
             {spacesWithLocation.map((s) => (
-              <Marker key={s.id} position={[s.latitude, s.longitude]}>
+              <Marker key={s.id} position={[s.latitude, s.longitude]} icon={redPin}>
                 <Popup>
                   <strong>{s.name}</strong><br />${s.price}/hr
                 </Popup>
@@ -286,8 +315,16 @@ export default function App() {
             {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
           </button>
 
+          <button
+            onClick={goToMyLocation}
+            title="My location"
+            style={{ position: "absolute", bottom: 10, right: 110, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+          >
+            📍
+          </button>
+
           {!loading && spacesWithLocation.length === 0 && (
-            <div style={{ position: "absolute", bottom: 10, left: 56, right: 90, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 10, left: 56, right: 150, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
               No spaces near you yet — be the first to list one!
             </div>
           )}
