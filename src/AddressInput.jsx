@@ -7,6 +7,37 @@ function makeLabel(p) {
   return parts.filter((x, i) => parts.indexOf(x) === i).join(", ");
 }
 
+function withTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
+function nominatimLabel(r) {
+  const a = r.address || {};
+  const street = [a.house_number, a.road].filter(Boolean).join(" ");
+  const place = a.city || a.town || a.village || a.hamlet || a.county;
+  const parts = [street, place, a.state, a.postcode].filter(Boolean);
+  return parts.length > 1 ? parts.join(", ") : r.display_name;
+}
+
+// Tries Photon first, and falls back to OpenStreetMap Nominatim if Photon is slow or down
+async function lookup(text, limit) {
+  try {
+    const res = await withTimeout(`https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=${limit}&lang=en`, 3500);
+    const data = await res.json();
+    const list = (data.features || [])
+      .map((f) => ({ label: makeLabel(f.properties || {}), lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0] }))
+      .filter((r) => r.label);
+    if (list.length > 0) return list;
+  } catch (e) {}
+  const res = await withTimeout(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(text)}&format=json&addressdetails=1&countrycodes=us&limit=${limit}`, 6000);
+  const data = await res.json();
+  return (data || [])
+    .map((r) => ({ label: nominatimLabel(r), lat: parseFloat(r.lat), lng: parseFloat(r.lon) }))
+    .filter((r) => r.label && !isNaN(r.lat));
+}
+
 export default function AddressInput({ value, onChange, onPick, placeholder, inputStyle, containerStyle }) {
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
@@ -26,14 +57,8 @@ export default function AddressInput({ value, onChange, onPick, placeholder, inp
     const id = ++requestId.current;
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=5&lang=en`);
-        const data = await res.json();
+        const list = await lookup(text, 5);
         if (id !== requestId.current) return;
-        const list = (data.features || []).map((f) => ({
-          label: makeLabel(f.properties || {}),
-          lat: f.geometry.coordinates[1],
-          lng: f.geometry.coordinates[0],
-        })).filter((r) => r.label);
         setResults(list);
         setOpen(list.length > 0);
       } catch (e) {
