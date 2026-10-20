@@ -7,6 +7,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
   const [sending, setSending] = useState(false);
   const [myId, setMyId] = useState(null);
   const [open, setOpen] = useState(false);
+  const [blocked, setBlocked] = useState([]);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -18,6 +19,21 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
       .order("created_at", { ascending: true });
     if (error) console.error(error);
     else setMessages(data || []);
+    const { data: b } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
+    setBlocked((b || []).map((x) => x.blocked_id));
+  }
+
+  async function reportMessage(m) {
+    if (!window.confirm("Report this message to Park Aura? We review reports within 24 hours.")) return;
+    const { error } = await supabase.from("reports").insert({ reporter_id: myId, reported_user_id: m.sender_id, message_id: m.id, reason: "Objectionable content" });
+    alert(error ? "Could not send the report. Please email parkauraapp@gmail.com." : "Thanks. We will review this within 24 hours.");
+  }
+
+  async function blockUser(userId) {
+    if (!window.confirm("Block this user? You will no longer see their messages.")) return;
+    const { error } = await supabase.from("blocked_users").insert({ blocker_id: myId, blocked_id: userId });
+    if (error) alert("Could not block this user.");
+    else setBlocked([...blocked, userId]);
   }
 
   useEffect(() => {
@@ -80,7 +96,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
         {messages.length === 0 && (
           <div style={{ fontSize: 12, color: "#5A6178" }}>No messages yet.</div>
         )}
-        {messages.map((m) => (
+        {messages.filter((m) => !blocked.includes(m.sender_id)).map((m) => (
           <div
             key={m.id}
             style={{
@@ -94,6 +110,12 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
             }}
           >
             {m.body}
+            {m.sender_id !== myId && (
+              <div style={{ marginTop: 4, fontSize: 10 }}>
+                <a href="#" onClick={(e) => { e.preventDefault(); reportMessage(m); }} style={{ color: "#B3261E", marginRight: 8 }}>Report</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); blockUser(m.sender_id); }} style={{ color: "#5A6178" }}>Block</a>
+              </div>
+            )}
           </div>
         ))}
       </div>
