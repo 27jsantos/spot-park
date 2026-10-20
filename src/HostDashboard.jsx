@@ -44,7 +44,7 @@ export default function HostDashboard({ onBack }) {
     if (reqError) console.error(reqError);
     else {
       setRequests((reqData || []).filter((r) => r.status === "pending"));
-      setBookings((reqData || []).filter((r) => r.status !== "pending" && r.status !== "declined"));
+      setBookings((reqData || []).filter((r) => r.status !== "pending"));
     }
 
     setLoading(false);
@@ -193,6 +193,19 @@ export default function HostDashboard({ onBack }) {
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
                 <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>${r.price} · {new Date(r.created_at).toLocaleDateString()}</div>
+                <div style={{ fontSize: 12, color: "#5A6178", marginBottom: 6 }}>
+                  {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved" : r.status === "declined" ? "Declined" : ""}
+                </div>
+                {r.status === "confirmed" && (
+                  <button onClick={() => handleRequestDecision(r, "declined")} style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>
+                    Decline
+                  </button>
+                )}
+                {r.status === "declined" && (
+                  <button onClick={() => handleRequestDecision(r, "confirmed")} style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    Approve
+                  </button>
+                )}
                 {r.user_id !== r.owner_id && (
                   <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
                 )}
