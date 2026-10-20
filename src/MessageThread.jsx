@@ -16,7 +16,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
       .from("messages")
       .select("*")
       .eq("reservation_id", reservationId)
-      .order("created_at", { ascending: true });
+      .order("id", { ascending: true });
     if (error) console.error(error);
     else setMessages(data || []);
     const { data: b } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
