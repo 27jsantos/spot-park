@@ -37,7 +37,10 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
   }
 
   useEffect(() => {
-    if (open) load();
+    if (!open) return;
+    load();
+    const timer = setInterval(load, 5000);
+    return () => clearInterval(timer);
   }, [open]);
 
   async function handleSend(e) {

@@ -21,6 +21,7 @@ function notifyByEmail(email, subject, message) {
 export default function HostDashboard({ onBack }) {
   const [mySpaces, setMySpaces] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
@@ -39,9 +40,12 @@ export default function HostDashboard({ onBack }) {
       .from("reservations")
       .select("*")
       .eq("owner_id", user.id)
-      .eq("status", "pending");
+      .order("created_at", { ascending: false });
     if (reqError) console.error(reqError);
-    else setRequests(reqData || []);
+    else {
+      setRequests((reqData || []).filter((r) => r.status === "pending"));
+      setBookings((reqData || []).filter((r) => r.status !== "pending" && r.status !== "declined"));
+    }
 
     setLoading(false);
   }
@@ -177,6 +181,21 @@ export default function HostDashboard({ onBack }) {
                   </button>
                 </div>
                 <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {bookings.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>Bookings And Messages</div>
+            {bookings.map((r) => (
+              <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
+                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
+                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>${r.price} · {new Date(r.created_at).toLocaleDateString()}</div>
+                {r.user_id !== r.owner_id && (
+                  <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
+                )}
               </div>
             ))}
           </div>
