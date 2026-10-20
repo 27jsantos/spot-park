@@ -27,17 +27,10 @@ function PayForm({ reservation, onPaid }) {
       return;
     }
 
-    const { error: dbError } = await supabase
-      .from("reservations")
-      .update({ status: "paid" })
-      .eq("id", reservation.id);
-
+    // The server marks the reservation as paid once Stripe confirms the payment
+    await new Promise((r) => setTimeout(r, 2500));
     setSaving(false);
-    if (dbError) {
-      setError("Payment succeeded but updating your reservation failed. Contact support.");
-    } else {
-      onPaid();
-    }
+    onPaid();
   }
 
   return (
@@ -118,7 +111,7 @@ export default function MyReservations({ onBack }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ amount: reservation.price }),
+          body: JSON.stringify({ reservation_id: reservation.id }),
         }
       );
       const data = await res.json();

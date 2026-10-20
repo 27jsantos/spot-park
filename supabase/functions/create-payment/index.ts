@@ -35,36 +35,69 @@ Deno.serve(async (req) => {
     const user = getUser(req);
     if (!user) throw new Error("Please log in again");
 
-    const { space_id, hours, start_time } = await req.json();
-    const h = Number(hours);
-
-    if (!space_id || !Number.isInteger(h) || h < 1 || h > 24) {
-      throw new Error("Invalid booking details");
-    }
-
-    const start = new Date(start_time);
-    if (isNaN(start.getTime()) || start.getTime() < Date.now() - 60000) {
-      throw new Error("Start time must be in the future");
-    }
-
+    const body = await req.json();
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const dbHeaders = { apikey: serviceKey!, Authorization: `Bearer ${serviceKey}` };
 
-    // Look up the real price and host in the database (never trust the app)
-    const spaceRes = await fetch(
-      `${supabaseUrl}/rest/v1/spaces?id=eq.${encodeURIComponent(space_id)}&select=price,name,owner_id,owner_email`,
-      { headers: { apikey: serviceKey!, Authorization: `Bearer ${serviceKey}` } }
-    );
-    const rows = await spaceRes.json();
-    if (!spaceRes.ok || !Array.isArray(rows) || rows.length === 0) {
-      throw new Error("Space not found");
-    }
-    const space = rows[0];
+    let space_id: string;
+    let cents: number;
+    const meta: Record<string, string> = {};
+    let space: { price?: number; daily_price?: number; name?: string; owner_id?: string; owner_email?: string };
 
-    const price = Number(space.price);
-    const cents = Math.round(price * h * 100);
-    if (!(cents >= 50)) {
-      throw new Error("Amount is too small");
+    if (body.reservation_id) {
+      // Paying for an approved long-term request. Everything comes from the database.
+      const resRes = await fetch(
+        `${supabaseUrl}/rest/v1/reservations?id=eq.${encodeURIComponent(body.reservation_id)}&select=id,user_id,space_id,status,booking_type,start_date,end_date,payment_intent_id`,
+        { headers: dbHeaders }
+      );
+      const resRows = await resRes.json();
+      if (!resRes.ok || !Array.isArray(resRows) || resRows.length === 0) throw new Error("Reservation not found");
+      const reservation = resRows[0];
+      if (reservation.user_id !== user.id) throw new Error("This is not your reservation");
+      if (reservation.booking_type !== "long_term" || reservation.status !== "confirmed" || reservation.payment_intent_id) {
+        throw new Error("This reservation does not need payment");
+      }
+      space_id = String(reservation.space_id);
+      const spaceRes = await fetch(
+        `${supabaseUrl}/rest/v1/spaces?id=eq.${encodeURIComponent(space_id)}&select=price,daily_price,name,owner_id,owner_email`,
+        { headers: dbHeaders }
+      );
+      const rows = await spaceRes.json();
+      if (!spaceRes.ok || !Array.isArray(rows) || rows.length === 0) throw new Error("Space not found");
+      space = rows[0];
+      const dayMs = 1000 * 60 * 60 * 24;
+      const days = Math.max(1, Math.ceil((new Date(reservation.end_date).getTime() - new Date(reservation.start_date).getTime()) / dayMs) + 1);
+      cents = Math.round(Number(space.daily_price) * days * 100);
+      if (!(cents >= 50)) throw new Error("Amount is too small");
+      meta["metadata[reservation_id]"] = String(reservation.id);
+    } else {
+      const hoursIn = body.hours;
+      const h = Number(hoursIn);
+      space_id = body.space_id;
+      if (!space_id || !Number.isInteger(h) || h < 1 || h > 24) {
+        throw new Error("Invalid booking details");
+      }
+      const start = new Date(body.start_time);
+      if (isNaN(start.getTime()) || start.getTime() < Date.now() - 60000) {
+        throw new Error("Start time must be in the future");
+      }
+      // Look up the real price and host in the database (never trust the app)
+      const spaceRes = await fetch(
+        `${supabaseUrl}/rest/v1/spaces?id=eq.${encodeURIComponent(space_id)}&select=price,name,owner_id,owner_email`,
+        { headers: dbHeaders }
+      );
+      const rows = await spaceRes.json();
+      if (!spaceRes.ok || !Array.isArray(rows) || rows.length === 0) {
+        throw new Error("Space not found");
+      }
+      space = rows[0];
+      cents = Math.round(Number(space.price) * h * 100);
+      if (!(cents >= 50)) {
+        throw new Error("Amount is too small");
+      }
+      meta["metadata[hours]"] = String(h);
+      meta["metadata[start_time]"] = start.toISOString();
     }
 
     const params = new URLSearchParams({
@@ -72,10 +105,9 @@ Deno.serve(async (req) => {
       currency: "usd",
       "metadata[space_id]": String(space_id),
       "metadata[space_name]": String(space.name ?? ""),
-      "metadata[hours]": String(h),
-      "metadata[start_time]": start.toISOString(),
       "metadata[user_id]": user.id,
       "metadata[user_email]": user.email,
+      ...meta,
     });
     // If the host has finished payout setup, send them 80% and keep 20%
     if (space.owner_id) {

@@ -49,6 +49,30 @@ Deno.serve(async (req) => {
     const pi = event.data.object;
     const m = pi.metadata || {};
 
+    // A long-term request that the host approved and the driver has now paid
+    if (m.reservation_id && m.user_id) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      const upd = await fetch(
+        `${supabaseUrl}/rest/v1/reservations?id=eq.${encodeURIComponent(m.reservation_id)}&user_id=eq.${encodeURIComponent(m.user_id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            apikey: serviceKey!,
+            Authorization: `Bearer ${serviceKey}`,
+            "Content-Type": "application/json",
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({ status: "paid", payment_intent_id: pi.id }),
+        }
+      );
+      if (!upd.ok) {
+        console.error("Reservation update failed:", await upd.text());
+        return new Response("Update failed", { status: 500 });
+      }
+      return new Response("ok", { status: 200 });
+    }
+
     // Ignore payments that did not come from a Park Aura booking
     if (m.space_id && m.user_id) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -73,7 +97,7 @@ Deno.serve(async (req) => {
             hours: m.hours ? Number(m.hours) : null,
             start_time: m.start_time || null,
             booking_type: "hourly",
-            status: "confirmed",
+            status: "paid",
             owner_id: m.owner_id || null,
             owner_email: m.owner_email || null,
             payment_intent_id: pi.id,
