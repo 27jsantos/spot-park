@@ -130,7 +130,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE" }}>
       <div style={{ maxHeight: 160, overflowY: "auto", marginBottom: 8, display: "flex", flexDirection: "column", gap: 6 }}>
         {messages.length === 0 && (
-          <div style={{ fontSize: 12, color: "#5A6178" }}>No messages yet.</div>
+          <div style={{ fontSize: 12, color: "#000000" }}>No messages yet.</div>
         )}
         {messages.filter((m) => !blocked.includes(m.sender_id)).map((m) => (
           <div
@@ -157,7 +157,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
             {m.sender_id !== myId && (
               <div style={{ marginTop: 4, fontSize: 10 }}>
                 <a href="#" onClick={(e) => { e.preventDefault(); reportMessage(m); }} style={{ color: "#B3261E", marginRight: 8 }}>Report</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); blockUser(m.sender_id); }} style={{ color: "#5A6178" }}>Block</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); blockUser(m.sender_id); }} style={{ color: "#000000" }}>Block</a>
               </div>
             )}
           </div>

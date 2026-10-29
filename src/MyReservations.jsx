@@ -238,7 +238,7 @@ export default function MyReservations({ onBack }) {
 
               {r.space_id && (r.status === "paid" || !r.status) && (
                 myReview ? (
-                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE", fontSize: 12, color: "#5A6178" }}>
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE", fontSize: 12, color: "#000000" }}>
                     You rated this {"⭐".repeat(myReview.rating)}
                     {myReview.comment && <div style={{ marginTop: 2 }}>"{myReview.comment}"</div>}
                   </div>

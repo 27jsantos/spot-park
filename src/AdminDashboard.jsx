@@ -40,26 +40,26 @@ export default function AdminDashboard({ onBack }) {
           <>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
               <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 14 }}>
-                <div style={{ fontSize: 11, color: "#5A6178" }}>Gross Bookings</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>Gross Bookings</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233" }}>${stats.grossBookings.toFixed(2)}</div>
               </div>
               <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 14 }}>
-                <div style={{ fontSize: 11, color: "#5A6178" }}>Reservations</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>Reservations</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233" }}>{stats.totalReservations}</div>
               </div>
               <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 14 }}>
-                <div style={{ fontSize: 11, color: "#5A6178" }}>Active Spaces</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>Active Spaces</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233" }}>{stats.totalSpaces}</div>
               </div>
               <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 14 }}>
-                <div style={{ fontSize: 11, color: "#5A6178" }}>Pending Requests</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>Pending Requests</div>
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233" }}>{stats.pendingRequests}</div>
               </div>
             </div>
 
             <h2 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Recent Spaces</h2>
             {stats.recentSpaces.map((s) => (
-              <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 10, padding: 10, marginBottom: 8, fontSize: 12, color: "#1E2233" }}>
+              <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 10, padding: 10, marginBottom: 8, fontSize: 13, fontWeight: 700, color: "#1E2233" }}>
                 <strong>{s.name}</strong> — ${s.price}/hr
               </div>
             ))}

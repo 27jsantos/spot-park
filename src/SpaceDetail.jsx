@@ -195,7 +195,7 @@ function LongTermRequest({ space, onSubmitted }) {
     <div style={{ marginTop: 12 }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
         <div style={{ flex: 1 }}>
-          <label style={{ fontSize: 11, color: "#5A6178" }}>Start date</label>
+          <label style={{ fontSize: 11, color: "#000000" }}>Start date</label>
           <DatePicker
             selected={startDate}
             onChange={setStartDate}
@@ -208,7 +208,7 @@ function LongTermRequest({ space, onSubmitted }) {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <label style={{ fontSize: 11, color: "#5A6178" }}>End date</label>
+          <label style={{ fontSize: 11, color: "#000000" }}>End date</label>
           <DatePicker
             selected={endDate}
             onChange={setEndDate}
@@ -321,7 +321,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               {c.label} {vehicle.label.toLowerCase()}
             </div>
             <FitVisual space={space} vehicle={vehicle} status={status} />
-            <div style={{ display: "flex", justifyContent: "space-around", fontSize: 12, color: "#5A6178" }}>
+            <div style={{ display: "flex", justifyContent: "space-around", fontSize: 12, color: "#000000" }}>
               <div>{space.width}' wide</div>
               <div>{space.length}' deep</div>
             </div>
@@ -355,7 +355,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               <div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                   <div style={{ flex: 2 }}>
-                    <label style={{ fontSize: 11, color: "#5A6178" }}>Start time</label>
+                    <label style={{ fontSize: 11, color: "#000000" }}>Start time</label>
                     <DatePicker
                       selected={startTime}
                       onChange={setStartTime}
@@ -368,7 +368,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
                     />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: 11, color: "#5A6178" }}>Hours</label>
+                    <label style={{ fontSize: 11, color: "#000000" }}>Hours</label>
                     <select
                       value={hours}
                       onChange={(e) => setHours(Number(e.target.value))}

@@ -139,7 +139,7 @@ export default function AddSpace({ onBack, onSaved }) {
                 ))}
               </div>
             ) : (
-              <div style={{ ...inputStyle, height: 90, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6178" }}>
+              <div style={{ ...inputStyle, height: 90, display: "flex", alignItems: "center", justifyContent: "center", color: "#000000" }}>
                 No photos selected
               </div>
             )}

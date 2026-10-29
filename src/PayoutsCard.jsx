@@ -35,7 +35,7 @@ export default function PayoutsCard() {
 
   return (
     <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-      <div style={{ fontSize: 13, color: "#5A6178" }}>Payouts</div>
+      <div style={{ fontSize: 13, color: "#000000" }}>Payouts</div>
       {status === "ready" ? (
         <div style={{ fontSize: 15, fontWeight: 700, color: "#2C5E3F", marginTop: 4 }}>✓ You're set up to get paid</div>
       ) : (

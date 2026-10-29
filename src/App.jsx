@@ -327,7 +327,7 @@ export default function App() {
           </button>
 
           {!loading && spacesWithLocation.length === 0 && (
-            <div style={{ position: "absolute", bottom: 10, left: 56, right: 150, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#5A6178", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 10, left: 56, right: 150, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#000000", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
               No spaces near you yet — be the first to list one!
             </div>
           )}
@@ -354,7 +354,7 @@ export default function App() {
           {isAdmin && (
             <button
               onClick={() => setViewingAdmin(true)}
-              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
+              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 14, cursor: "pointer" }}
             >
               ⚙ Admin Dashboard
             </button>
@@ -362,7 +362,7 @@ export default function App() {
 
           <button
             onClick={() => setViewingDashboard(true)}
-            style={{ width: "100%", background: "#FFD60A", color: "#1E2233", fontWeight: 700, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
+            style={{ width: "100%", background: "#FFD60A", color: "#1E2233", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 14, cursor: "pointer" }}
           >
             My Host Dashboard
             {newHost > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#1E2233", marginTop: 3 }}>{newHost} New {newHost === 1 ? "Message" : "Messages"}</div>}
@@ -371,13 +371,13 @@ export default function App() {
           </button>
           <button
             onClick={() => setAddingSpace(true)}
-            style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+            style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontWeight: 800, fontSize: 14, cursor: "pointer" }}
           >
             + List a Space
           </button>
           <button
             onClick={() => setViewingReservations(true)}
-            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 14, cursor: "pointer" }}
           >
             My Reservations
             {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
@@ -401,7 +401,7 @@ export default function App() {
                     <strong style={{ fontSize: 14, color: "#1E2233" }}>{s.name}</strong>
                     <span style={{ fontSize: 14, color: "#1E2233" }}>${s.price}/hr</span>
                   </div>
-                  <div style={{ fontSize: 12, color: "#5A6178", margin: "3px 0" }}>
+                  <div style={{ fontSize: 12, color: "#000000", margin: "3px 0" }}>
                     {s.distance} mi · {s.hours} · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count})` : "No ratings yet"}
                   </div>
                   <span style={{ background: c.bg, color: c.text, fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 700 }}>

@@ -160,9 +160,9 @@ export default function HostDashboard({ onBack }) {
         <PayoutsCard />
 
         <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: "#5A6178" }}>Your listed spaces</div>
+          <div style={{ fontSize: 13, color: "#000000" }}>Your listed spaces</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>{mySpaces.length}</div>
-          <div style={{ fontSize: 13, color: "#5A6178", marginTop: 8 }}>Combined hourly rate</div>
+          <div style={{ fontSize: 13, color: "#000000", marginTop: 8 }}>Combined hourly rate</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${totalPossibleEarnings}/hr</div>
         </div>
 
@@ -225,7 +225,7 @@ export default function HostDashboard({ onBack }) {
             {reviews.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>
+                <div style={{ fontSize: 12, color: "#000000", margin: "4px 0" }}>
                   {"⭐".repeat(r.rating)}{r.id > reviewSeen && <span style={{ color: "#D92D20", fontWeight: 800 }}>{"  ·  NEW"}</span>}
                 </div>
                 {r.comment && <div style={{ fontSize: 13, color: "#1E2233" }}>"{r.comment}"</div>}
@@ -246,24 +246,24 @@ export default function HostDashboard({ onBack }) {
           <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
             {editingId === s.id ? (
               <div>
-                <label style={{ fontSize: 12, color: "#5A6178" }}>
+                <label style={{ fontSize: 12, color: "#000000" }}>
                   Name
                   <input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} style={inputStyle} />
                 </label>
-                <label style={{ fontSize: 12, color: "#5A6178" }}>
+                <label style={{ fontSize: 12, color: "#000000" }}>
                   Price per hour ($)
                   <input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} style={inputStyle} />
                 </label>
-                <label style={{ fontSize: 12, color: "#5A6178" }}>
+                <label style={{ fontSize: 12, color: "#000000" }}>
                   Available hours
                   <input value={editForm.hours} onChange={(e) => setEditForm({ ...editForm, hours: e.target.value })} style={inputStyle} />
                 </label>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <label style={{ fontSize: 12, color: "#5A6178", flex: 1 }}>
+                  <label style={{ fontSize: 12, color: "#000000", flex: 1 }}>
                     Width (ft)
                     <input type="number" step="0.1" value={editForm.width} onChange={(e) => setEditForm({ ...editForm, width: e.target.value })} style={inputStyle} />
                   </label>
-                  <label style={{ fontSize: 12, color: "#5A6178", flex: 1 }}>
+                  <label style={{ fontSize: 12, color: "#000000", flex: 1 }}>
                     Length (ft)
                     <input type="number" step="0.1" value={editForm.length} onChange={(e) => setEditForm({ ...editForm, length: e.target.value })} style={inputStyle} />
                   </label>
@@ -288,7 +288,7 @@ export default function HostDashboard({ onBack }) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <strong style={{ color: "#1E2233" }}>{s.name}</strong>
-                  <div style={{ fontSize: 13, color: "#5A6178", marginTop: 4 }}>
+                  <div style={{ fontSize: 13, color: "#000000", marginTop: 4 }}>
                     ${s.price}/hr · {s.hours} · {s.width}' × {s.length}'
                   </div>
                 </div>
