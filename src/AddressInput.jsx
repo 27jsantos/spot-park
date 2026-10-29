@@ -7,6 +7,14 @@ function makeLabel(p) {
   return parts.filter((x, i) => parts.indexOf(x) === i).join(", ");
 }
 
+// Turns a map tag like "railway / station" into a short readable kind, e.g. "Station"
+const KIND_NAMES = { station: "Train Station", train_station: "Train Station", stop: "Transit Stop", halt: "Train Station", subway_entrance: "Subway", bus_station: "Bus Station", restaurant: "Restaurant", cafe: "Cafe", fast_food: "Fast Food", bar: "Bar", pub: "Pub", hospital: "Hospital", stadium: "Stadium", parking: "Parking", mall: "Mall", supermarket: "Supermarket", hotel: "Hotel", aerodrome: "Airport", university: "University", school: "School", park: "Park", theatre: "Theater", cinema: "Cinema", museum: "Museum" };
+function kindOf(p) {
+  const v = p.osm_value;
+  if (!v || v === "yes" || ["house", "residential", "primary", "secondary", "tertiary", "unclassified", "service", "city", "town", "village", "suburb", "neighbourhood", "administrative", "state", "county", "postcode"].includes(v)) return "";
+  return KIND_NAMES[v] || v.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function withTimeout(url, ms) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
@@ -22,23 +30,23 @@ function nominatimLabel(r) {
 }
 
 // Tries Photon first, and falls back to OpenStreetMap Nominatim if Photon is slow or down
-async function lookup(text, limit) {
+async function lookup(text, limit, bias) {
   try {
-    const res = await withTimeout(`https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=${limit}&lang=en`, 3500);
+    const res = await withTimeout(`https://photon.komoot.io/api/?q=${encodeURIComponent(text)}&limit=${limit}&lang=en${bias ? `&lat=${bias.lat}&lon=${bias.lng}` : ""}`, 3500);
     const data = await res.json();
     const list = (data.features || [])
-      .map((f) => ({ label: makeLabel(f.properties || {}), lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0] }))
+      .map((f) => ({ label: makeLabel(f.properties || {}), kind: kindOf(f.properties || {}), lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0] }))
       .filter((r) => r.label);
     if (list.length > 0) return list;
   } catch (e) {}
-  const res = await withTimeout(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(text)}&format=json&addressdetails=1&countrycodes=us&limit=${limit}`, 6000);
+  const res = await withTimeout(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(text)}&format=json&addressdetails=1&countrycodes=us&limit=${limit}${bias ? `&viewbox=${bias.lng - 0.5},${bias.lat + 0.5},${bias.lng + 0.5},${bias.lat - 0.5}` : ""}`, 6000);
   const data = await res.json();
   return (data || [])
-    .map((r) => ({ label: nominatimLabel(r), lat: parseFloat(r.lat), lng: parseFloat(r.lon) }))
+    .map((r) => ({ label: nominatimLabel(r), kind: "", lat: parseFloat(r.lat), lng: parseFloat(r.lon) }))
     .filter((r) => r.label && !isNaN(r.lat));
 }
 
-export default function AddressInput({ value, onChange, onPick, placeholder, inputStyle, containerStyle }) {
+export default function AddressInput({ value, onChange, onPick, placeholder, inputStyle, containerStyle, bias, limit }) {
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
   const skipNext = useRef(false);
@@ -57,7 +65,7 @@ export default function AddressInput({ value, onChange, onPick, placeholder, inp
     const id = ++requestId.current;
     const timer = setTimeout(async () => {
       try {
-        const list = await lookup(text, 5);
+        const list = await lookup(text, limit || 5, bias);
         if (id !== requestId.current) return;
         setResults(list);
         setOpen(list.length > 0);
@@ -94,7 +102,7 @@ export default function AddressInput({ value, onChange, onPick, placeholder, inp
               onMouseDown={(e) => { e.preventDefault(); pick(r); }}
               style={{ padding: "8px 10px", fontSize: 12, color: "#1E2233", cursor: "pointer", borderBottom: i < results.length - 1 ? "1px solid #E5E7EB" : "none" }}
             >
-              📍 {r.label}
+              📍 {r.label}{r.kind ? <span style={{ color: "#2A4FA0", fontWeight: 700 }}>{`  ·  ${r.kind}`}</span> : null}
             </div>
           ))}
         </div>

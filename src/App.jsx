@@ -305,7 +305,9 @@ export default function App() {
               value={searchText}
               onChange={setSearchText}
               onPick={(r) => { setSearchText(r.label); setMapCenter([r.lat, r.lng]); }}
-              placeholder="Search an address"
+              bias={{ lat: mapCenter[0], lng: mapCenter[1] }}
+              limit={6}
+              placeholder="Search address, train station, food..."
               containerStyle={{ flex: 1 }}
               inputStyle={{ border: "none", outline: "none", fontSize: 13, color: "#1E2233", width: "100%", background: "transparent" }}
             />
