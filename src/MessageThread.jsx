@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { countUnreadFor, markSeen } from "./unread";
 
+function formatTime(iso) {
+  try {
+    return new Date(iso).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  } catch {
+    return "";
+  }
+}
+
 export default function MessageThread({ reservationId, recipientId, recipientEmail }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -25,6 +33,10 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
       const incoming = (data || []).filter((x) => x.recipient_id === user.id).map((x) => x.id);
       if (incoming.length) markSeen(user.id, reservationId, Math.max(...incoming));
       setUnread(0);
+      const unreadIds = (data || []).filter((x) => x.recipient_id === user.id && "read_at" in x && !x.read_at).map((x) => x.id);
+      if (unreadIds.length) {
+        await supabase.from("messages").update({ read_at: new Date().toISOString() }).in("id", unreadIds).eq("recipient_id", user.id);
+      }
     }
     const { data: b } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
     setBlocked((b || []).map((x) => x.blocked_id));
@@ -134,6 +146,13 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
             }}
           >
             {m.body}
+            {!!m.created_at && (
+              <div style={{ fontSize: 10, marginTop: 3, color: m.sender_id === myId ? "#DCE6FF" : "#5A6178" }}>
+                {m.sender_id === myId
+                  ? `Sent ${formatTime(m.created_at)}${m.read_at ? `  ·  Read ${formatTime(m.read_at)}` : "  ·  Not read yet"}`
+                  : `Received ${formatTime(m.created_at)}`}
+              </div>
+            )}
             {m.sender_id !== myId && (
               <div style={{ marginTop: 4, fontSize: 10 }}>
                 <a href="#" onClick={(e) => { e.preventDefault(); reportMessage(m); }} style={{ color: "#B3261E", marginRight: 8 }}>Report</a>
