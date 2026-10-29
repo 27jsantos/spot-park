@@ -37,19 +37,19 @@ export default function VehicleProfile({ onSave, onBack }) {
         <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Vehicle</h1>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Year
             <input value={year} onChange={(e) => setYear(e.target.value)} placeholder="2021" style={inputStyle} />
           </label>
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Make
             <input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Ford" style={inputStyle} />
           </label>
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Model
             <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="F-150" style={inputStyle} />
           </label>
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Body type
             <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} style={inputStyle}>
               {Object.entries(BODY_TYPES).map(([id, v]) => (

@@ -130,7 +130,7 @@ export default function AddSpace({ onBack, onSaved }) {
         <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>List Your Space</h1>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Photos (up to 5)
             {previews.length > 0 ? (
               <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
@@ -146,7 +146,7 @@ export default function AddSpace({ onBack, onSaved }) {
             <input type="file" accept="image/*" multiple onChange={handlePhotoChange} style={{ marginTop: 8 }} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Address
             <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
               <AddressInput
@@ -179,32 +179,32 @@ export default function AddSpace({ onBack, onSaved }) {
             )}
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Space name
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Driveway on Oak St" required style={inputStyle} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Price per hour ($)
             <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="6" required style={inputStyle} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Price per day for long-term stays ($) — optional
             <input type="number" value={dailyPrice} onChange={(e) => setDailyPrice(e.target.value)} placeholder="20" style={inputStyle} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Available hours
             <input value={hours} onChange={(e) => setHours(e.target.value)} placeholder="5 PM – 11 PM" required style={inputStyle} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Width (feet)
             <input type="number" step="0.1" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="9.0" required style={inputStyle} />
           </label>
 
-          <label style={{ fontSize: 13, color: "#B7C4DC" }}>
+          <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Length (feet)
             <input type="number" step="0.1" value={length} onChange={(e) => setLength(e.target.value)} placeholder="20.0" required style={inputStyle} />
           </label>

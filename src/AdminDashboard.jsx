@@ -57,7 +57,7 @@ export default function AdminDashboard({ onBack }) {
               </div>
             </div>
 
-            <h2 style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Recent Spaces</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 800, textDecoration: "underline", marginBottom: 8 }}>Recent Spaces</h2>
             {stats.recentSpaces.map((s) => (
               <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 10, padding: 10, marginBottom: 8, fontSize: 13, fontWeight: 700, color: "#1E2233" }}>
                 <strong>{s.name}</strong> — ${s.price}/hr

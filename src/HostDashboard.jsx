@@ -168,7 +168,7 @@ export default function HostDashboard({ onBack }) {
 
         {requests.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>Pending Requests ({requests.length})</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 800, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>Pending Requests ({requests.length})</h2>
             {requests.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
@@ -197,7 +197,7 @@ export default function HostDashboard({ onBack }) {
 
         {bookings.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>Bookings And Messages</div>
+            <div style={{ fontWeight: 800, fontSize: 15, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>Bookings And Messages</div>
             {bookings.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
@@ -219,7 +219,7 @@ export default function HostDashboard({ onBack }) {
 
         {reviews.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, marginBottom: 8, color: "#FFFFFF" }}>
+            <div style={{ fontWeight: 800, fontSize: 15, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>
               Reviews{reviews.filter((r) => r.id > reviewSeen).length > 0 && <span style={{ color: "#FFD60A" }}>{`  ·  ${reviews.filter((r) => r.id > reviewSeen).length} New`}</span>}
             </div>
             {reviews.map((r) => (
@@ -246,24 +246,24 @@ export default function HostDashboard({ onBack }) {
           <div key={s.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
             {editingId === s.id ? (
               <div>
-                <label style={{ fontSize: 12, color: "#000000" }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>
                   Name
                   <input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} style={inputStyle} />
                 </label>
-                <label style={{ fontSize: 12, color: "#000000" }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>
                   Price per hour ($)
                   <input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} style={inputStyle} />
                 </label>
-                <label style={{ fontSize: 12, color: "#000000" }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>
                   Available hours
                   <input value={editForm.hours} onChange={(e) => setEditForm({ ...editForm, hours: e.target.value })} style={inputStyle} />
                 </label>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <label style={{ fontSize: 12, color: "#000000", flex: 1 }}>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#000000", flex: 1 }}>
                     Width (ft)
                     <input type="number" step="0.1" value={editForm.width} onChange={(e) => setEditForm({ ...editForm, width: e.target.value })} style={inputStyle} />
                   </label>
-                  <label style={{ fontSize: 12, color: "#000000", flex: 1 }}>
+                  <label style={{ fontSize: 12, fontWeight: 700, color: "#000000", flex: 1 }}>
                     Length (ft)
                     <input type="number" step="0.1" value={editForm.length} onChange={(e) => setEditForm({ ...editForm, length: e.target.value })} style={inputStyle} />
                   </label>
