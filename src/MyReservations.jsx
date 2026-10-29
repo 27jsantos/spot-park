@@ -155,10 +155,10 @@ export default function MyReservations({ onBack }) {
   }
 
   const STATUS_LABEL = {
-    pending: { text: "Pending host approval", color: "#854F0B" },
-    confirmed: { text: "Approved — payment needed", color: "#2A4FA0" },
-    declined: { text: "Declined by host", color: "#a33030" },
-    paid: { text: "Paid & confirmed", color: "#3B6D11" },
+    pending: { text: "Waiting For Host Approval", color: "#6D4AE0" },
+    confirmed: { text: "Approved — Not Paid Yet", color: "#D9730D" },
+    declined: { text: "Declined By Host", color: "#D92D20" },
+    paid: { text: "Paid", color: "#1E8E3E" },
   };
 
   return (
@@ -190,7 +190,7 @@ export default function MyReservations({ onBack }) {
                     {r.booking_type === "long_term" ? `${r.start_date} → ${r.end_date}` : `$${r.price}/hr`} · Reserved {new Date(r.created_at).toLocaleDateString()}
                   </div>
                   {statusInfo && (
-                    <div style={{ fontSize: 11, color: statusInfo.color, fontWeight: 700, marginTop: 4 }}>
+                    <div style={{ display: "inline-block", fontSize: 11, color: "#FFFFFF", background: statusInfo.color, fontWeight: 800, marginTop: 6, padding: "4px 10px", borderRadius: 12 }}>
                       {statusInfo.text}
                     </div>
                   )}
