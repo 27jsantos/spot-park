@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { bookingLines } from "./bookingInfo";
 import { supabase } from "./supabaseClient";
 import MessageThread from "./MessageThread";
 import { loadHostReviews, markReviewsSeen } from "./unread";
@@ -171,9 +172,9 @@ export default function HostDashboard({ onBack }) {
             {requests.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>
-                  {r.start_date} → {r.end_date} · ${r.price} total
-                </div>
+                {bookingLines(r, mySpaces.find((x) => x.id === r.space_id)).map((l) => (
+                  <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", margin: "3px 0" }}>{l.label}: {l.value}</div>
+                ))}
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <button
                     onClick={() => handleRequestDecision(r, "confirmed")}
@@ -200,7 +201,9 @@ export default function HostDashboard({ onBack }) {
             {bookings.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
                 <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                <div style={{ fontSize: 12, color: "#5A6178", margin: "4px 0" }}>${r.price} · {new Date(r.created_at).toLocaleDateString()}</div>
+                {bookingLines(r, mySpaces.find((x) => x.id === r.space_id)).map((l) => (
+                  <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", margin: "3px 0" }}>{l.label}: {l.value}</div>
+                ))}
                 {!!r.status && (
                   <div style={{ display: "inline-block", marginBottom: 6, color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, background: r.status === "paid" ? "#1E8E3E" : r.status === "confirmed" ? "#D9730D" : r.status === "declined" ? "#D92D20" : "#6D4AE0" }}>
                     {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved — Not Paid Yet" : r.status === "declined" ? "Declined" : "Waiting For Your Approval"}

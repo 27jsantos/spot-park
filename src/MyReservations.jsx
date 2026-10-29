@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { bookingLines } from "./bookingInfo";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "./supabaseClient";
 import { stripePromise } from "./stripeClient";
@@ -57,6 +58,7 @@ export default function MyReservations({ onBack }) {
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
   const [payingId, setPayingId] = useState(null);
+  const [spaceMap, setSpaceMap] = useState({});
   const [clientSecret, setClientSecret] = useState(null);
   const [loadingPayment, setLoadingPayment] = useState(false);
 
@@ -70,7 +72,16 @@ export default function MyReservations({ onBack }) {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     if (resError) console.error(resError);
-    else setReservations(resData);
+    else {
+      setReservations(resData);
+      const ids = [...new Set((resData || []).map((x) => x.space_id).filter(Boolean))];
+      if (ids.length) {
+        const { data: sp } = await supabase.from("spaces").select("id, width, length").in("id", ids);
+        const m = {};
+        (sp || []).forEach((x) => { m[x.id] = x; });
+        setSpaceMap(m);
+      }
+    }
 
     const { data: reviewData } = await supabase
       .from("reviews")
@@ -186,9 +197,9 @@ export default function MyReservations({ onBack }) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                  <div style={{ fontSize: 12, color: "#5A6178", marginTop: 4 }}>
-                    {r.booking_type === "long_term" ? `${r.start_date} → ${r.end_date}` : `$${r.price}/hr`} · Reserved {new Date(r.created_at).toLocaleDateString()}
-                  </div>
+                  {bookingLines(r, spaceMap[r.space_id]).map((l) => (
+                    <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", marginTop: 3 }}>{l.label}: {l.value}</div>
+                  ))}
                   {statusInfo && (
                     <div style={{ display: "inline-block", fontSize: 11, color: "#FFFFFF", background: statusInfo.color, fontWeight: 800, marginTop: 6, padding: "4px 10px", borderRadius: 12 }}>
                       {statusInfo.text}

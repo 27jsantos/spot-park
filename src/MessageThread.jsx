@@ -141,13 +141,14 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
               color: m.sender_id === myId ? "#FFFFFF" : "#1E2233",
               padding: "6px 10px",
               borderRadius: 10,
-              fontSize: 12,
+              fontSize: 14,
+              fontWeight: 700,
               maxWidth: "80%",
             }}
           >
             {m.body}
             {!!m.created_at && (
-              <div style={{ fontSize: 10, marginTop: 3, color: m.sender_id === myId ? "#DCE6FF" : "#5A6178" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, marginTop: 3, color: m.sender_id === myId ? "#DCE6FF" : "#5A6178" }}>
                 {m.sender_id === myId
                   ? `Sent ${formatTime(m.created_at)}${m.read_at ? `  ·  Read ${formatTime(m.read_at)}` : "  ·  Not read yet"}`
                   : `Received ${formatTime(m.created_at)}`}
