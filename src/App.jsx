@@ -67,15 +67,6 @@ function FitDiagram({ status }) {
   );
 }
 
-function milesBetween(lat1, lon1, lat2, lon2) {
-  const R = 3958.8;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
-
 function RecenterMap({ center }) {
   const map = useMap();
   useEffect(() => {
@@ -274,9 +265,6 @@ export default function App() {
   }
 
   const spacesWithLocation = spaces.filter((s) => s.latitude && s.longitude);
-  const sortedSpaces = spaces
-    .map((sp) => ({ ...sp, _miles: sp.latitude && sp.longitude ? milesBetween(mapCenter[0], mapCenter[1], Number(sp.latitude), Number(sp.longitude)) : null }))
-    .sort((a, b) => (a._miles === null) - (b._miles === null) || (a._miles ?? 0) - (b._miles ?? 0));
   const isAdmin = user.id === ADMIN_USER_ID;
 
   return (
@@ -363,55 +351,41 @@ export default function App() {
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+          <button
+            onClick={() => setAddingSpace(true)}
+            style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+          >
+            + List a Space
+          </button>
+          <button
+            onClick={() => setViewingDashboard(true)}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
+          >
+            My Host Dashboard
+            {newHost > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newHost} New {newHost === 1 ? "Message" : "Messages"}</div>}
+            {newReviews > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newReviews} New {newReviews === 1 ? "Review" : "Reviews"}</div>}
+            {newRequests > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}
+          </button>
+          <button
+            onClick={() => setViewingReservations(true)}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: isAdmin ? 8 : 16, fontSize: 13, cursor: "pointer" }}
+          >
+            My Reservations
+            {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
+            {toPay > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{toPay} Approved — Ready To Pay</div>}
+          </button>
+          {isAdmin && (
             <button
-              onClick={() => setAddingSpace(true)}
-              style={{ flex: 1, background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+              onClick={() => setViewingAdmin(true)}
+              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
             >
-              + List
+              ⚙ Admin Dashboard
             </button>
-            <button
-              onClick={() => setViewingDashboard(true)}
-              style={{ flex: 1, background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-            >
-              Host{newHost + newRequests + newReviews > 0 ? <span style={{ color: "#FFD60A" }}>{`  ●${newHost + newRequests + newReviews}`}</span> : null}
-            </button>
-            <button
-              onClick={() => setViewingReservations(true)}
-              style={{ flex: 1, background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-            >
-              Bookings{newDriver + toPay > 0 ? <span style={{ color: "#FFD60A" }}>{`  ●${newDriver + toPay}`}</span> : null}
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => setViewingAdmin(true)}
-                style={{ background: "#854F0B", color: "#FFFFFF", border: "none", padding: "11px 14px", borderRadius: 10, fontSize: 13, cursor: "pointer" }}
-              >
-                ⚙
-              </button>
-            )}
-          </div>
-          {(newHost > 0 || newRequests > 0 || newReviews > 0 || newDriver > 0 || toPay > 0) && (
-            <div style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, color: "#FFD60A", lineHeight: 1.5 }}>
-              {newRequests > 0 && <div>Host: {newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}
-              {newHost > 0 && <div>Host: {newHost} New {newHost === 1 ? "Message" : "Messages"}</div>}
-              {newReviews > 0 && <div>Host: {newReviews} New {newReviews === 1 ? "Review" : "Reviews"}</div>}
-              {newDriver > 0 && <div>Bookings: {newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
-              {toPay > 0 && <div>Bookings: {toPay} Approved — Ready To Pay</div>}
-            </div>
           )}
-
-          <div style={{ fontSize: 15, fontWeight: 700, margin: "12px 0 8px" }}>
-            Parking Spots Near You{!loading ? ` (${sortedSpaces.length})` : ""}
-          </div>
 
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
-          {!loading && sortedSpaces.length === 0 && (
-            <div style={{ color: "#B7C4DC", fontSize: 13 }}>No spots listed yet. Tap + List to add the first one.</div>
-          )}
-
-          {!loading && sortedSpaces.map((s) => {
+          {!loading && spaces.map((s) => {
             const status = fitStatus(s, vehicle);
             const c = FIT_COPY[status];
             const ratingInfo = ratings[s.id];
@@ -428,7 +402,7 @@ export default function App() {
                     <span style={{ fontSize: 14, color: "#1E2233" }}>${s.price}/hr</span>
                   </div>
                   <div style={{ fontSize: 12, color: "#5A6178", margin: "3px 0" }}>
-                    {s._miles !== null ? `${s._miles < 10 ? s._miles.toFixed(1) : Math.round(s._miles)} mi away · ` : ""}{s.hours} · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count})` : "No ratings yet"}
+                    {s.distance} mi · {s.hours} · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count})` : "No ratings yet"}
                   </div>
                   <span style={{ background: c.bg, color: c.text, fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 700 }}>
                     {c.label} {vehicle.label.toLowerCase()}
