@@ -351,12 +351,15 @@ export default function App() {
             </button>
           </div>
 
-          <button
-            onClick={() => setAddingSpace(true)}
-            style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-          >
-            + List a Space
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setViewingAdmin(true)}
+              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
+            >
+              ⚙ Admin Dashboard
+            </button>
+          )}
+
           <button
             onClick={() => setViewingDashboard(true)}
             style={{ width: "100%", background: "#FFD60A", color: "#1E2233", fontWeight: 700, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 13, cursor: "pointer" }}
@@ -367,22 +370,19 @@ export default function App() {
             {newRequests > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#1E2233", marginTop: 3 }}>{newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}
           </button>
           <button
+            onClick={() => setAddingSpace(true)}
+            style={{ width: "100%", background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+          >
+            + List a Space
+          </button>
+          <button
             onClick={() => setViewingReservations(true)}
-            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: isAdmin ? 8 : 16, fontSize: 13, cursor: "pointer" }}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
           >
             My Reservations
             {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
             {toPay > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{toPay} Approved — Ready To Pay</div>}
           </button>
-          {isAdmin && (
-            <button
-              onClick={() => setViewingAdmin(true)}
-              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 13, cursor: "pointer" }}
-            >
-              ⚙ Admin Dashboard
-            </button>
-          )}
-
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
           {!loading && spaces.map((s) => {
