@@ -71,16 +71,18 @@ function FitDiagram({ status }) {
 const trainIcon = L.divIcon({ className: "", html: '<div style="font-size:18px;background:#FFFFFF;border:2px solid #2A4FA0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">🚆</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
 const landmarkIcon = L.divIcon({ className: "", html: '<div style="font-size:16px;background:#FFFFFF;border:2px solid #D9730D;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">⭐</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
 
-function PlacesLayer() {
+function PlacesLayer({ onStatus }) {
   const map = useMap();
   const [places, setPlaces] = useState([]);
   const [zoomedOut, setZoomedOut] = useState(false);
 
   async function refresh() {
     const b = map.getBounds();
+    onStatus("…");
     const list = await fetchPlaces(b.getSouth(), b.getWest(), b.getNorth(), b.getEast());
-    if (list === null) { setZoomedOut(true); setPlaces([]); }
-    else { setZoomedOut(false); setPlaces(list); }
+    if (list === null) { setZoomedOut(true); setPlaces([]); onStatus("zoom in"); }
+    else if (list === "error") { setZoomedOut(false); setPlaces([]); onStatus("can't load"); }
+    else { setZoomedOut(false); setPlaces(list); onStatus(String(list.length)); }
   }
 
   useEffect(() => {
@@ -159,6 +161,7 @@ export default function App() {
   const [searchText, setSearchText] = useState("");
   const [mapView, setMapView] = useState("street");
   const [showPlaces, setShowPlaces] = useState(true);
+  const [placesStatus, setPlacesStatus] = useState("");
   const [userPos, setUserPos] = useState(null);
 
   async function handleSearch(e) {
@@ -333,7 +336,7 @@ export default function App() {
             )}
             <ZoomControl position="bottomleft" />
             <RecenterMap center={mapCenter} />
-            {showPlaces && <PlacesLayer />}
+            {showPlaces && <PlacesLayer onStatus={setPlacesStatus} />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]} icon={redPin}>
@@ -373,7 +376,7 @@ export default function App() {
             title="Show train stations and landmarks"
             style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
-            🚆 ⭐ {showPlaces ? "On" : "Off"}
+            🚆 ⭐ {showPlaces ? `On · ${placesStatus}` : "Off"}
           </button>
 
           <button

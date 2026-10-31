@@ -3,6 +3,8 @@
 const MIRRORS = [
   "https://overpass-api.de/api/interpreter",
   "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
 ];
 
 export async function fetchPlaces(south, west, north, east) {
@@ -19,7 +21,7 @@ export async function fetchPlaces(south, west, north, east) {
     `);out center 60;`;
   for (const url of MIRRORS) {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const timer = setTimeout(() => ctrl.abort(), 7000);
     try {
       const res = await fetch(url, {
         method: "POST",
@@ -48,5 +50,5 @@ export async function fetchPlaces(south, west, north, east) {
       clearTimeout(timer);
     }
   }
-  return [];
+  return "error";
 }
