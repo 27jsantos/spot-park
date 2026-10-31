@@ -1,13 +1,13 @@
-// Finds train stations and landmarks inside a map box, using OpenStreetMap Nominatim.
+// Finds train stations inside a map box, using OpenStreetMap Nominatim.
 // If the service is slow or down, it returns "error" and the map keeps working without markers.
-const QUERIES = ["railway station", "attraction", "museum", "stadium"];
+const QUERIES = ["railway station", "train station"];
 const cache = {};
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-export async function fetchPlaces(south, west, north, east) {
+export async function fetchPlaces(south, west, north, east, onPartial) {
   // Too zoomed out: skip, so we don't ask for a whole city at once
   if (north - south > 0.2 || east - west > 0.2) return null;
   const r4 = (n) => Math.round(n * 400) / 400;
@@ -19,7 +19,7 @@ export async function fetchPlaces(south, west, north, east) {
   const list = [];
   let okCount = 0;
   for (let i = 0; i < QUERIES.length; i++) {
-    if (i > 0) await sleep(1100);
+    if (i > 0) await sleep(1000);
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 8000);
     try {
@@ -33,7 +33,7 @@ export async function fetchPlaces(south, west, north, east) {
       okCount++;
       (data || []).forEach((p) => {
         const isTrain = p.category === "railway" && (p.type === "station" || p.type === "halt");
-        const isLandmark = ["attraction", "museum", "monument", "memorial", "viewpoint", "castle", "stadium"].includes(p.type);
+        const isLandmark = false;
         if (!p.name || (!isTrain && !isLandmark)) return;
         const kind = isTrain ? "train" : "landmark";
         const k = kind + p.name;
@@ -41,6 +41,7 @@ export async function fetchPlaces(south, west, north, east) {
         seen[k] = true;
         list.push({ id: `${p.osm_type}${p.osm_id}`, name: p.name, kind, lat: parseFloat(p.lat), lng: parseFloat(p.lon) });
       });
+      if (onPartial) onPartial(list.slice());
     } catch (e) {
       clearTimeout(timer);
     }

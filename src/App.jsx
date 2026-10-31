@@ -68,8 +68,11 @@ function FitDiagram({ status }) {
   );
 }
 
-const trainIcon = L.divIcon({ className: "", html: '<div style="font-size:18px;background:#FFFFFF;border:2px solid #2A4FA0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">🚆</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
-const landmarkIcon = L.divIcon({ className: "", html: '<div style="font-size:16px;background:#FFFFFF;border:2px solid #D9730D;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">⭐</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const trainHtml = (name) =>
+  `<div style="display:flex;flex-direction:column;align-items:center;width:120px;margin-left:-42px"><div style="font-size:24px;background:#1D4ED8;border:4px solid #FFD60A;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(255,214,10,0.45),0 3px 10px rgba(0,0,0,0.6)">🚆</div><div style="margin-top:3px;background:#FFD60A;color:#000;font-weight:800;font-size:11px;padding:2px 6px;border-radius:6px;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.4)">${esc(name)}</div></div>`;
+const trainIconFor = (name) => L.divIcon({ className: "", html: trainHtml(name), iconSize: [44, 70], iconAnchor: [22, 22] });
+const landmarkIcon = L.divIcon({ className: "", html: `<div style="font-size:16px;background:#F97316;border:3px solid #FFFFFF;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.55)">⭐</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
 
 function PlacesLayer({ onStatus }) {
   const map = useMap();
@@ -79,7 +82,7 @@ function PlacesLayer({ onStatus }) {
   async function refresh() {
     const b = map.getBounds();
     onStatus("…");
-    const list = await fetchPlaces(b.getSouth(), b.getWest(), b.getNorth(), b.getEast());
+    const list = await fetchPlaces(b.getSouth(), b.getWest(), b.getNorth(), b.getEast(), (part) => { setPlaces(part); onStatus(String(part.length)); });
     if (list === null) { setZoomedOut(true); setPlaces([]); onStatus("zoom in"); }
     else if (list === "error") { setZoomedOut(false); setPlaces([]); onStatus("can't load"); }
     else { setZoomedOut(false); setPlaces(list); onStatus(String(list.length)); }
@@ -100,7 +103,7 @@ function PlacesLayer({ onStatus }) {
   return (
     <>
       {places.map((p) => (
-        <Marker key={p.id} position={[p.lat, p.lng]} icon={p.kind === "train" ? trainIcon : landmarkIcon}>
+        <Marker key={p.id} position={[p.lat, p.lng]} icon={p.kind === "train" ? trainIconFor(p.name) : landmarkIcon}>
           <Popup>
             <strong>{p.name}</strong><br />{p.kind === "train" ? "Train Station" : "Landmark"}
           </Popup>
@@ -108,7 +111,7 @@ function PlacesLayer({ onStatus }) {
       ))}
       {zoomedOut && (
         <div style={{ position: "absolute", top: 70, left: 16, background: "rgba(255,255,255,0.92)", borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700, color: "#000000", zIndex: 1000 }}>
-          Zoom in to see train stations and landmarks
+          Zoom in to see train stations
         </div>
       )}
     </>
@@ -373,10 +376,10 @@ export default function App() {
 
           <button
             onClick={() => setShowPlaces(!showPlaces)}
-            title="Show train stations and landmarks"
+            title="Show train stations"
             style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
-            🚆 ⭐ {showPlaces ? `On · ${placesStatus}` : "Off"}
+            🚆 Trains {showPlaces ? `On · ${placesStatus}` : "Off"}
           </button>
 
           <button
