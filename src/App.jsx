@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl } from "react-leaflet";
+import { fetchPlaces } from "./places";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import SpaceDetail from "./SpaceDetail";
@@ -67,6 +68,51 @@ function FitDiagram({ status }) {
   );
 }
 
+const trainIcon = L.divIcon({ className: "", html: '<div style="font-size:18px;background:#FFFFFF;border:2px solid #2A4FA0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">🚆</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+const landmarkIcon = L.divIcon({ className: "", html: '<div style="font-size:16px;background:#FFFFFF;border:2px solid #D9730D;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3)">⭐</div>', iconSize: [28, 28], iconAnchor: [14, 14] });
+
+function PlacesLayer() {
+  const map = useMap();
+  const [places, setPlaces] = useState([]);
+  const [zoomedOut, setZoomedOut] = useState(false);
+
+  async function refresh() {
+    const b = map.getBounds();
+    const list = await fetchPlaces(b.getSouth(), b.getWest(), b.getNorth(), b.getEast());
+    if (list === null) { setZoomedOut(true); setPlaces([]); }
+    else { setZoomedOut(false); setPlaces(list); }
+  }
+
+  useEffect(() => {
+    const t = setTimeout(refresh, 400);
+    return () => clearTimeout(t);
+  }, []);
+
+  useMapEvents({
+    moveend: () => {
+      clearTimeout(window.__placesTimer);
+      window.__placesTimer = setTimeout(refresh, 700);
+    },
+  });
+
+  return (
+    <>
+      {places.map((p) => (
+        <Marker key={p.id} position={[p.lat, p.lng]} icon={p.kind === "train" ? trainIcon : landmarkIcon}>
+          <Popup>
+            <strong>{p.name}</strong><br />{p.kind === "train" ? "Train Station" : "Landmark"}
+          </Popup>
+        </Marker>
+      ))}
+      {zoomedOut && (
+        <div style={{ position: "absolute", top: 70, left: 16, background: "rgba(255,255,255,0.92)", borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700, color: "#000000", zIndex: 1000 }}>
+          Zoom in to see train stations and landmarks
+        </div>
+      )}
+    </>
+  );
+}
+
 function RecenterMap({ center }) {
   const map = useMap();
   useEffect(() => {
@@ -112,6 +158,7 @@ export default function App() {
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
   const [mapView, setMapView] = useState("street");
+  const [showPlaces, setShowPlaces] = useState(true);
   const [userPos, setUserPos] = useState(null);
 
   async function handleSearch(e) {
@@ -286,6 +333,7 @@ export default function App() {
             )}
             <ZoomControl position="bottomleft" />
             <RecenterMap center={mapCenter} />
+            {showPlaces && <PlacesLayer />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]} icon={redPin}>
@@ -318,6 +366,14 @@ export default function App() {
             style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
+          </button>
+
+          <button
+            onClick={() => setShowPlaces(!showPlaces)}
+            title="Show train stations and landmarks"
+            style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+          >
+            🚆 ⭐ {showPlaces ? "On" : "Off"}
           </button>
 
           <button

@@ -144,6 +144,7 @@ export default function AddSpace({ onBack, onSaved }) {
               </div>
             )}
             <input type="file" accept="image/*" multiple onChange={handlePhotoChange} style={{ marginTop: 8 }} />
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#B7C4DC", marginTop: 4 }}>On a phone you can tap here and take a picture with your camera.</div>
           </label>
 
           <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
