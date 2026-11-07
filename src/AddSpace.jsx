@@ -133,9 +133,9 @@ export default function AddSpace({ onBack, onSaved }) {
           <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
             Photos (up to 5)
             {previews.length > 0 ? (
-              <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap", justifyContent: "center" }}>
                 {previews.map((p, i) => (
-                  <img key={i} src={p} alt={`Preview ${i + 1}`} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8 }} />
+                  <img key={i} src={p} alt={`Preview ${i + 1}`} style={{ width: 96, height: 72, objectFit: "contain", background: "#EEF1F8", borderRadius: 8 }} />
                 ))}
               </div>
             ) : (

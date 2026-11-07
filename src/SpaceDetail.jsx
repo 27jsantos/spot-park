@@ -79,7 +79,7 @@ function PhotoGallery({ space }) {
 
   return (
     <div style={{ position: "relative" }}>
-      <img src={photos[index]} alt={space.name} style={{ width: "100%", height: 190, objectFit: "cover" }} />
+      <img src={photos[index]} alt={space.name} style={{ width: "100%", height: 210, objectFit: "contain", background: "#0D2C64", display: "block" }} />
       {photos.length > 1 && (
         <>
           <button onClick={() => setIndex((index - 1 + photos.length) % photos.length)} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}>‹</button>
