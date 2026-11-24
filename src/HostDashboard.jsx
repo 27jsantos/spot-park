@@ -205,8 +205,8 @@ export default function HostDashboard({ onBack }) {
                   <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", margin: "3px 0" }}>{l.label}: {l.value}</div>
                 ))}
                 {!!r.status && (
-                  <div style={{ display: "inline-block", marginBottom: 6, color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, background: r.status === "paid" ? "#1E8E3E" : r.status === "confirmed" ? "#D9730D" : r.status === "declined" ? "#D92D20" : "#6D4AE0" }}>
-                    {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved — Not Paid Yet" : r.status === "declined" ? "Declined" : "Waiting For Your Approval"}
+                  <div style={{ display: "inline-block", marginBottom: 6, color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, background: r.status === "paid" ? "#1E8E3E" : r.status === "confirmed" ? "#D9730D" : r.status === "declined" ? "#D92D20" : r.status === "cancelled" ? "#5B6475" : "#6D4AE0" }}>
+                    {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved — Not Paid Yet" : r.status === "declined" ? "Declined" : r.status === "cancelled" ? "Cancelled By Driver" : "Waiting For Your Approval"}
                   </div>
                 )}
                 {r.user_id !== r.owner_id && (

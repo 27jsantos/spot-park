@@ -337,6 +337,17 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             Available: {space.hours}
           </div>
 
+          {space.latitude && space.longitude ? (
+            <a
+              href={"https://www.google.com/maps/dir/?api=1&destination=" + space.latitude + "," + space.longitude}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: "block", background: "#FFD60A", color: "#1E2233", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
+            >
+              🧭 Directions
+            </a>
+          ) : null}
+
           {isOwn && (
             <div style={{ background: "#FFD60A", color: "#1E2233", fontWeight: 800, fontSize: 13, borderRadius: 10, padding: 12, textAlign: "center", marginBottom: 12 }}>
               This is your own listing. You can't book it. Manage it from My Host Dashboard.

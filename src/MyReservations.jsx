@@ -110,6 +110,21 @@ export default function MyReservations({ onBack }) {
     }
   }
 
+  async function handleRefund(r) {
+    if (!window.confirm("Cancel and get a full refund? You can cancel up to 24 hours before your booking starts.")) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("https://ppywqlxnjiiufxjhxjah.supabase.co/functions/v1/cancel-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ reservation_id: r.id }),
+      });
+      const data = await res.json();
+      if (data.ok) { alert(data.refunded ? "Cancelled. Your refund is on its way." : "Your booking was cancelled."); load(); }
+      else alert("Couldn't cancel: " + (data.error || "Please try again."));
+    } catch (e) { alert("Couldn't cancel. Please check your connection and try again."); }
+  }
+
   async function startPayment(reservation) {
     setLoadingPayment(true);
     try {
@@ -170,6 +185,7 @@ export default function MyReservations({ onBack }) {
     confirmed: { text: "Approved — Not Paid Yet", color: "#D9730D" },
     declined: { text: "Declined By Host", color: "#D92D20" },
     paid: { text: "Paid", color: "#1E8E3E" },
+    cancelled: { text: "Cancelled", color: "#5B6475" },
   };
 
   return (
@@ -206,7 +222,15 @@ export default function MyReservations({ onBack }) {
                     </div>
                   )}
                 </div>
-                {r.status !== "paid" && (
+                {r.status === "paid" && (
+                  <button
+                    onClick={() => handleRefund(r)}
+                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "8px 12px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", minHeight: 36 }}
+                  >
+                    Cancel and Refund
+                  </button>
+                )}
+                {r.status !== "paid" && r.status !== "cancelled" && (
                   <button
                     onClick={() => handleCancel(r.id)}
                     style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
