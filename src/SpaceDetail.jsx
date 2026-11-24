@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -251,6 +251,12 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [startTime, setStartTime] = useState(null);
   const [hours, setHours] = useState(1);
   const [timeError, setTimeError] = useState("");
+  const [isOwn, setIsOwn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data && data.user && space.owner_id && data.user.id === space.owner_id) setIsOwn(true);
+    });
+  }, [space.id]);
   const status = fitStatus(space, vehicle);
   const c = FIT_COPY[status];
 
@@ -331,7 +337,13 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             Available: {space.hours}
           </div>
 
-          {!reserved && !requested && (
+          {isOwn && (
+            <div style={{ background: "#FFD60A", color: "#1E2233", fontWeight: 800, fontSize: 13, borderRadius: 10, padding: 12, textAlign: "center", marginBottom: 12 }}>
+              This is your own listing. You can't book it. Manage it from My Host Dashboard.
+            </div>
+          )}
+
+          {!isOwn && !reserved && !requested && (
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <button
                 onClick={() => setMode("hourly")}
@@ -351,7 +363,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
           )}
 
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
-            {mode === "hourly" && !paying && !reserved && !requested && (
+            {!isOwn && mode === "hourly" && !paying && !reserved && !requested && (
               <div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                   <div style={{ flex: 2 }}>
@@ -406,7 +418,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               </Elements>
             )}
 
-            {mode === "long_term" && !requested && !reserved && (
+            {!isOwn && mode === "long_term" && !requested && !reserved && (
               <>
                 <div style={{ color: "#1E2233", fontWeight: 700, marginBottom: 4 }}>${space.daily_price}/day</div>
                 <LongTermRequest space={space} onSubmitted={() => setRequested(true)} />

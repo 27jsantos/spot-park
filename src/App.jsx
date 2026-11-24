@@ -441,7 +441,7 @@ export default function App() {
           </button>
           <button
             onClick={() => setViewingReservations(true)}
-            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 16, fontSize: 14, cursor: "pointer" }}
+            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 20, fontSize: 14, cursor: "pointer" }}
           >
             My Reservations
             {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}

@@ -92,6 +92,34 @@ Deno.serve(async (req) => {
         throw new Error("Space not found");
       }
       space = rows[0];
+      if (space.owner_id && space.owner_id === user.id) {
+        throw new Error("You can't book your own space");
+      }
+      // Make sure nobody else already has this space at that time
+      const endMs = start.getTime() + h * 3600000;
+      const bookedRes = await fetch(
+        `${supabaseUrl}/rest/v1/reservations?space_id=eq.${encodeURIComponent(space_id)}&status=in.(paid,confirmed)&select=booking_type,start_time,hours,start_date,end_date,payment_intent_id`,
+        { headers: dbHeaders }
+      );
+      const booked = await bookedRes.json();
+      if (bookedRes.ok && Array.isArray(booked)) {
+        for (const b of booked) {
+          if (b.booking_type === "long_term") {
+            if (!b.start_date || !b.end_date) continue;
+            const from = new Date(b.start_date + "T00:00:00").getTime();
+            const to = new Date(b.end_date + "T00:00:00").getTime() + 86400000;
+            if (start.getTime() < to && endMs > from) {
+              throw new Error("This space is already booked for those dates");
+            }
+          } else if (b.start_time && b.hours) {
+            const bs = new Date(b.start_time).getTime();
+            const be = bs + Number(b.hours) * 3600000;
+            if (start.getTime() < be && endMs > bs) {
+              throw new Error("That time is already booked. Please pick another time.");
+            }
+          }
+        }
+      }
       cents = Math.round(Number(space.price) * h * 100);
       if (!(cents >= 50)) {
         throw new Error("Amount is too small");
