@@ -164,6 +164,10 @@ export default function HostDashboard({ onBack }) {
           <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>{mySpaces.length}</div>
           <div style={{ fontSize: 13, color: "#000000", marginTop: 8 }}>Combined hourly rate</div>
           <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${totalPossibleEarnings}/hr</div>
+          <div style={{ fontSize: 13, color: "#000000", marginTop: 8, fontWeight: 800, textDecoration: "underline" }}>You've Earned (After 20% Fee)</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${(bookings.filter((b) => b.status === "paid").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
+          <div style={{ fontSize: 13, color: "#000000", marginTop: 8, fontWeight: 800, textDecoration: "underline" }}>Approved, Waiting For Payment</div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${(bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
         </div>
 
         {requests.length > 0 && (

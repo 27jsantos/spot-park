@@ -156,6 +156,7 @@ Deno.serve(async (req) => {
         }
       }
     }
+    if (user.email) params.set("receipt_email", user.email);
     if (space.owner_id) params.set("metadata[owner_id]", String(space.owner_id));
     if (space.owner_email) params.set("metadata[owner_email]", String(space.owner_email));
 
