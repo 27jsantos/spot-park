@@ -462,7 +462,7 @@ export default function App() {
           <button
             onClick={() => setShowSaved(!showSaved)}
             aria-label={showSaved ? "Show all spaces" : "Show saved spaces only"}
-            style={{ width: "100%", marginTop: 8, padding: 12, minHeight: 44, borderRadius: 12, border: "none", fontWeight: 800, fontSize: 14, cursor: "pointer", background: showSaved ? "#FFD60A" : "#3B4F73", color: showSaved ? "#1E2233" : "#FFFFFF" }}
+            style={{ width: "100%", marginTop: 8, marginBottom: 12, padding: 12, minHeight: 44, borderRadius: 12, border: "none", fontWeight: 800, fontSize: 14, cursor: "pointer", background: showSaved ? "#FFD60A" : "#3B4F73", color: showSaved ? "#1E2233" : "#FFFFFF" }}
           >
             {showSaved ? "♥ Showing Saved Only" : "♡ Saved Spaces"}
           </button>
