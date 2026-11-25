@@ -252,19 +252,6 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [hours, setHours] = useState(1);
   const [timeError, setTimeError] = useState("");
   const [isOwn, setIsOwn] = useState(false);
-  const [saved, setSaved] = useState(false);
-  useEffect(() => {
-    supabase.from("favorites").select("space_id").eq("space_id", String(space.id)).then(({ data }) => setSaved(!!(data && data.length)));
-  }, [space.id]);
-  async function toggleSaved() {
-    if (saved) {
-      const { error } = await supabase.from("favorites").delete().eq("space_id", String(space.id));
-      if (!error) setSaved(false);
-    } else {
-      const { error } = await supabase.from("favorites").insert({ space_id: String(space.id) });
-      if (!error) setSaved(true);
-    }
-  }
   async function handleReport() {
     const reason = window.prompt("Report this listing. What's wrong? (Fake or misleading, Unsafe or illegal, Inappropriate content, Other)");
     if (!reason) return;
@@ -349,7 +336,6 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
 
           <div style={{ display: "flex", gap: 8, margin: "10px 0" }}>
             {[
-              [saved ? "♥ Saved" : "♡ Save", toggleSaved, true],
               ["⚑ Report", handleReport, !isOwn && !!space.owner_id],
               ["⊘ Block", handleBlock, !isOwn && !!space.owner_id],
             ].filter((b) => b[2]).map((b) => (
