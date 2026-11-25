@@ -158,6 +158,9 @@ export default function App() {
   const [viewingPrivacy, setViewingPrivacy] = useState(false);
   const [viewingTerms, setViewingTerms] = useState(false);
   const [spaces, setSpaces] = useState([]);
+  const [savedIds, setSavedIds] = useState([]);
+  const [showSaved, setShowSaved] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
@@ -202,8 +205,15 @@ export default function App() {
   async function loadSpaces() {
     setLoading(true);
     const { data, error } = await supabase.from("spaces").select("*");
-    if (error) console.error("Error loading spaces:", error);
-    else setSpaces(data);
+    if (error) { console.error("Error loading spaces:", error); setLoadError(true); }
+    else {
+      setLoadError(false);
+      const { data: blockRows } = await supabase.from("blocks").select("blocked_id");
+      const blocked = new Set((blockRows || []).map((b) => b.blocked_id));
+      setSpaces((data || []).filter((sp) => !sp.paused && !blocked.has(sp.owner_id)));
+    }
+    const { data: favRows } = await supabase.from("favorites").select("space_id");
+    setSavedIds((favRows || []).map((f) => String(f.space_id)));
 
     const { data: reviewData, error: reviewError } = await supabase.from("reviews").select("space_id, rating");
     if (!reviewError && reviewData) {
@@ -449,7 +459,22 @@ export default function App() {
           </button>
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
-          {!loading && spaces.map((s) => {
+          <button
+            onClick={() => setShowSaved(!showSaved)}
+            aria-label={showSaved ? "Show all spaces" : "Show saved spaces only"}
+            style={{ width: "100%", marginTop: 8, padding: 12, minHeight: 44, borderRadius: 12, border: "none", fontWeight: 800, fontSize: 14, cursor: "pointer", background: showSaved ? "#FFD60A" : "#3B4F73", color: showSaved ? "#1E2233" : "#FFFFFF" }}
+          >
+            {showSaved ? "♥ Showing Saved Only" : "♡ Saved Spaces"}
+          </button>
+
+          {!loading && (showSaved ? spaces.filter((sp) => savedIds.includes(String(sp.id))) : spaces).length === 0 && (
+            <div style={{ color: "#FFFFFF", fontWeight: 800, fontSize: 14, textAlign: "center", padding: "20px 0" }}>
+              {loadError ? "Couldn't Load Spaces. Check Your Internet And Try Again." : showSaved ? "No Saved Spaces Yet. Tap The Heart On A Space To Save It." : "No Spaces Here Yet."}
+              {loadError && <div><button onClick={loadSpaces} style={{ marginTop: 10, padding: "10px 18px", borderRadius: 10, border: "none", fontWeight: 800, cursor: "pointer" }}>Try Again</button></div>}
+            </div>
+          )}
+
+          {!loading && (showSaved ? spaces.filter((sp) => savedIds.includes(String(sp.id))) : spaces).map((s) => {
             const status = fitStatus(s, vehicle);
             const c = FIT_COPY[status];
             const ratingInfo = ratings[s.id];
@@ -489,6 +514,8 @@ export default function App() {
             <a href="#" onClick={(e) => { e.preventDefault(); setViewingPrivacy(true); }} style={{ color: "#8FB4FF" }}>Privacy Policy</a>
             {" · "}
             <a href="#" onClick={(e) => { e.preventDefault(); setViewingTerms(true); }} style={{ color: "#8FB4FF" }}>Terms</a>
+            {" · "}
+            <a href="mailto:parkauraapp@gmail.com?subject=Park%20Aura%20Support" style={{ color: "#8FB4FF" }}>Contact Support</a>
           </div>
         </div>
       </div>

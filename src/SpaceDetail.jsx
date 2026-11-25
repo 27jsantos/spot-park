@@ -252,6 +252,31 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [hours, setHours] = useState(1);
   const [timeError, setTimeError] = useState("");
   const [isOwn, setIsOwn] = useState(false);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    supabase.from("favorites").select("space_id").eq("space_id", String(space.id)).then(({ data }) => setSaved(!!(data && data.length)));
+  }, [space.id]);
+  async function toggleSaved() {
+    if (saved) {
+      const { error } = await supabase.from("favorites").delete().eq("space_id", String(space.id));
+      if (!error) setSaved(false);
+    } else {
+      const { error } = await supabase.from("favorites").insert({ space_id: String(space.id) });
+      if (!error) setSaved(true);
+    }
+  }
+  async function handleReport() {
+    const reason = window.prompt("Report this listing. What's wrong? (Fake or misleading, Unsafe or illegal, Inappropriate content, Other)");
+    if (!reason) return;
+    const { error } = await supabase.from("reports").insert({ space_id: String(space.id), reported_user_id: space.owner_id || null, reason: reason.slice(0, 500) });
+    alert(error ? "Couldn't send report. Please try again." : "Thank you. We got your report and will look into it.");
+  }
+  async function handleBlock() {
+    if (!window.confirm("Block this host? You won't see their spaces anymore.")) return;
+    const { error } = await supabase.from("blocks").insert({ blocked_id: space.owner_id });
+    if (error) alert("Couldn't block. Please try again.");
+    else { alert("Blocked. You won't see this host's spaces."); onBack(); }
+  }
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data && data.user && space.owner_id && data.user.id === space.owner_id) setIsOwn(true);
@@ -320,6 +345,16 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
           <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF" }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
             {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
+          </div>
+
+          <div style={{ display: "flex", gap: 8, margin: "10px 0" }}>
+            {[
+              [saved ? "♥ Saved" : "♡ Save", toggleSaved, true],
+              ["⚑ Report", handleReport, !isOwn && !!space.owner_id],
+              ["⊘ Block", handleBlock, !isOwn && !!space.owner_id],
+            ].filter((b) => b[2]).map((b) => (
+              <button key={b[0]} onClick={b[1]} style={{ flex: 1, minHeight: 44, border: "none", borderRadius: 10, background: "#FFFFFF", color: "#1E2233", fontWeight: 800, fontSize: 13, cursor: "pointer" }}>{b[0]}</button>
+            ))}
           </div>
 
           <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px" }}>

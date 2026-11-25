@@ -288,11 +288,21 @@ export default function HostDashboard({ onBack }) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <strong style={{ color: "#1E2233" }}>{s.name}</strong>
+                  {s.paused && <div style={{ display: "inline-block", background: "#5B6475", color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, marginTop: 4 }}>Paused — Hidden From Drivers</div>}
                   <div style={{ fontSize: 13, color: "#000000", marginTop: 4 }}>
                     ${s.price}/hr · {s.hours} · {s.width}' × {s.length}'
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  <button
+                    onClick={async () => {
+                      const { error } = await supabase.from("spaces").update({ paused: !s.paused }).eq("id", s.id);
+                      if (error) alert("Couldn't update this space."); else load();
+                    }}
+                    style={{ background: "#FFF3CC", color: "#6B5200", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                  >
+                    {s.paused ? "Resume" : "Pause"}
+                  </button>
                   <button
                     onClick={() => startEditing(s)}
                     style={{ background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
