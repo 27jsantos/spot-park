@@ -336,7 +336,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        <div style={{ height: 220, position: "relative" }}>
+        <div style={{ height: 340, position: "relative" }}>
           <MapContainer center={mapCenter} zoom={13} zoomControl={false} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
@@ -388,30 +388,31 @@ export default function App() {
           </form>
 
           <button
-            onClick={() => setMapView(mapView === "street" ? "satellite" : "street")}
-            style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 12px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            aria-label="Switch map view" onClick={() => setMapView(mapView === "street" ? "satellite" : "street")}
+            style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 40, height: 40, fontSize: 18, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
-            {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
+            {mapView === "street" ? "🛰" : "🗺"}
           </button>
 
           <button
             onClick={() => setShowPlaces(!showPlaces)}
-            title="Show train stations" aria-label="Show train stations"
-            style={{ position: "absolute", bottom: 60, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 44, height: 44, fontSize: 16, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            aria-label="Show train stations"
+            title="Show train stations"
+            style={{ position: "absolute", bottom: 10, right: 56, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "0 10px", height: 40, fontSize: 11, fontWeight: 700, color: "#1E2233", cursor: "pointer" }}
           >
-            T
+            🚆 Trains {showPlaces ? `On · ${placesStatus}` : "Off"}
           </button>
 
           <button
             onClick={goToMyLocation}
-            title="My location"
-            style={{ position: "absolute", bottom: 10, right: 110, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            title="My location" aria-label="Go to my location"
+            style={{ position: "absolute", top: 62, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 40, height: 40, fontSize: 16, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             📍
           </button>
 
           {!loading && spacesWithLocation.length === 0 && (
-            <div style={{ position: "absolute", bottom: 10, left: 56, right: 150, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#000000", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 10, left: 56, right: 190, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#000000", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
               No spaces near you yet — be the first to list one!
             </div>
           )}
