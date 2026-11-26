@@ -159,8 +159,6 @@ export default function App() {
   const [viewingTerms, setViewingTerms] = useState(false);
   const [spaces, setSpaces] = useState([]);
   const [loadError, setLoadError] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(null);
-  const [fitOnly, setFitOnly] = useState(false);
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
@@ -325,7 +323,7 @@ export default function App() {
     );
   }
 
-  const visibleSpaces = spaces.filter((sp) => (maxPrice == null || Number(sp.price) <= maxPrice) && (!fitOnly || fitStatus(sp, vehicle) !== "bad"));
+  const visibleSpaces = spaces;
   const spacesWithLocation = visibleSpaces.filter((s) => s.latitude && s.longitude);
   const isAdmin = user.id === ADMIN_USER_ID;
 
@@ -458,15 +456,6 @@ export default function App() {
           </button>
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
-          <div style={{ color: "#FFFFFF", fontWeight: 800, fontSize: 13, textDecoration: "underline", margin: "14px 0 6px" }}>Filters</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
-            {[[null, "Any Price"], [5, "Under $5"], [10, "Under $10"], [20, "Under $20"]].map(([v, label]) => (
-              <button key={label} onClick={() => setMaxPrice(v)} aria-pressed={maxPrice === v}
-                style={{ minHeight: 44, padding: "0 14px", borderRadius: 22, border: "none", fontWeight: 800, fontSize: 13, cursor: "pointer", background: maxPrice === v ? "#FFD60A" : "#FFFFFF", color: "#1E2233" }}>{label}</button>
-            ))}
-            <button onClick={() => setFitOnly(!fitOnly)} aria-pressed={fitOnly}
-              style={{ minHeight: 44, padding: "0 14px", borderRadius: 22, border: "none", fontWeight: 800, fontSize: 13, cursor: "pointer", background: fitOnly ? "#FFD60A" : "#FFFFFF", color: "#1E2233" }}>Fits My Vehicle</button>
-          </div>
 
 
           {!loading && visibleSpaces.length === 0 && (
