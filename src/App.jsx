@@ -336,7 +336,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        <div style={{ height: 340, position: "relative" }}>
+        <div style={{ height: 280, position: "relative" }}>
           <MapContainer center={mapCenter} zoom={13} zoomControl={false} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
