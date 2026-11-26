@@ -119,7 +119,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
     return (
       <button
         onClick={() => setOpen(true)}
-        style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+        style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
       >
         💬 Messages{unread > 0 && <span style={{ color: "#D92D20", fontWeight: 800 }}>{`  ·  ${unread} New`}</span>}
       </button>
@@ -173,7 +173,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
         <button
           type="submit"
           disabled={sending}
-          style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 14px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+          style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 14px", minHeight: 44, borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
         >
           Send
         </button>

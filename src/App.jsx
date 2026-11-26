@@ -376,7 +376,7 @@ export default function App() {
 
           <button
             onClick={() => setMapView(mapView === "street" ? "satellite" : "street")}
-            style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 12px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            style={{ position: "absolute", bottom: 10, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 12px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             {mapView === "street" ? "🛰 Satellite" : "🗺 Map"}
           </button>
@@ -384,7 +384,7 @@ export default function App() {
           <button
             onClick={() => setShowPlaces(!showPlaces)}
             title="Show train stations"
-            style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             🚆 Trains {showPlaces ? `On · ${placesStatus}` : "Off"}
           </button>
@@ -392,7 +392,7 @@ export default function App() {
           <button
             onClick={goToMyLocation}
             title="My location"
-            style={{ position: "absolute", bottom: 10, right: 110, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            style={{ position: "absolute", bottom: 10, right: 110, background: "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             📍
           </button>
@@ -409,7 +409,7 @@ export default function App() {
             <span style={{ fontSize: 22, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Park Aura</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-              style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", borderRadius: 6, cursor: "pointer" }}
+              style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}
             >
               Log out
             </button>
@@ -417,7 +417,7 @@ export default function App() {
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "10px 0 14px" }}>
             <span style={{ fontSize: 13, color: "#B7C4DC" }}>Driving: <strong style={{ color: "#FFFFFF" }}>{vehicle.label}</strong></span>
-            <button onClick={() => setEditingVehicle(true)} style={{ background: "#3B4F73", border: "none", color: "#FFFFFF", fontSize: 12, padding: "5px 10px", borderRadius: 6, cursor: "pointer" }}>
+            <button onClick={() => setEditingVehicle(true)} style={{ background: "#3B4F73", border: "none", color: "#FFFFFF", fontSize: 12, padding: "5px 10px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}>
               Edit
             </button>
           </div>

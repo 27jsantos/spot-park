@@ -5,7 +5,7 @@ export default function PrivacyPolicy({ onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 24, color: "#FFFFFF", height: "fit-content" }}>
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 4, fontWeight: 800 }}>Privacy Policy</h1>

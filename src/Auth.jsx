@@ -47,7 +47,7 @@ export default function Auth({ onLoggedIn }) {
               Enter your email and we'll send you a link to reset your password.
             </p>
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <input
+              <input aria-label="Email"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -65,7 +65,7 @@ export default function Auth({ onLoggedIn }) {
           </>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <input
+            <input aria-label="Email"
               type="email"
               placeholder="Email"
               value={email}
@@ -73,7 +73,7 @@ export default function Auth({ onLoggedIn }) {
               style={{ padding: 12, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" }}
               required
             />
-            <input
+            <input aria-label="Password"
               type="password"
               placeholder="Password"
               value={password}

@@ -325,7 +325,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
         <PhotoGallery space={space} />
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
-          <button onClick={onBack} style={{ marginBottom: 12, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
+          <button onClick={onBack} style={{ marginBottom: 12, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
             ← Back
           </button>
 

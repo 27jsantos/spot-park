@@ -152,7 +152,7 @@ export default function HostDashboard({ onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
-        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", color: "#FFFFFF", cursor: "pointer" }}>
+        <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
         <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Host Dashboard</h1>
@@ -303,26 +303,26 @@ export default function HostDashboard({ onBack }) {
                       const { error } = await supabase.from("spaces").update({ paused: !s.paused }).eq("id", s.id);
                       if (error) alert("Couldn't update this space."); else load();
                     }}
-                    style={{ background: "#FFF3CC", color: "#6B5200", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                    style={{ background: "#FFF3CC", color: "#6B5200", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     {s.paused ? "Resume" : "Pause"}
                   </button>
                   <button
                     onClick={() => startEditing(s)}
-                    style={{ background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                    style={{ background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDuplicate(s)}
                     disabled={duplicatingId === s.id}
-                    style={{ background: "#E5EEEA", color: "#2C5E3F", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                    style={{ background: "#E5EEEA", color: "#2C5E3F", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     {duplicatingId === s.id ? "Copying..." : "Duplicate"}
                   </button>
                   <button
                     onClick={() => handleDelete(s.id)}
-                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
                   >
                     Remove
                   </button>

@@ -100,7 +100,7 @@ export default function AddressInput({ value, onChange, onPick, placeholder, inp
             <div
               key={i}
               onMouseDown={(e) => { e.preventDefault(); pick(r); }}
-              style={{ padding: "8px 10px", fontSize: 12, color: "#1E2233", cursor: "pointer", borderBottom: i < results.length - 1 ? "1px solid #E5E7EB" : "none" }}
+              style={{ padding: "8px 10px", minHeight: 44, fontSize: 12, color: "#1E2233", cursor: "pointer", borderBottom: i < results.length - 1 ? "1px solid #E5E7EB" : "none" }}
             >
               📍 {r.label}{r.kind ? <span style={{ color: "#2A4FA0", fontWeight: 700 }}>{`  ·  ${r.kind}`}</span> : null}
             </div>
