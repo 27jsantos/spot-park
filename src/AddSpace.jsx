@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { supabase } from "./supabaseClient";
 import AddressInput from "./AddressInput";
 
-const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };
+const inputStyle = { display: "block", width: "100%", padding: "14px 14px", fontSize: 16, boxSizing: "border-box", marginTop: 4, border: "1px solid #3B4F73", borderRadius: 10, background: "#FFFFFF", color: "#1E2233" };
 
 export default function AddSpace({ onBack, onSaved }) {
   const [name, setName] = useState("");
@@ -126,12 +126,12 @@ export default function AddSpace({ onBack, onSaved }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>List Your Space</h1>
+        <h1 style={{ fontSize: 26, textAlign: "center", marginBottom: 16, color: "#FFFFFF", fontWeight: 800, fontFamily: "'Playfair Display', serif", textDecoration: "underline" }}>List Your Space</h1>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label style={{ fontSize: 13, fontWeight: 700, color: "#B7C4DC" }}>
@@ -143,7 +143,7 @@ export default function AddSpace({ onBack, onSaved }) {
                 ))}
               </div>
             ) : (
-              <div style={{ ...inputStyle, height: 90, display: "flex", alignItems: "center", justifyContent: "center", color: "#000000" }}>
+              <div style={{ ...inputStyle, height: 110, display: "flex", alignItems: "center", justifyContent: "center", color: "#000000" }}>
                 No photos selected
               </div>
             )}

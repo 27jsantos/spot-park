@@ -79,7 +79,7 @@ function PhotoGallery({ space }) {
 
   return (
     <div style={{ position: "relative" }}>
-      <img src={photos[index]} alt={space.name} style={{ width: "100%", height: 210, objectFit: "contain", background: "#0D2C64", display: "block" }} />
+      <img src={photos[index]} alt={space.name} style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "contain", background: "#1E3A78", display: "block" }} />
       {photos.length > 1 && (
         <>
           <button onClick={() => setIndex((index - 1 + photos.length) % photos.length)} style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", background: "rgba(0,0,0,0.5)", color: "#FFFFFF", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer" }}>‹</button>
@@ -318,9 +318,9 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
       <style>{".react-datepicker-wrapper{width:100%;display:block}"}</style>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
         <div style={{ padding: "10px 16px 10px" }}>
           <button onClick={onBack} aria-label="Go back" style={{ background: "#3B4F73", border: "none", borderRadius: 8, padding: "0 10px", height: 30, fontSize: 12, fontWeight: 700, color: "#FFFFFF", cursor: "pointer", position: "relative" }}>
@@ -332,7 +332,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
         <PhotoGallery space={space} />
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
-          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF", textAlign: "center" }}>{space.name}</h1>
+          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF", textAlign: "center", fontFamily: "'Playfair Display', serif", textDecoration: "underline" }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12, textAlign: "center" }}>
             {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
@@ -348,7 +348,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
           </div>
           )}
 
-          <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px" }}>
+          <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px", textAlign: "center" }}>
             <div style={{ display: "inline-flex", alignItems: "center", background: c.bg, color: c.text, fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20, marginTop: 12 }}>
               {c.label} {vehicle.label.toLowerCase()}
             </div>
@@ -359,7 +359,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             </div>
           </div>
 
-          <div style={{ margin: "14px 0", fontSize: 13, color: "#B7C4DC" }}>
+          <div style={{ margin: "14px 0", fontSize: 13, color: "#B7C4DC", textAlign: "center" }}>
             Available: {space.hours}
           </div>
 
@@ -368,7 +368,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             onClick={(e) => { if (!space.latitude || !space.longitude) { e.preventDefault(); alert("This listing doesn't have a map location yet. The host can relist it and pick the address from the suggestions."); } }}
             target="_blank"
             rel="noreferrer"
-            style={{ display: "block", background: "#3B6FE0", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginTop: 12, marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
+            style={{ display: "block", background: "#D9730D", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginTop: 12, marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
           >
             🧭 Directions
           </a>
@@ -398,7 +398,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             </div>
           )}
           {!isOwn && (
-          <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
+          <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, textAlign: "center" }}>
             {!isOwn && mode === "hourly" && !paying && !reserved && !requested && (
               <div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>

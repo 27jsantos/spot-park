@@ -150,35 +150,52 @@ export default function HostDashboard({ onBack }) {
   const totalPossibleEarnings = mySpaces.reduce((sum, s) => sum + s.price, 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Host Dashboard</h1>
+        <h1 style={{ textAlign: "center", textDecoration: "underline", fontSize: 28, marginBottom: 16, color: "#FFFFFF", fontWeight: 800, fontFamily: "'Playfair Display', serif" }}>My Host Dashboard</h1>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+          <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Earned</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233", marginTop: 2 }}>${(bookings.filter((b) => b.status === "paid").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
+            <div style={{ fontSize: 11, color: "#000000" }}>After 20% fee</div>
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Waiting for payment</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233", marginTop: 2 }}>${(bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
+            <div style={{ fontSize: 11, color: "#000000" }}>Approved bookings</div>
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Your spaces</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233", marginTop: 2 }}>{mySpaces.length}</div>
+          </div>
+          <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Needs answer</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233", marginTop: 2 }}>{requests.length}</div>
+            <div style={{ fontSize: 11, color: "#000000" }}>New requests</div>
+          </div>
+        </div>
 
         <PayoutsCard />
 
-        <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: "#000000" }}>Your listed spaces</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>{mySpaces.length}</div>
-          <div style={{ fontSize: 13, color: "#000000", marginTop: 8 }}>Combined hourly rate</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${totalPossibleEarnings}/hr</div>
-          <div style={{ fontSize: 13, color: "#000000", marginTop: 8, fontWeight: 800, textDecoration: "underline" }}>You've Earned (After 20% Fee)</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${(bookings.filter((b) => b.status === "paid").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
-          <div style={{ fontSize: 13, color: "#000000", marginTop: 8, fontWeight: 800, textDecoration: "underline" }}>Approved, Waiting For Payment</div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: "#1E2233" }}>${(bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + Number(b.price || 0), 0) * 0.8).toFixed(2)}</div>
-        </div>
-
         {requests.length > 0 && (
           <div style={{ marginBottom: 20 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 800, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>Pending Requests ({requests.length})</h2>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", marginBottom: 12, color: "#FFFFFF", marginTop: 0 }}>Pending Requests ({requests.length})</h2>
             {requests.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
-                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                {bookingLines(r, mySpaces.find((x) => x.id === r.space_id)).map((l) => (
-                  <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", margin: "3px 0" }}>{l.label}: {l.value}</div>
-                ))}
+                <div style={{ textAlign: "center", fontSize: 18, fontWeight: 700, color: "#1E2233", textDecoration: "underline" }}>{r.space_name}</div>
+                {(() => {
+                  const ls = bookingLines(r, mySpaces.find((x) => x.id === r.space_id));
+                  return (
+                    <div style={{ textAlign: "center", margin: "6px 0 8px", color: "#000000" }}>
+                      <div style={{ fontSize: 15, fontWeight: 700 }}>{ls[0].value}</div>
+                      {ls.length > 1 && <div style={{ fontSize: 14, marginTop: 2 }}>{ls.slice(1).map((l) => l.value).join(" · ")}</div>}
+                    </div>
+                  );
+                })()}
                 <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                   <button
                     onClick={() => handleRequestDecision(r, "confirmed")}
@@ -201,18 +218,24 @@ export default function HostDashboard({ onBack }) {
 
         {bookings.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>Bookings And Messages</div>
+            <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", marginBottom: 12, color: "#FFFFFF" }}>Bookings And Messages</div>
             {bookings.map((r) => (
               <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
-                <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                {bookingLines(r, mySpaces.find((x) => x.id === r.space_id)).map((l) => (
-                  <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", margin: "3px 0" }}>{l.label}: {l.value}</div>
-                ))}
+                <div style={{ textAlign: "center", fontSize: 18, fontWeight: 700, color: "#1E2233", textDecoration: "underline" }}>{r.space_name}</div>
                 {!!r.status && (
-                  <div style={{ display: "inline-block", marginBottom: 6, color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, background: r.status === "paid" ? "#1E8E3E" : r.status === "confirmed" ? "#D9730D" : r.status === "declined" ? "#D92D20" : r.status === "cancelled" ? "#5B6475" : "#6D4AE0" }}>
+                  <div style={{ display: "block", width: "fit-content", margin: "6px auto 2px", color: "#FFFFFF", fontSize: 13, fontWeight: 700, padding: "4px 12px", borderRadius: 12, background: r.status === "paid" ? "#1E8E3E" : r.status === "confirmed" ? "#D9730D" : r.status === "declined" ? "#D92D20" : r.status === "cancelled" ? "#5B6475" : "#6D4AE0" }}>
                     {r.status === "paid" ? "Paid" : r.status === "confirmed" ? "Approved — Not Paid Yet" : r.status === "declined" ? "Declined" : r.status === "cancelled" ? "Cancelled By Driver" : "Waiting For Your Approval"}
                   </div>
                 )}
+                {(() => {
+                  const ls = bookingLines(r, mySpaces.find((x) => x.id === r.space_id));
+                  return (
+                    <div style={{ textAlign: "center", margin: "6px 0 8px", color: "#000000" }}>
+                      <div style={{ fontSize: 15, fontWeight: 700 }}>{ls[0].value}</div>
+                      {ls.length > 1 && <div style={{ fontSize: 14, marginTop: 2 }}>{ls.slice(1).map((l) => l.value).join(" · ")}</div>}
+                    </div>
+                  );
+                })()}
                 {r.user_id !== r.owner_id && (
                   <MessageThread reservationId={r.id} recipientId={r.user_id} recipientEmail={r.user_email} />
                 )}
@@ -223,7 +246,7 @@ export default function HostDashboard({ onBack }) {
 
         {reviews.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, textDecoration: "underline", marginBottom: 8, color: "#FFFFFF" }}>
+            <div style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", marginBottom: 12, color: "#FFFFFF" }}>
               Reviews{reviews.filter((r) => r.id > reviewSeen).length > 0 && <span style={{ color: "#FFD60A" }}>{`  ·  ${reviews.filter((r) => r.id > reviewSeen).length} New`}</span>}
             </div>
             {reviews.map((r) => (
@@ -238,6 +261,7 @@ export default function HostDashboard({ onBack }) {
           </div>
         )}
 
+        <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", color: "#FFFFFF", margin: "0 0 12px" }}>Your Spaces</h2>
         {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
 
         {!loading && mySpaces.length === 0 && (
@@ -289,43 +313,32 @@ export default function HostDashboard({ onBack }) {
                 </div>
               </div>
             ) : (
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div>
-                  <strong style={{ color: "#1E2233" }}>{s.name}</strong>
-                  {s.paused && <div style={{ display: "inline-block", background: "#5B6475", color: "#FFFFFF", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 12, marginTop: 4 }}>Paused — Hidden From Drivers</div>}
-                  <div style={{ fontSize: 13, color: "#000000", marginTop: 4 }}>
-                    ${s.price}/hr · {s.hours} · {s.width}' × {s.length}'
+              <div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ width: "100%", height: 160, borderRadius: 8, background: "#C9D6EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#1E2233" }}>
+                    {(s.photo_urls && s.photo_urls[0]) || s.photo_url ? <img src={(s.photo_urls && s.photo_urls[0]) || s.photo_url} alt={"Photo of " + s.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }} /> : "No photo"}
+                  </div>
+                  <div style={{ color: "#1E2233", fontSize: 18, fontWeight: 700, marginTop: 8 }}>{s.name}</div>
+                  <div style={{ fontSize: 14, color: "#000000", marginBottom: 6 }}>${s.price}/hr · {s.hours} · {s.width}' × {s.length}'</div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                    <span style={{ background: s.paused ? "#5B6475" : "#EAF3DE", color: s.paused ? "#FFFFFF" : "#27500A", fontSize: 13, fontWeight: 800, padding: "2px 10px", borderRadius: 12 }}>{s.paused ? "Paused" : "Live"}</span>
+                    {(() => {
+                      const rs = reviews.filter((r) => r.space_id === s.id);
+                      return rs.length ? <span style={{ fontSize: 13, color: "#000000" }}>⭐ {(rs.reduce((a, r) => a + r.rating, 0) / rs.length).toFixed(1)} ({rs.length})</span> : null;
+                    })()}
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <button onClick={() => startEditing(s)} style={{ width: "100%", marginTop: 12, background: "#1D6FD0", border: "none", color: "#FFFFFF", minHeight: 40, borderRadius: 20, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>✏️ Edit Space</button>
+                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                   <button
                     onClick={async () => {
                       const { error } = await supabase.from("spaces").update({ paused: !s.paused }).eq("id", s.id);
                       if (error) alert("Couldn't update this space."); else load();
                     }}
-                    style={{ background: "#FFF3CC", color: "#6B5200", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-                  >
-                    {s.paused ? "Resume" : "Pause"}
-                  </button>
-                  <button
-                    onClick={() => startEditing(s)}
-                    style={{ background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDuplicate(s)}
-                    disabled={duplicatingId === s.id}
-                    style={{ background: "#E5EEEA", color: "#2C5E3F", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-                  >
-                    {duplicatingId === s.id ? "Copying..." : "Duplicate"}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(s.id)}
-                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-                  >
-                    Remove
-                  </button>
+                    style={{ flex: 1, padding: "0 4px", background: "#FFFFFF", border: "2px solid #0D2C64", boxSizing: "border-box", color: "#000000", minHeight: 40, borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+                  >{s.paused ? "▶️ Resume" : "⏸ Pause"}</button>
+                  <button onClick={() => handleDuplicate(s)} disabled={duplicatingId === s.id} style={{ flex: 1, padding: "0 4px", background: "#FFFFFF", border: "2px solid #0D2C64", boxSizing: "border-box", color: "#000000", minHeight: 40, borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{duplicatingId === s.id ? "..." : "📄 Copy"}</button>
+                  <button onClick={() => handleDelete(s.id)} style={{ flex: 1, padding: "0 4px", background: "#FFFFFF", border: "2px solid #D92D20", boxSizing: "border-box", color: "#B3261E", minHeight: 40, borderRadius: 20, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🗑 Remove</button>
                 </div>
               </div>
             )}

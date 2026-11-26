@@ -22,3 +22,16 @@ export function bookingLines(r, space) {
   lines.push({ label: "Price", value: `$${r.price}` });
   return lines;
 }
+
+// True once the booking's time has fully passed (rating is only allowed after that).
+export function bookingEnded(r) {
+  const now = Date.now();
+  if (r.booking_type === "long_term" && r.end_date) {
+    return new Date(r.end_date + "T23:59:59").getTime() < now;
+  }
+  if (r.start_time) {
+    const hrs = Number(r.hours) || 1;
+    return new Date(r.start_time).getTime() + hrs * 3600000 < now;
+  }
+  return r.created_at ? new Date(r.created_at).getTime() < now - 24 * 3600000 : false;
+}

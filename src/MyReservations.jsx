@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { bookingLines } from "./bookingInfo";
+import { bookingLines, bookingEnded } from "./bookingInfo";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { supabase } from "./supabaseClient";
 import { stripePromise } from "./stripeClient";
@@ -76,7 +76,7 @@ export default function MyReservations({ onBack }) {
       setReservations(resData);
       const ids = [...new Set((resData || []).map((x) => x.space_id).filter(Boolean))];
       if (ids.length) {
-        const { data: sp } = await supabase.from("spaces").select("id, width, length").in("id", ids);
+        const { data: sp } = await supabase.from("spaces").select("id, width, length, photo_url, photo_urls").in("id", ids);
         const m = {};
         (sp || []).forEach((x) => { m[x.id] = x; });
         setSpaceMap(m);
@@ -189,17 +189,17 @@ export default function MyReservations({ onBack }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, padding: 20, color: "#FFFFFF" }}>
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 16, color: "#FFFFFF", fontWeight: 800 }}>My Reservations</h1>
+        <h1 style={{ textAlign: "center", fontSize: 24, marginBottom: 16, color: "#FFFFFF", fontWeight: 800, fontFamily: "'Playfair Display', serif", textDecoration: "underline" }}>My Reservations</h1>
 
-        {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}
+        {loading && <div style={{ color: "#B7C4DC", textAlign: "center" }}>Loading...</div>}
 
         {!loading && reservations.length === 0 && (
-          <div style={{ color: "#B7C4DC", fontSize: 14 }}>
+          <div style={{ color: "#B7C4DC", fontSize: 14, textAlign: "center" }}>
             You haven't reserved a space yet.
           </div>
         )}
@@ -210,34 +210,31 @@ export default function MyReservations({ onBack }) {
 
           return (
             <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 10 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div>
-                  <strong style={{ color: "#1E2233" }}>{r.space_name}</strong>
-                  {bookingLines(r, spaceMap[r.space_id]).map((l) => (
-                    <div key={l.label} style={{ fontSize: 13, fontWeight: 800, color: "#1E2233", marginTop: 3 }}>{l.label}: {l.value}</div>
-                  ))}
-                  {statusInfo && (
-                    <div style={{ display: "inline-block", fontSize: 11, color: "#FFFFFF", background: statusInfo.color, fontWeight: 800, marginTop: 6, padding: "4px 10px", borderRadius: 12 }}>
-                      {statusInfo.text}
+              <div style={{ textAlign: "center" }}>
+                {(() => {
+                  const sp = spaceMap[r.space_id];
+                  const src = sp && ((sp.photo_urls && sp.photo_urls[0]) || sp.photo_url);
+                  return (
+                    <div style={{ width: "100%", height: 160, borderRadius: 8, background: "#C9D6EE", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, fontSize: 12, fontWeight: 700, color: "#1E2233" }}>
+                      {src ? <img src={src} alt={"Photo of " + r.space_name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }} /> : "No photo"}
                     </div>
-                  )}
-                </div>
-                {r.status === "paid" && (
-                  <button
-                    onClick={() => handleRefund(r)}
-                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "8px 12px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer", minHeight: 36 }}
-                  >
-                    Cancel and Refund
-                  </button>
+                  );
+                })()}
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#1E2233", textDecoration: "underline" }}>{r.space_name}</div>
+                {statusInfo && (
+                  <div style={{ display: "block", width: "fit-content", margin: "6px auto 0", fontSize: 13, color: "#FFFFFF", background: statusInfo.color, fontWeight: 700, padding: "4px 12px", borderRadius: 12 }}>
+                    {statusInfo.text}
+                  </div>
                 )}
-                {r.status !== "paid" && r.status !== "cancelled" && (
-                  <button
-                    onClick={() => handleCancel(r.id)}
-                    style={{ background: "#fbe6e6", color: "#a33030", border: "none", padding: "6px 10px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
-                  >
-                    Cancel
-                  </button>
-                )}
+                {(() => {
+                  const ls = bookingLines(r, spaceMap[r.space_id]);
+                  return (
+                    <div style={{ margin: "8px 0", color: "#000000" }}>
+                      <div style={{ fontSize: 15, fontWeight: 700 }}>{ls[0].value}</div>
+                      {ls.length > 1 && <div style={{ fontSize: 14, marginTop: 2 }}>{ls.slice(1).map((l) => l.value).join(" · ")}</div>}
+                    </div>
+                  );
+                })()}
               </div>
 
               {r.status === "confirmed" && payingId !== r.id && (
@@ -260,7 +257,30 @@ export default function MyReservations({ onBack }) {
                 <MessageThread reservationId={r.id} recipientId={r.owner_id} recipientEmail={r.owner_email} />
               )}
 
-              {r.space_id && (r.status === "paid" || !r.status) && (
+              <div style={{ textAlign: "center", marginTop: 8 }}>
+              {r.status === "paid" && (
+                <button
+                  onClick={() => handleRefund(r)}
+                  style={{ background: "#FFFFFF", color: "#B3261E", border: "2px solid #D92D20", padding: "8px 16px", borderRadius: 20, fontSize: 13, fontWeight: 700, cursor: "pointer", minHeight: 44 }}
+                >
+                  Cancel and Refund
+                </button>
+              )}
+              {r.status !== "paid" && r.status !== "cancelled" && (
+                <button
+                  onClick={() => handleCancel(r.id)}
+                  style={{ background: "#FFFFFF", color: "#B3261E", border: "2px solid #D92D20", fontWeight: 700, padding: "6px 16px", minHeight: 44, borderRadius: 20, fontSize: 13, cursor: "pointer" }}
+                >
+                  Cancel
+                </button>
+              )}
+              </div>
+
+              {r.space_id && r.status === "paid" && !myReview && !bookingEnded(r) && (
+                <div style={{ marginTop: 10, fontSize: 12, color: "#000000", textAlign: "center" }}>You can rate this space after your booking ends.</div>
+              )}
+
+              {r.space_id && (r.status === "paid" || !r.status) && bookingEnded(r) && (
                 myReview ? (
                   <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE", fontSize: 12, color: "#000000" }}>
                     You rated this {"⭐".repeat(myReview.rating)}

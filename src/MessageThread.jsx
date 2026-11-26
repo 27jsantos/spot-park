@@ -128,52 +128,55 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
 
   return (
     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE" }}>
-      <div style={{ maxHeight: 160, overflowY: "auto", marginBottom: 8, display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ maxHeight: 280, overflowY: "auto", marginBottom: 8, display: "flex", flexDirection: "column" }}>
         {messages.length === 0 && (
           <div style={{ fontSize: 12, color: "#000000" }}>No messages yet.</div>
         )}
-        {messages.filter((m) => !blocked.includes(m.sender_id)).map((m) => (
-          <div
-            key={m.id}
-            style={{
-              alignSelf: m.sender_id === myId ? "flex-end" : "flex-start",
-              background: m.sender_id === myId ? "#3B6FE0" : "#EEE",
-              color: m.sender_id === myId ? "#FFFFFF" : "#1E2233",
-              padding: "6px 10px",
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 700,
-              maxWidth: "80%",
-            }}
-          >
-            {m.body}
-            {!!m.created_at && (
-              <div style={{ fontSize: 11, fontWeight: 700, marginTop: 3, color: m.sender_id === myId ? "#DCE6FF" : "#5A6178" }}>
-                {m.sender_id === myId
-                  ? `Sent ${formatTime(m.created_at)}${m.read_at ? `  ·  Read ${formatTime(m.read_at)}` : "  ·  Not read yet"}`
-                  : `Received ${formatTime(m.created_at)}`}
+        {messages.filter((m) => !blocked.includes(m.sender_id)).map((m) => {
+          const mine = m.sender_id === myId;
+          return (
+            <div key={m.id} style={{ display: "flex", flexDirection: "column", alignItems: mine ? "flex-end" : "flex-start", marginBottom: 6 }}>
+              <div
+                style={{
+                  background: mine ? "#3B6FE0" : "#E3E6EE",
+                  color: mine ? "#FFFFFF" : "#000000",
+                  padding: "14px 18px",
+                  borderRadius: mine ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
+                  fontSize: 14,
+                  maxWidth: "85%",
+                  wordBreak: "break-word",
+                }}
+              >
+                {m.body}
               </div>
-            )}
-            {m.sender_id !== myId && (
-              <div style={{ marginTop: 4, fontSize: 10 }}>
-                <a href="#" onClick={(e) => { e.preventDefault(); reportMessage(m); }} style={{ color: "#B3261E", marginRight: 8 }}>Report</a>
-                <a href="#" onClick={(e) => { e.preventDefault(); blockUser(m.sender_id); }} style={{ color: "#000000" }}>Block</a>
-              </div>
-            )}
-          </div>
-        ))}
+              {!!m.created_at && (
+                <div style={{ fontSize: 11, marginTop: 3, color: "#000000" }}>
+                  {mine
+                    ? `Sent ${formatTime(m.created_at)}${m.read_at ? `  ·  Read ${formatTime(m.read_at)}` : "  ·  Not read yet"}`
+                    : `Received ${formatTime(m.created_at)}`}
+                </div>
+              )}
+              {!mine && (
+                <div style={{ marginTop: 2, fontSize: 11 }}>
+                  <a href="#" onClick={(e) => { e.preventDefault(); reportMessage(m); }} style={{ color: "#B3261E", marginRight: 14 }}>Report</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); blockUser(m.sender_id); }} style={{ color: "#000000" }}>Block</a>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
       <form onSubmit={handleSend} style={{ display: "flex", gap: 6 }}>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type a message..."
-          style={{ flex: 1, padding: 8, border: "1px solid #DDD", borderRadius: 6, fontSize: 12 }}
+          style={{ flex: 1, padding: "10px 16px", minHeight: 44, boxSizing: "border-box", border: "1px solid #DDD", borderRadius: 22, fontSize: 14, color: "#000000" }}
         />
         <button
           type="submit"
           disabled={sending}
-          style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 14px", minHeight: 44, borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}
+          style={{ background: "#3B6FE0", color: "#FFFFFF", border: "none", padding: "8px 18px", minHeight: 44, borderRadius: 22, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
         >
           Send
         </button>

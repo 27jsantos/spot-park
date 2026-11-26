@@ -3,12 +3,12 @@ import { TERMS_SECTIONS, EFFECTIVE } from "./legalContent";
 
 export default function TermsOfService({ onBack }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, padding: 24, color: "#FFFFFF", height: "fit-content" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, padding: 24, color: "#FFFFFF", height: "fit-content" }}>
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ fontSize: 20, marginBottom: 4, fontWeight: 800 }}>Terms of Service</h1>
+        <h1 style={{ textAlign: "center", fontSize: 24, marginBottom: 4, fontWeight: 800, fontFamily: "'Playfair Display', serif", textDecoration: "underline" }}>Terms of Service</h1>
         <p style={{ fontSize: 12, color: "#B7C4DC", marginBottom: 16 }}>{EFFECTIVE}</p>
 
         <div style={{ fontSize: 13, color: "#E4E8F2", lineHeight: 1.6 }}>

@@ -34,10 +34,10 @@ export default function PayoutsCard() {
   if (status === "loading") return null;
 
   return (
-    <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-      <div style={{ fontSize: 14, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Payouts</div>
+    <div style={{ background: status === "ready" ? "#EAF3DE" : "#FFFFFF", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+      {status !== "ready" && <div style={{ fontSize: 14, fontWeight: 800, textDecoration: "underline", color: "#000000" }}>Payouts</div>}
       {status === "ready" ? (
-        <div style={{ fontSize: 15, fontWeight: 700, color: "#2C5E3F", marginTop: 4 }}>✓ You're set up to get paid</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: "#27500A" }}>✓ Payouts are on. Money goes to your bank.</div>
       ) : (
         <div>
           <div style={{ fontSize: 13, color: "#1E2233", margin: "6px 0 10px" }}>

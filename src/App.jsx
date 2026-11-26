@@ -77,6 +77,8 @@ const trainIconFor = (name, zoom) => {
   return L.divIcon({ className: "", html, iconSize: [d, big ? 46 : d], iconAnchor: [d / 2, d / 2] });
 };
 
+const landmarkIcon = L.divIcon({ className: "", html: `<div style="font-size:16px;background:#F97316;border:3px solid #FFFFFF;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.55)">⭐</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
+
 function PlacesLayer({ onStatus }) {
   const map = useMap();
   const [places, setPlaces] = useState([]);
@@ -211,9 +213,11 @@ export default function App() {
     if (error) { console.error("Error loading spaces:", error); setLoadError(true); }
     else {
       setLoadError(false);
+      const { data: { user: meUser } } = await supabase.auth.getUser();
+      const me = meUser ? meUser.id : null;
       const { data: blockRows } = await supabase.from("blocks").select("blocked_id");
       const blocked = new Set((blockRows || []).map((b) => b.blocked_id));
-      setSpaces((data || []).filter((sp) => !sp.paused && !blocked.has(sp.owner_id)));
+      setSpaces((data || []).filter((sp) => !sp.paused && !blocked.has(sp.owner_id) && sp.owner_id !== me));
     }
 
     const { data: reviewData, error: reviewError } = await supabase.from("reviews").select("space_id, rating");
@@ -333,10 +337,11 @@ export default function App() {
   const isAdmin = user.id === ADMIN_USER_ID;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
+    <div style={{ minHeight: "100vh", background: "#385780", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", display: "flex", justifyContent: "center", padding: 13 }}>
+      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box", background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
-        <div style={{ height: 280, position: "relative" }}>
+        <div style={{ height: 310, position: "relative", borderRadius: 20, overflow: "hidden", margin: 12 }}>
+          <style>{".leaflet-bottom.leaflet-right{bottom:52px}"}</style>
           <MapContainer center={mapCenter} zoom={13} zoomControl={false} style={{ height: "100%", width: "100%" }}>
             {mapView === "street" ? (
               <TileLayer
@@ -357,7 +362,7 @@ export default function App() {
                 />
               </>
             )}
-            <ZoomControl position="bottomleft" />
+            <ZoomControl position="bottomright" />
             <RecenterMap center={mapCenter} />
             {showPlaces && <PlacesLayer onStatus={setPlacesStatus} />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
@@ -398,7 +403,7 @@ export default function App() {
             onClick={() => setShowPlaces(!showPlaces)}
             aria-label="Show train stations"
             title="Show train stations"
-            style={{ position: "absolute", bottom: 10, right: 56, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "0 10px", height: 40, fontSize: 11, fontWeight: 700, color: "#1E2233", cursor: "pointer" }}
+            style={{ position: "absolute", bottom: 10, left: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "0 10px", height: 40, fontSize: 11, fontWeight: 700, color: "#1E2233", cursor: "pointer" }}
           >
             🚆 Trains {showPlaces ? `On · ${placesStatus}` : "Off"}
           </button>
@@ -406,32 +411,26 @@ export default function App() {
           <button
             onClick={goToMyLocation}
             title="My location" aria-label="Go to my location"
-            style={{ position: "absolute", top: 62, right: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 40, height: 40, fontSize: 16, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            style={{ position: "absolute", top: 62, left: 10, background: "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 40, height: 40, fontSize: 16, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
             📍
           </button>
 
           {!loading && spacesWithLocation.length === 0 && (
-            <div style={{ position: "absolute", bottom: 10, left: 56, right: 190, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#000000", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
+            <div style={{ position: "absolute", bottom: 10, left: 130, right: 64, background: "#FFFFFF", borderRadius: 8, padding: "6px 10px", fontSize: 11, color: "#000000", boxShadow: "0 2px 6px rgba(0,0,0,0.15)", zIndex: 1000 }}>
               No spaces near you yet — be the first to list one!
             </div>
           )}
         </div>
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 22, fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Park Aura</span>
-            <button
-              onClick={() => supabase.auth.signOut().then(() => setUser(null))}
-              style={{ background: "none", border: "1px solid #3B4F73", color: "#B7C4DC", fontSize: 11, padding: "4px 8px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}
-            >
-              Log out
-            </button>
+          <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
+            <span style={{ fontSize: 32, fontWeight: 700, fontStyle: "italic", fontFamily: "'Playfair Display', serif" }}>Park Aura</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "10px 0 14px" }}>
-            <span style={{ fontSize: 13, color: "#B7C4DC" }}>Driving: <strong style={{ color: "#FFFFFF" }}>{vehicle.label}</strong></span>
-            <button onClick={() => setEditingVehicle(true)} style={{ background: "#3B4F73", border: "none", color: "#FFFFFF", fontSize: 12, padding: "5px 10px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}>
+            <span style={{ fontSize: 16, color: "#B7C4DC" }}>Driving: <strong style={{ color: "#FFFFFF" }}>{vehicle.label}</strong></span>
+            <button onClick={() => setEditingVehicle(true)} style={{ background: "#1E8E3E", border: "none", color: "#FFFFFF", fontWeight: 700, fontSize: 12, padding: "5px 10px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}>
               Edit
             </button>
           </div>
@@ -439,7 +438,7 @@ export default function App() {
           {isAdmin && (
             <button
               onClick={() => setViewingAdmin(true)}
-              style={{ width: "100%", background: "#854F0B", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 14, cursor: "pointer" }}
+              style={{ width: "100%", background: "#D92D20", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 14, cursor: "pointer" }}
             >
               ⚙ Admin Dashboard
             </button>
@@ -462,12 +461,13 @@ export default function App() {
           </button>
           <button
             onClick={() => setViewingReservations(true)}
-            style={{ width: "100%", background: "#3B4F73", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 20, fontSize: 14, cursor: "pointer" }}
+            style={{ width: "100%", background: "#334155", color: "#FFFFFF", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 20, fontSize: 14, cursor: "pointer" }}
           >
             My Reservations
             {newDriver > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{newDriver} New {newDriver === 1 ? "Message" : "Messages"}</div>}
             {toPay > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#FFD60A", marginTop: 3 }}>{toPay} Approved — Ready To Pay</div>}
           </button>
+          <div style={{ height: 14 }} />
           {loading && <div style={{ color: "#B7C4DC", fontSize: 13 }}>Loading spaces...</div>}
 
 
@@ -487,18 +487,21 @@ export default function App() {
               <div
                 key={s.id}
                 onClick={() => setSelectedSpace(s)}
-                style={{ background: "#FFFFFF", border: "none", borderRadius: 14, padding: 12, marginBottom: 10, cursor: "pointer", display: "flex", gap: 12 }}
+                style={{ background: "#FFFFFF", border: "none", borderRadius: 14, marginBottom: 10, cursor: "pointer", overflow: "hidden" }}
               >
-                <FitDiagram status={status} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <strong style={{ fontSize: 14, color: "#1E2233" }}>{s.name}</strong>
-                    <span style={{ fontSize: 14, color: "#1E2233" }}>${s.price}/hr</span>
+                <div style={{ position: "relative", height: 160, margin: "12px 12px 0", borderRadius: 8, overflow: "hidden", background: "#C9D6EE", display: "flex", alignItems: "center", justifyContent: "center", color: "#1E2233", fontSize: 12, fontWeight: 700 }}>
+                  {(s.photo_urls && s.photo_urls.length > 0 ? s.photo_urls[0] : s.photo_url) ? <img src={s.photo_urls && s.photo_urls.length > 0 ? s.photo_urls[0] : s.photo_url} alt={"Photo of " + s.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block" }} /> : "Photo coming soon"}
+                  {s.distance != null && <div style={{ position: "absolute", top: 8, left: 8, background: "#FFFFFF", color: "#1E2233", fontSize: 11, fontWeight: 800, padding: "3px 8px", borderRadius: 20 }}>{s.distance} mi away</div>}
+                </div>
+                <div style={{ padding: 12, textAlign: "center" }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
+                  <div style={{ fontSize: 14, color: "#000000", margin: "4px 0 10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Available {s.hours}</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
+                    <div style={{ background: "#DCE6FF", borderRadius: 8, padding: "0 4px", height: 58, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}><div style={{ fontSize: 15, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap" }}>${s.price}</div><div style={{ fontSize: 12, color: "#000000" }}>per hour</div></div>
+                    <div style={{ background: "#DCE6FF", borderRadius: 8, padding: "0 4px", height: 58, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}><div style={{ fontSize: 15, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap" }}>{ratingInfo ? `⭐ ${ratingInfo.avg}` : "⭐ New"}</div><div style={{ fontSize: 12, color: "#000000" }}>{ratingInfo ? `${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"}` : "no reviews"}</div></div>
+                    <div style={{ background: "#DCE6FF", borderRadius: 8, padding: "0 4px", height: 58, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}><div style={{ fontSize: 15, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap" }}>{s.width}×{s.length}</div><div style={{ fontSize: 12, color: "#000000" }}>feet</div></div>
                   </div>
-                  <div style={{ fontSize: 12, color: "#000000", margin: "3px 0" }}>
-                    {s.distance} mi · {s.hours} · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count})` : "No ratings yet"}
-                  </div>
-                  <span style={{ background: c.bg, color: c.text, fontSize: 11, padding: "3px 9px", borderRadius: 20, fontWeight: 700 }}>
+                  <span style={{ display: "inline-block", marginTop: 10, maxWidth: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", verticalAlign: "top", background: c.bg, color: c.text, fontSize: 12, padding: "3px 10px", borderRadius: 20, fontWeight: 700 }}>
                     {c.label} {vehicle.label.toLowerCase()}
                   </span>
                 </div>
@@ -521,6 +524,15 @@ export default function App() {
             <a href="#" onClick={(e) => { e.preventDefault(); setViewingTerms(true); }} style={{ color: "#8FB4FF" }}>Terms</a>
             {" · "}
             <a href="mailto:parkauraapp@gmail.com?subject=Park%20Aura%20Support" style={{ color: "#8FB4FF" }}>Contact Support</a>
+          </div>
+
+          <div style={{ textAlign: "center", paddingTop: 14 }}>
+            <button
+              onClick={() => supabase.auth.signOut().then(() => setUser(null))}
+              style={{ background: "#FFFFFF", border: "none", color: "#000000", fontSize: 15, fontWeight: 700, minHeight: 44, minWidth: 160, borderRadius: 22, cursor: "pointer" }}
+            >
+              Log Out
+            </button>
           </div>
         </div>
       </div>
