@@ -322,15 +322,18 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
       <style>{".react-datepicker-wrapper{width:100%;display:block}"}</style>
       <div style={{ width: 380, background: "#0d2c64", borderRadius: 24, overflow: "hidden", border: "1px solid #3B4F73", height: "fit-content" }}>
 
+        <div style={{ padding: "10px 16px 10px" }}>
+          <button onClick={onBack} aria-label="Go back" style={{ background: "#3B4F73", border: "none", borderRadius: 8, padding: "0 10px", height: 30, fontSize: 12, fontWeight: 700, color: "#FFFFFF", cursor: "pointer", position: "relative" }}>
+            <span style={{ position: "absolute", inset: "-7px -8px" }} aria-hidden="true" />
+            ← Back
+          </button>
+        </div>
+
         <PhotoGallery space={space} />
 
         <div style={{ padding: 16, color: "#FFFFFF" }}>
-          <button onClick={onBack} style={{ marginBottom: 12, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
-            ← Back
-          </button>
-
-          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF" }}>{space.name}</h1>
-          <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12 }}>
+          <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF", textAlign: "center" }}>{space.name}</h1>
+          <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12, textAlign: "center" }}>
             {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
 
@@ -365,7 +368,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             onClick={(e) => { if (!space.latitude || !space.longitude) { e.preventDefault(); alert("This listing doesn't have a map location yet. The host can relist it and pick the address from the suggestions."); } }}
             target="_blank"
             rel="noreferrer"
-            style={{ display: "block", background: "#3B6FE0", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
+            style={{ display: "block", background: "#3B6FE0", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginTop: 12, marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
           >
             🧭 Directions
           </a>

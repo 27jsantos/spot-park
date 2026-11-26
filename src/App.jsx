@@ -69,15 +69,19 @@ function FitDiagram({ status }) {
 }
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const trainHtml = (name) =>
-  `<div style="display:flex;flex-direction:column;align-items:center;width:120px;margin-left:-42px"><div style="font-size:24px;background:#1D4ED8;border:4px solid #FFD60A;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(255,214,10,0.45),0 3px 10px rgba(0,0,0,0.6)">🚆</div><div style="margin-top:3px;background:#FFD60A;color:#000;font-weight:800;font-size:11px;padding:2px 6px;border-radius:6px;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.4)">${esc(name)}</div></div>`;
-const trainIconFor = (name) => L.divIcon({ className: "", html: trainHtml(name), iconSize: [44, 70], iconAnchor: [22, 22] });
-const landmarkIcon = L.divIcon({ className: "", html: `<div style="font-size:16px;background:#F97316;border:3px solid #FFFFFF;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.55)">⭐</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
+const trainIconFor = (name, zoom) => {
+  const big = zoom >= 15;
+  const d = big ? 30 : 22;
+  const label = big ? `<div style="margin-top:2px;background:#FFD60A;color:#000;font-weight:800;font-size:10px;padding:1px 5px;border-radius:5px;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.4)">${esc(name)}</div>` : "";
+  const html = `<div style="display:flex;flex-direction:column;align-items:center;width:110px;margin-left:${-(55 - d / 2)}px"><div style="font-size:${big ? 15 : 11}px;background:#1D4ED8;border:3px solid #FFD60A;border-radius:50%;width:${d}px;height:${d}px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.5)">🚆</div>${label}</div>`;
+  return L.divIcon({ className: "", html, iconSize: [d, big ? 46 : d], iconAnchor: [d / 2, d / 2] });
+};
 
 function PlacesLayer({ onStatus }) {
   const map = useMap();
   const [places, setPlaces] = useState([]);
   const [zoomedOut, setZoomedOut] = useState(false);
+  const [zoom, setZoom] = useState(map.getZoom());
 
   async function refresh() {
     const b = map.getBounds();
@@ -94,6 +98,7 @@ function PlacesLayer({ onStatus }) {
   }, []);
 
   useMapEvents({
+    zoomend: () => setZoom(map.getZoom()),
     moveend: () => {
       clearTimeout(window.__placesTimer);
       window.__placesTimer = setTimeout(refresh, 700);
@@ -103,7 +108,7 @@ function PlacesLayer({ onStatus }) {
   return (
     <>
       {places.map((p) => (
-        <Marker key={p.id} position={[p.lat, p.lng]} icon={p.kind === "train" ? trainIconFor(p.name) : landmarkIcon}>
+        <Marker key={p.id} position={[p.lat, p.lng]} icon={p.kind === "train" ? trainIconFor(p.name, zoom) : landmarkIcon}>
           <Popup>
             <strong>{p.name}</strong><br />{p.kind === "train" ? "Train Station" : "Landmark"}
           </Popup>
