@@ -360,16 +360,15 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             Available: {space.hours}
           </div>
 
-          {space.latitude && space.longitude ? (
-            <a
-              href={(/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? "https://maps.apple.com/?dirflg=d&daddr=" : "https://www.google.com/maps/dir/?api=1&destination=") + space.latitude + "," + space.longitude}
-              target="_blank"
-              rel="noreferrer"
-              style={{ display: "block", background: "#3B6FE0", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
-            >
-              🧭 Directions
-            </a>
-          ) : null}
+          <a
+            href={space.latitude && space.longitude ? (/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? "https://maps.apple.com/?dirflg=d&daddr=" : "https://www.google.com/maps/dir/?api=1&destination=") + space.latitude + "," + space.longitude : "#"}
+            onClick={(e) => { if (!space.latitude || !space.longitude) { e.preventDefault(); alert("This listing doesn't have a map location yet. The host can relist it and pick the address from the suggestions."); } }}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "block", background: "#3B6FE0", color: "#FFFFFF", fontWeight: 800, fontSize: 15, borderRadius: 12, padding: "14px 0", textAlign: "center", textDecoration: "none", marginBottom: 12, minHeight: 44, boxSizing: "border-box" }}
+          >
+            🧭 Directions
+          </a>
 
           {!isOwn && !reserved && !requested && (
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
