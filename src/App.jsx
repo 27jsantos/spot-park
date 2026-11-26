@@ -495,7 +495,7 @@ export default function App() {
                   {s.distance != null && <div style={{ position: "absolute", top: 8, left: 8, background: "#FFFFFF", color: "#1E2233", fontSize: 11, fontWeight: 800, padding: "3px 8px", borderRadius: 20 }}>{s.distance} mi away</div>}
                 </div>
                 <div style={{ padding: 12, textAlign: "center" }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, textDecoration: "underline", color: "#1E2233", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
                   <div style={{ fontSize: 14, color: "#000000", margin: "4px 0 10px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Available {s.hours}</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
                     <div style={{ background: "#DCE6FF", borderRadius: 8, padding: "0 4px", height: 58, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: 0, overflow: "hidden", boxSizing: "border-box" }}><div style={{ fontSize: 15, fontWeight: 700, color: "#1E2233", whiteSpace: "nowrap" }}>${s.price}</div><div style={{ fontSize: 12, color: "#000000" }}>per hour</div></div>
