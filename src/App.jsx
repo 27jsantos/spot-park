@@ -71,9 +71,9 @@ function FitDiagram({ status }) {
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const trainIconFor = (name, zoom) => {
   const big = zoom >= 15;
-  const d = big ? 30 : 22;
+  const d = big ? 22 : 16;
   const label = big ? `<div style="margin-top:2px;background:#FFD60A;color:#000;font-weight:800;font-size:10px;padding:1px 5px;border-radius:5px;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.4)">${esc(name)}</div>` : "";
-  const html = `<div style="display:flex;flex-direction:column;align-items:center;width:110px;margin-left:${-(55 - d / 2)}px"><div style="font-size:${big ? 15 : 11}px;background:#1D4ED8;border:3px solid #FFD60A;border-radius:50%;width:${d}px;height:${d}px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.5)">🚆</div>${label}</div>`;
+  const html = `<div style="display:flex;flex-direction:column;align-items:center;width:110px;margin-left:${-(55 - d / 2)}px"><div style="font-size:${big ? 11 : 8}px;background:#1D4ED8;border:3px solid #FFD60A;border-radius:50%;width:${d}px;height:${d}px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.5)">🚆</div>${label}</div>`;
   return L.divIcon({ className: "", html, iconSize: [d, big ? 46 : d], iconAnchor: [d / 2, d / 2] });
 };
 
@@ -396,10 +396,10 @@ export default function App() {
 
           <button
             onClick={() => setShowPlaces(!showPlaces)}
-            title="Show train stations"
-            style={{ position: "absolute", bottom: 46, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: "6px 10px", minHeight: 44, fontSize: 12, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
+            title="Show train stations" aria-label="Show train stations"
+            style={{ position: "absolute", bottom: 60, right: 10, background: showPlaces ? "#FFD60A" : "#FFFFFF", border: "none", borderRadius: 8, padding: 0, width: 44, height: 44, fontSize: 16, fontWeight: 700, color: "#1E2233", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.2)", zIndex: 1000 }}
           >
-            🚆 Trains {showPlaces ? `On · ${placesStatus}` : "Off"}
+            T
           </button>
 
           <button
