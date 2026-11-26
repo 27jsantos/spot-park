@@ -334,6 +334,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
 
+          {!isOwn && !!space.owner_id && (
           <div style={{ display: "flex", gap: 8, margin: "10px 0" }}>
             {[
               ["⚑ Report", handleReport, !isOwn && !!space.owner_id],
@@ -342,6 +343,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               <button key={b[0]} onClick={b[1]} style={{ flex: 1, minHeight: 44, border: "none", borderRadius: 10, background: "#FFFFFF", color: "#1E2233", fontWeight: 800, fontSize: 13, cursor: "pointer" }}>{b[0]}</button>
             ))}
           </div>
+          )}
 
           <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "6px 14px 16px" }}>
             <div style={{ display: "inline-flex", alignItems: "center", background: c.bg, color: c.text, fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20, marginTop: 12 }}>
@@ -369,12 +371,6 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             </a>
           ) : null}
 
-          {isOwn && (
-            <div style={{ background: "#DCE6FF", color: "#1E2233", fontWeight: 800, fontSize: 13, borderRadius: 10, padding: 12, textAlign: "center", marginBottom: 12 }}>
-              This is your own listing. You can't book it. Manage it from My Host Dashboard.
-            </div>
-          )}
-
           {!isOwn && !reserved && !requested && (
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <button
@@ -394,6 +390,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             </div>
           )}
 
+          {!isOwn && (
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
             {!isOwn && mode === "hourly" && !paying && !reserved && !requested && (
               <div>
@@ -472,6 +469,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>
