@@ -68,6 +68,10 @@ export default function AddSpace({ onBack, onSaved }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!location && !address.trim()) {
+      setError("Add an address and pick it from the list, so drivers can find your space and get directions.");
+      return;
+    }
     setSaving(true);
     setError("");
 
