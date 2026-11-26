@@ -39,7 +39,8 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
       }
     }
     const { data: b } = await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id);
-    setBlocked((b || []).map((x) => x.blocked_id));
+    const { data: listingBlocks } = await supabase.from("blocks").select("blocked_id");
+    setBlocked([...(b || []), ...(listingBlocks || [])].map((x) => x.blocked_id));
   }
 
   async function reportMessage(m) {

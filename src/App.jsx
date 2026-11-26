@@ -216,7 +216,8 @@ export default function App() {
       const { data: { user: meUser } } = await supabase.auth.getUser();
       const me = meUser ? meUser.id : null;
       const { data: blockRows } = await supabase.from("blocks").select("blocked_id");
-      const blocked = new Set((blockRows || []).map((b) => b.blocked_id));
+      const { data: msgBlockRows } = me ? await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", me) : { data: [] };
+      const blocked = new Set([...(blockRows || []), ...(msgBlockRows || [])].map((b) => b.blocked_id));
       setSpaces((data || []).filter((sp) => !sp.paused && !blocked.has(sp.owner_id) && sp.owner_id !== me));
     }
 

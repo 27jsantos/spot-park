@@ -9,6 +9,7 @@ export default function AdminDashboard({ onBack }) {
     async function load() {
       const { data: spaces } = await supabase.from("spaces").select("*");
       const { data: reservations } = await supabase.from("reservations").select("*");
+      const { data: reports } = await supabase.from("reports").select("*").order("created_at", { ascending: false }).limit(20);
 
       const grossBookings = (reservations || [])
         .filter((r) => r.status === "paid" || !r.status)
@@ -20,6 +21,7 @@ export default function AdminDashboard({ onBack }) {
         pendingRequests: (reservations || []).filter((r) => r.status === "pending").length,
         grossBookings,
         recentSpaces: (spaces || []).slice(-5).reverse(),
+        reports: (reports || []).map((r) => ({ ...r, spaceName: r.space_id ? ((spaces || []).find((sp) => String(sp.id) === String(r.space_id)) || {}).name : null })),
       });
       setLoading(false);
     }
@@ -56,6 +58,16 @@ export default function AdminDashboard({ onBack }) {
                 <div style={{ fontSize: 20, fontWeight: 700, color: "#1E2233" }}>{stats.pendingRequests}</div>
               </div>
             </div>
+
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", color: "#FFFFFF", margin: "0 0 12px" }}>{`Reports (${stats.reports.length})`}</h2>
+            {stats.reports.length === 0 && <div style={{ color: "#B7C4DC", fontSize: 13, textAlign: "center", marginBottom: 12 }}>No reports yet.</div>}
+            {stats.reports.map((r) => (
+              <div key={r.id} style={{ background: "#FFFFFF", borderRadius: 12, padding: 14, marginBottom: 8, color: "#000000", textAlign: "center" }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#1E2233" }}>{r.message_id ? "Reported Message" : "Reported Listing"}{r.spaceName ? ` — ${r.spaceName}` : ""}</div>
+                <div style={{ fontSize: 14, marginTop: 4 }}>{r.reason}</div>
+                <div style={{ fontSize: 12, marginTop: 4 }}>{new Date(r.created_at).toLocaleString()}{r.reported_user_id ? `  ·  User ${String(r.reported_user_id).slice(0, 8)}` : ""}</div>
+              </div>
+            ))}
 
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", color: "#FFFFFF", margin: "0 0 12px" }}>Recent Spaces</h2>
             {stats.recentSpaces.map((s) => (
