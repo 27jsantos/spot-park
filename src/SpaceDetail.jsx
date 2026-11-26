@@ -389,6 +389,11 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             </div>
           )}
 
+          {isOwn && (
+            <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, color: "#000000", fontWeight: 800, fontSize: 14, textAlign: "center" }}>
+              This is your own listing. You can't book it. Manage it from My Host Dashboard.
+            </div>
+          )}
           {!isOwn && (
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14 }}>
             {!isOwn && mode === "hourly" && !paying && !reserved && !requested && (
