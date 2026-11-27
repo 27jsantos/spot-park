@@ -91,6 +91,17 @@ export default function HostDashboard({ onBack }) {
     }
   }
 
+  async function setBookingTypes(sp, choice) {
+    if (choice !== "hourly" && !sp.daily_price) {
+      alert("Add a Price Per Day first: click Edit Space and enter a Price Per Day to turn on long-term bookings.");
+      return;
+    }
+    const patch = { allow_hourly: choice !== "long_term", allow_long_term: choice !== "hourly" };
+    const { error } = await supabase.from("spaces").update(patch).eq("id", sp.id);
+    if (error) alert("Couldn't update the booking types.");
+    else setMySpaces((prev) => prev.map((x) => (x.id === sp.id ? { ...x, ...patch } : x)));
+  }
+
   async function handleRequestDecision(request, decision) {
     const { error } = await supabase
       .from("reservations")
@@ -328,6 +339,22 @@ export default function HostDashboard({ onBack }) {
                     })()}
                   </div>
                 </div>
+                {(() => {
+                  const hourlyOn = s.allow_hourly !== false;
+                  const longOn = s.allow_long_term !== false && !!s.daily_price;
+                  const current = hourlyOn && longOn ? "both" : longOn ? "long_term" : "hourly";
+                  const opts = [["hourly", "Hourly"], ["long_term", "Long-Term"], ["both", "Both"]];
+                  return (
+                    <div style={{ marginTop: 12 }}>
+                      <div style={{ textAlign: "center", textDecoration: "underline", fontWeight: 700, fontSize: 14, color: "#FFFFFF", marginBottom: 8 }}>Booking Types</div>
+                      <div style={{ display: "flex", background: "#FFFFFF", borderRadius: 14, padding: 4, gap: 4 }}>
+                        {opts.map(([key, label]) => (
+                          <button key={key} aria-label={`${label} bookings`} onClick={() => setBookingTypes(s, key)} style={{ flex: 1, minHeight: 44, borderRadius: 11, border: "none", cursor: "pointer", background: current === key ? "#1D6FD0" : "transparent", color: current === key ? "#FFFFFF" : "#000000", fontWeight: current === key ? 700 : 400, fontSize: 13 }}>{label}</button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
                 <button onClick={() => startEditing(s)} style={{ width: "100%", marginTop: 12, background: "#1D6FD0", border: "none", color: "#FFFFFF", minHeight: 40, borderRadius: 20, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>✏️ Edit Space</button>
                 <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                   <button

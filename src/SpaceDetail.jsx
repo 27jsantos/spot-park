@@ -245,7 +245,9 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
   const [reserved, setReserved] = useState(false);
   const [requested, setRequested] = useState(false);
   const [paying, setPaying] = useState(false);
-  const [mode, setMode] = useState("hourly");
+  const hourlyOn = space.allow_hourly !== false;
+  const longOn = !!space.daily_price && space.allow_long_term !== false;
+  const [mode, setMode] = useState(space.allow_hourly === false ? "long_term" : "hourly");
   const [clientSecret, setClientSecret] = useState(null);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -373,7 +375,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
             🧭 Directions
           </a>
 
-          {!isOwn && !reserved && !requested && (
+          {!isOwn && !reserved && !requested && hourlyOn && longOn && (
             <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
               <button
                 onClick={() => setMode("hourly")}
@@ -399,7 +401,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
           )}
           {!isOwn && (
           <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, textAlign: "center" }}>
-            {!isOwn && mode === "hourly" && !paying && !reserved && !requested && (
+            {!isOwn && mode === "hourly" && hourlyOn && !paying && !reserved && !requested && (
               <div>
                 <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
                   <div style={{ flex: 2 }}>
@@ -454,7 +456,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
               </Elements>
             )}
 
-            {!isOwn && mode === "long_term" && !requested && !reserved && (
+            {!isOwn && mode === "long_term" && longOn && !requested && !reserved && (
               <>
                 <div style={{ color: "#1E2233", fontWeight: 700, marginBottom: 4 }}>${space.daily_price}/day</div>
                 <LongTermRequest space={space} onSubmitted={() => setRequested(true)} />
