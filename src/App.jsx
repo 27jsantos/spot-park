@@ -37,7 +37,7 @@ function searchDotIcon(label) {
   const safe = String(label || "").replace(/[<>&"]/g, "");
   return L.divIcon({
     className: "",
-    html: `<div style="display:flex;flex-direction:column;align-items:center;width:180px;margin-left:-90px;margin-top:-22px"><div style="width:44px;height:44px;border-radius:50%;background:rgba(55,138,221,0.25);display:flex;align-items:center;justify-content:center"><div style="width:20px;height:20px;border-radius:50%;background:#378ADD;border:3px solid #FFFFFF"></div></div><div style="background:#FFFFFF;color:#1E2233;font-size:11px;border-radius:11px;padding:3px 8px;margin-top:2px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.25)">${safe}</div></div>`,
+    html: `<div style="display:flex;flex-direction:column;align-items:center;width:180px;margin-left:-90px;margin-top:-22px"><div style="width:44px;height:44px;border-radius:50%;background:rgba(124,77,214,0.28);display:flex;align-items:center;justify-content:center"><div style="width:20px;height:20px;border-radius:50%;background:#7C4DD6;border:3px solid #FFFFFF"></div></div><div style="background:#FFFFFF;color:#4B2A94;font-weight:700;font-size:11px;border-radius:11px;padding:3px 8px;margin-top:2px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.25)">${safe}</div></div>`,
     iconSize: [0, 0],
     iconAnchor: [0, 0],
   });

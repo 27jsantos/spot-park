@@ -29,6 +29,20 @@ async function verifySignature(payload: string, header: string, secret: string) 
   return sigs.some((s) => safeEqual(s, expected));
 }
 
+async function sendEmail(to: string | null | undefined, subject: string, text: string) {
+  if (!to) return;
+  try {
+    const r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${Deno.env.get("RESEND_API_KEY")}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: "Park Aura <onboarding@resend.dev>", to, subject, text }),
+    });
+    if (!r.ok) console.error("Email failed:", await r.text());
+  } catch (e) {
+    console.error("Email error:", e);
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
@@ -86,7 +100,7 @@ Deno.serve(async (req) => {
             apikey: serviceKey!,
             Authorization: `Bearer ${serviceKey}`,
             "Content-Type": "application/json",
-            Prefer: "resolution=ignore-duplicates,return=minimal",
+            Prefer: "resolution=ignore-duplicates,return=representation",
           },
           body: JSON.stringify({
             user_id: m.user_id,
@@ -109,6 +123,27 @@ Deno.serve(async (req) => {
         console.error("Reservation insert failed:", await res.text());
         // A 500 tells Stripe to try again later
         return new Response("Insert failed", { status: 500 });
+      }
+
+      // Only email when a new booking was really created (not on a repeat delivery from Stripe)
+      const created = await res.json().catch(() => []);
+      if (Array.isArray(created) && created.length > 0) {
+        const name = m.space_name || "your space";
+        const when = m.start_time
+          ? new Date(m.start_time).toLocaleString("en-US", { timeZone: "America/New_York", dateStyle: "medium", timeStyle: "short" }) + " (Eastern)"
+          : "the time you selected";
+        const hrs = m.hours ? `${m.hours} hour${Number(m.hours) === 1 ? "" : "s"}` : "";
+        const total = `$${(pi.amount_received / 100).toFixed(2)}`;
+        await sendEmail(
+          m.owner_email,
+          `New booking at ${name}`,
+          `Good news! Your space "${name}" was just booked.\n\nWhen: ${when}\nLength: ${hrs}\nTotal paid: ${total}\n\nOpen My Host Dashboard in Park Aura to see the details and message the driver.`
+        );
+        await sendEmail(
+          m.user_email,
+          `Your booking at ${name} is confirmed`,
+          `Thanks for booking with Park Aura!\n\nSpace: ${name}\nWhen: ${when}\nLength: ${hrs}\nTotal paid: ${total}\n\nOpen My Reservations in Park Aura for directions and to message the host.`
+        );
       }
     }
   }
