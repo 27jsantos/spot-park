@@ -33,6 +33,16 @@ const redPin = L.divIcon({
   popupAnchor: [0, -38],
 });
 
+function searchDotIcon(label) {
+  const safe = String(label || "").replace(/[<>&"]/g, "");
+  return L.divIcon({
+    className: "",
+    html: `<div style="display:flex;flex-direction:column;align-items:center;width:180px;margin-left:-90px;margin-top:-22px"><div style="width:44px;height:44px;border-radius:50%;background:rgba(55,138,221,0.25);display:flex;align-items:center;justify-content:center"><div style="width:20px;height:20px;border-radius:50%;background:#378ADD;border:3px solid #FFFFFF"></div></div><div style="background:#FFFFFF;color:#1E2233;font-size:11px;border-radius:11px;padding:3px 8px;margin-top:2px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.25)">${safe}</div></div>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
 const blueDot = L.divIcon({
   className: "",
   html: '<div style="width:16px;height:16px;border-radius:50%;background:#007AFF;border:3px solid #FFFFFF;box-shadow:0 0 0 2px rgba(0,122,255,0.35)"></div>',
@@ -170,6 +180,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
+  const [searchedPlace, setSearchedPlace] = useState(null);
   const [mapView, setMapView] = useState("street");
   const [showPlaces, setShowPlaces] = useState(true);
   const [placesStatus, setPlacesStatus] = useState("");
@@ -182,6 +193,7 @@ export default function App() {
     const results = await res.json();
     if (results.length > 0) {
       setMapCenter([parseFloat(results[0].lat), parseFloat(results[0].lon)]);
+      setSearchedPlace({ lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon), label: searchText });
     } else {
       alert("Couldn't find that address.");
     }
@@ -367,6 +379,7 @@ export default function App() {
             <RecenterMap center={mapCenter} />
             {showPlaces && <PlacesLayer onStatus={setPlacesStatus} />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
+            {searchedPlace && <Marker position={[searchedPlace.lat, searchedPlace.lng]} icon={searchDotIcon(searchedPlace.label)} zIndexOffset={1000} />}
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]} icon={redPin}>
                 <Popup>
@@ -383,8 +396,8 @@ export default function App() {
             <span style={{ fontSize: 14 }}>🔍</span>
             <AddressInput
               value={searchText}
-              onChange={setSearchText}
-              onPick={(r) => { setSearchText(r.label); setMapCenter([r.lat, r.lng]); }}
+              onChange={(t) => { setSearchText(t); if (!t.trim()) setSearchedPlace(null); }}
+              onPick={(r) => { setSearchText(r.label); setSearchedPlace({ lat: r.lat, lng: r.lng, label: r.label }); setMapCenter([r.lat, r.lng]); }}
               bias={{ lat: mapCenter[0], lng: mapCenter[1] }}
               limit={6}
               placeholder="Search address, train station, food..."
