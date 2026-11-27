@@ -106,9 +106,9 @@ export default function HostDashboard({ onBack }) {
     load();
 
     if (request.user_email) {
-      const subject = decision === "confirmed" ? "Your request was approved!" : "Your request was declined";
+      const subject = decision === "confirmed" ? "Your request was approved — payment needed" : "Your request was declined";
       const message = decision === "confirmed"
-        ? `Good news — your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was approved. Log in to Park Aura to complete payment.`
+        ? `Good news — your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was approved. Open My Reservations in Park Aura and click Pay to lock it in.`
         : `Your request for "${request.space_name}" (${request.start_date} to ${request.end_date}) was declined by the host.`;
       notifyByEmail(request.user_email, subject, message);
     }
