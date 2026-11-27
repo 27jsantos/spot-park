@@ -1,29 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 import { bookingLines } from "./bookingInfo";
 import { supabase } from "./supabaseClient";
 import MessageThread from "./MessageThread";
 import { loadHostReviews, markReviewsSeen } from "./unread";
 import PayoutsCard from "./PayoutsCard";
-
-const hostPin = L.divIcon({
-  className: "",
-  html: '<svg width="30" height="42" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg"><path d="M15 1C7.3 1 1 7.2 1 14.8 1 25 15 41 15 41s14-16 14-26.2C29 7.2 22.7 1 15 1z" fill="#FF3B30" stroke="#B3261E" stroke-width="1.5"/><circle cx="15" cy="14.5" r="5" fill="#FFFFFF"/></svg>',
-  iconSize: [30, 42],
-  iconAnchor: [15, 41],
-  popupAnchor: [0, -38],
-});
-
-function FitSpaces({ points }) {
-  const map = useMap();
-  useEffect(() => {
-    if (points.length === 1) map.setView(points[0], 15);
-    else if (points.length > 1) map.fitBounds(points, { padding: [30, 30] });
-  }, [points.length]);
-  return null;
-}
 
 const inputStyle = { display: "block", width: "100%", padding: 8, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 6, background: "#FFFFFF", color: "#1E2233", fontSize: 13 };
 
@@ -280,25 +260,6 @@ export default function HostDashboard({ onBack }) {
             ))}
           </div>
         )}
-
-        {(() => {
-          const pts = mySpaces.filter((sp) => typeof sp.latitude === "number" && typeof sp.longitude === "number");
-          if (pts.length === 0) return null;
-          const coords = pts.map((sp) => [sp.latitude, sp.longitude]);
-          return (
-            <div style={{ height: 200, borderRadius: 20, overflow: "hidden", marginBottom: 14 }}>
-              <MapContainer center={coords[0]} zoom={14} style={{ height: "100%", width: "100%" }}>
-                <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <FitSpaces points={coords} />
-                {pts.map((sp) => (
-                  <Marker key={sp.id} position={[sp.latitude, sp.longitude]} icon={hostPin}>
-                    <Popup><strong>{sp.name}</strong><br />${sp.price}/hr</Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            </div>
-          );
-        })()}
 
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: 22, textAlign: "center", textDecoration: "underline", color: "#FFFFFF", margin: "0 0 12px" }}>Your Spaces</h2>
         {loading && <div style={{ color: "#B7C4DC" }}>Loading...</div>}

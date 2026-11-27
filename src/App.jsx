@@ -43,6 +43,14 @@ function searchDotIcon(label) {
   });
 }
 
+const greenPin = L.divIcon({
+  className: "",
+  html: '<svg width="30" height="42" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg"><path d="M15 1C7.3 1 1 7.2 1 14.8 1 25 15 41 15 41s14-16 14-26.2C29 7.2 22.7 1 15 1z" fill="#1E8E3E" stroke="#146C2E" stroke-width="1.5"/><circle cx="15" cy="14.5" r="5" fill="#FFFFFF"/></svg>',
+  iconSize: [30, 42],
+  iconAnchor: [15, 41],
+  popupAnchor: [0, -38],
+});
+
 const blueDot = L.divIcon({
   className: "",
   html: '<div style="width:16px;height:16px;border-radius:50%;background:#007AFF;border:3px solid #FFFFFF;box-shadow:0 0 0 2px rgba(0,122,255,0.35)"></div>',
@@ -175,6 +183,7 @@ export default function App() {
   const [viewingPrivacy, setViewingPrivacy] = useState(false);
   const [viewingTerms, setViewingTerms] = useState(false);
   const [spaces, setSpaces] = useState([]);
+  const [myPins, setMyPins] = useState([]);
   const [loadError, setLoadError] = useState(false);
   const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true);
@@ -231,6 +240,7 @@ export default function App() {
       const { data: msgBlockRows } = me ? await supabase.from("blocked_users").select("blocked_id").eq("blocker_id", me) : { data: [] };
       const blocked = new Set([...(blockRows || []), ...(msgBlockRows || [])].map((b) => b.blocked_id));
       setSpaces((data || []).filter((sp) => !sp.paused && !blocked.has(sp.owner_id) && sp.owner_id !== me));
+      setMyPins((data || []).filter((sp) => me && sp.owner_id === me && sp.latitude && sp.longitude));
     }
 
     const { data: reviewData, error: reviewError } = await supabase.from("reviews").select("space_id, rating");
@@ -380,6 +390,11 @@ export default function App() {
             {showPlaces && <PlacesLayer onStatus={setPlacesStatus} />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
             {searchedPlace && <Marker position={[searchedPlace.lat, searchedPlace.lng]} icon={searchDotIcon(searchedPlace.label)} zIndexOffset={1000} />}
+            {myPins.map((s) => (
+              <Marker key={"mine-" + s.id} position={[s.latitude, s.longitude]} icon={greenPin}>
+                <Popup><strong>{s.name}</strong><br />Your Listing · ${s.price}/hr</Popup>
+              </Marker>
+            ))}
             {spacesWithLocation.map((s) => (
               <Marker key={s.id} position={[s.latitude, s.longitude]} icon={redPin}>
                 <Popup>
