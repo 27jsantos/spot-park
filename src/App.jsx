@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents, ZoomControl } from "react-leaflet";
 import { fetchPlaces } from "./places";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -33,15 +33,13 @@ const redPin = L.divIcon({
   popupAnchor: [0, -38],
 });
 
-function searchDotIcon(label) {
-  const safe = String(label || "").replace(/[<>&"]/g, "");
-  return L.divIcon({
-    className: "",
-    html: `<div style="display:flex;flex-direction:column;align-items:center;width:180px;margin-left:-90px;margin-top:-22px"><div style="width:44px;height:44px;border-radius:50%;background:rgba(124,77,214,0.28);display:flex;align-items:center;justify-content:center"><div style="width:20px;height:20px;border-radius:50%;background:#7C4DD6;border:3px solid #FFFFFF"></div></div><div style="background:#FFFFFF;color:#4B2A94;font-weight:700;font-size:11px;border-radius:11px;padding:3px 8px;margin-top:2px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 4px rgba(0,0,0,0.25)">${safe}</div></div>`,
-    iconSize: [0, 0],
-    iconAnchor: [0, 0],
-  });
-}
+const purplePin = L.divIcon({
+  className: "",
+  html: '<svg width="30" height="42" viewBox="0 0 30 42" xmlns="http://www.w3.org/2000/svg"><path d="M15 1C7.3 1 1 7.2 1 14.8 1 25 15 41 15 41s14-16 14-26.2C29 7.2 22.7 1 15 1z" fill="#7C4DD6" stroke="#4B2A94" stroke-width="1.5"/><circle cx="15" cy="14.5" r="5" fill="#FFFFFF"/></svg>',
+  iconSize: [30, 42],
+  iconAnchor: [15, 41],
+  popupAnchor: [0, -38],
+});
 
 const greenPin = L.divIcon({
   className: "",
@@ -389,7 +387,11 @@ export default function App() {
             <RecenterMap center={mapCenter} />
             {showPlaces && <PlacesLayer onStatus={setPlacesStatus} />}
             {userPos && <Marker position={userPos} icon={blueDot} />}
-            {searchedPlace && <Marker position={[searchedPlace.lat, searchedPlace.lng]} icon={searchDotIcon(searchedPlace.label)} zIndexOffset={1000} />}
+            {searchedPlace && (
+              <Marker position={[searchedPlace.lat, searchedPlace.lng]} icon={purplePin} zIndexOffset={1000}>
+                <Tooltip permanent direction="top" offset={[0, -38]}>{searchedPlace.label}</Tooltip>
+              </Marker>
+            )}
             {myPins.map((s) => (
               <Marker key={"mine-" + s.id} position={[s.latitude, s.longitude]} icon={greenPin}>
                 <Popup><strong>{s.name}</strong><br />Your Listing · ${s.price}/hr</Popup>
