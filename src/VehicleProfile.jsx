@@ -6,6 +6,7 @@ const BODY_TYPES = {
   suv: { label: "SUV", width: 6.5, length: 16.8 },
   truck: { label: "Pickup truck", width: 6.7, length: 19.5 },
   van: { label: "Minivan", width: 6.6, length: 17.5 },
+  motorcycle: { label: "Motorcycle", width: 3.0, length: 7.5 },
 };
 
 const inputStyle = { display: "block", width: "100%", padding: 10, marginTop: 4, border: "1px solid #3B4F73", borderRadius: 8, background: "#FFFFFF", color: "#1E2233" };

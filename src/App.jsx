@@ -472,7 +472,7 @@ export default function App() {
             </button>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "10px 0 14px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "22px 0 14px" }}>
             <span style={{ fontSize: 16, color: "#B7C4DC" }}>Driving: <strong style={{ color: "#FFFFFF" }}>{vehicle.label}</strong></span>
             <button onClick={() => setEditingVehicle(true)} style={{ background: "#1E8E3E", border: "none", color: "#FFFFFF", fontWeight: 700, fontSize: 12, padding: "5px 10px", minHeight: 44, borderRadius: 6, cursor: "pointer" }}>
               Edit
