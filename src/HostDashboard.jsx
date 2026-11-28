@@ -29,6 +29,7 @@ export default function HostDashboard({ onBack }) {
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [newFiles, setNewFiles] = useState([]);
   const [saving, setSaving] = useState(false);
   const [duplicatingId, setDuplicatingId] = useState(null);
 
@@ -127,9 +128,11 @@ export default function HostDashboard({ onBack }) {
 
   function startEditing(space) {
     setEditingId(space.id);
+    setNewFiles([]);
     setEditForm({
       name: space.name,
       price: space.price,
+      dailyPrice: space.daily_price != null ? String(space.daily_price) : "",
       hours: space.hours,
       width: space.width,
       length: space.length,
@@ -138,11 +141,30 @@ export default function HostDashboard({ onBack }) {
 
   async function handleSaveEdit(id) {
     setSaving(true);
+    let photoPatch = {};
+    if (newFiles.length > 0) {
+      const { data: { user: me } } = await supabase.auth.getUser();
+      const urls = [];
+      for (const file of newFiles) {
+        const fileExt = file.name.split(".").pop();
+        const filePath = `${me.id}-${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage.from("space-photos").upload(filePath, file);
+        if (uploadError) {
+          setSaving(false);
+          alert("Something went wrong uploading your photo.");
+          return;
+        }
+        urls.push(supabase.storage.from("space-photos").getPublicUrl(filePath).data.publicUrl);
+      }
+      photoPatch = { photo_url: urls[0] || null, photo_urls: urls.length > 0 ? urls : null };
+    }
     const { error } = await supabase
       .from("spaces")
       .update({
+        ...photoPatch,
         name: editForm.name,
         price: Number(editForm.price),
+        daily_price: editForm.dailyPrice ? Number(editForm.dailyPrice) : null,
         hours: editForm.hours,
         width: Number(editForm.width),
         length: Number(editForm.length),
@@ -154,6 +176,7 @@ export default function HostDashboard({ onBack }) {
       console.error(error);
     } else {
       setEditingId(null);
+      setNewFiles([]);
       load();
     }
   }
@@ -166,7 +189,7 @@ export default function HostDashboard({ onBack }) {
         <button onClick={onBack} style={{ marginBottom: 16, background: "#3B4F73", border: "none", borderRadius: 6, padding: "5px 10px", minHeight: 44, color: "#FFFFFF", cursor: "pointer" }}>
           ← Back
         </button>
-        <h1 style={{ textAlign: "center", textDecoration: "underline", fontSize: 28, marginBottom: 16, color: "#FFFFFF", fontWeight: 800, fontFamily: "'Playfair Display', serif" }}>My Host Dashboard</h1>
+        <h1 style={{ textAlign: "center", textDecoration: "underline", fontSize: 28, marginBottom: 16, color: "#FFFFFF", fontWeight: 800, fontFamily: "'Playfair Display', serif" }}>Host Dashboard</h1>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
           <div style={{ background: "#FFFFFF", borderRadius: 12, padding: 12 }}>
@@ -294,6 +317,10 @@ export default function HostDashboard({ onBack }) {
                   <input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} style={inputStyle} />
                 </label>
                 <label style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>
+                  Price per day ($) — optional
+                  <input type="number" value={editForm.dailyPrice} onChange={(e) => setEditForm({ ...editForm, dailyPrice: e.target.value })} style={inputStyle} />
+                </label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#000000" }}>
                   Available hours
                   <input value={editForm.hours} onChange={(e) => setEditForm({ ...editForm, hours: e.target.value })} style={inputStyle} />
                 </label>
@@ -307,6 +334,17 @@ export default function HostDashboard({ onBack }) {
                     <input type="number" step="0.1" value={editForm.length} onChange={(e) => setEditForm({ ...editForm, length: e.target.value })} style={inputStyle} />
                   </label>
                 </div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#000000", marginTop: 8 }}>Photos</div>
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", margin: "6px 0" }}>
+                  {(newFiles.length > 0 ? newFiles.map((f) => URL.createObjectURL(f)) : (s.photo_urls && s.photo_urls.length > 0 ? s.photo_urls : s.photo_url ? [s.photo_url] : [])).map((src, i) => (
+                    <img key={i} src={src} alt={"Photo " + (i + 1)} style={{ width: 120, height: 90, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
+                  ))}
+                </div>
+                <label style={{ display: "block", background: "#C9D6EE", color: "#000000", textAlign: "center", borderRadius: 8, padding: "12px 8px", minHeight: 44, boxSizing: "border-box", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+                  📷 Change Photos
+                  <input type="file" accept="image/*" multiple onChange={(e) => setNewFiles(Array.from(e.target.files).slice(0, 5))} style={{ display: "none" }} />
+                </label>
+                {newFiles.length > 0 && <div style={{ color: "#000000", fontSize: 12, textAlign: "center", marginTop: 6 }}>{newFiles.length} new photo{newFiles.length === 1 ? "" : "s"} will replace the current ones when you save.</div>}
                 <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                   <button
                     onClick={() => handleSaveEdit(s.id)}
@@ -347,7 +385,7 @@ export default function HostDashboard({ onBack }) {
                   return (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ textAlign: "center", textDecoration: "underline", fontWeight: 700, fontSize: 14, color: "#FFFFFF", marginBottom: 8 }}>Booking Types</div>
-                      <div style={{ display: "flex", background: "#E3DAFB", borderRadius: 14, padding: 4, gap: 4 }}>
+                      <div style={{ display: "flex", background: "#C9D6EE", borderRadius: 14, padding: 4, gap: 4 }}>
                         {opts.map(([key, label]) => (
                           <button key={key} aria-label={`${label} bookings`} onClick={() => setBookingTypes(s, key)} style={{ flex: 1, minHeight: 44, borderRadius: 11, border: "none", cursor: "pointer", background: current === key ? "#0B6FB8" : "transparent", color: current === key ? "#FFFFFF" : "#000000", fontWeight: current === key ? 700 : 400, fontSize: 13 }}>{label}</button>
                         ))}

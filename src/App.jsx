@@ -492,7 +492,7 @@ export default function App() {
             onClick={() => setViewingDashboard(true)}
             style={{ width: "100%", background: "#FFD60A", color: "#1E2233", fontWeight: 800, border: "none", padding: 11, borderRadius: 10, marginBottom: 8, fontSize: 14, cursor: "pointer" }}
           >
-            My Host Dashboard
+            Host Dashboard
             {newHost > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#1E2233", marginTop: 3 }}>{newHost} New {newHost === 1 ? "Message" : "Messages"}</div>}
             {newReviews > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#1E2233", marginTop: 3 }}>{newReviews} New {newReviews === 1 ? "Review" : "Reviews"}</div>}
             {newRequests > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#1E2233", marginTop: 3 }}>{newRequests} New {newRequests === 1 ? "Request" : "Requests"} To Answer</div>}

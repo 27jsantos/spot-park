@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
       }
       const nm = m.space_name || "your space";
       const amt = `$${(pi.amount_received / 100).toFixed(2)}`;
-      await sendEmail(m.owner_email, `Payment received for ${nm}`, `The driver paid ${amt} for the long-term stay at "${nm}". Open My Host Dashboard in Park Aura to see the details.`);
+      await sendEmail(m.owner_email, `Payment received for ${nm}`, `The driver paid ${amt} for the long-term stay at "${nm}". Open Host Dashboard in Park Aura to see the details.`);
       await sendEmail(m.user_email, `Payment received for ${nm}`, `Thanks! We received your payment of ${amt} for "${nm}". Your stay is confirmed. Open My Reservations in Park Aura for details.`);
       return new Response("ok", { status: 200 });
     }
@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
         await sendEmail(
           m.owner_email,
           `New booking at ${name}`,
-          `Good news! Your space "${name}" was just booked.\n\nWhen: ${when}\nLength: ${hrs}\nTotal paid: ${total}\n\nOpen My Host Dashboard in Park Aura to see the details and message the driver.`
+          `Good news! Your space "${name}" was just booked.\n\nWhen: ${when}\nLength: ${hrs}\nTotal paid: ${total}\n\nOpen Host Dashboard in Park Aura to see the details and message the driver.`
         );
         await sendEmail(
           m.user_email,

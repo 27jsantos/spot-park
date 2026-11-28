@@ -182,7 +182,7 @@ function LongTermRequest({ space, onSubmitted }) {
             body: JSON.stringify({
               email: space.owner_email,
               subject: "New long-term request on Park Aura",
-              message: `Someone requested a long-term stay at "${space.name}". Log in to Park Aura and open My Host Dashboard to approve or decline.`,
+              message: `Someone requested a long-term stay at "${space.name}". Log in to Park Aura and open Host Dashboard to approve or decline.`,
             }),
           }).catch(() => {});
         });
@@ -396,7 +396,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
 
           {isOwn && (
             <div style={{ background: "#FFFFFF", borderRadius: 14, padding: 14, color: "#000000", fontWeight: 800, fontSize: 14, textAlign: "center" }}>
-              This is your own listing. You can't book it. Manage it from My Host Dashboard.
+              This is your own listing. You can't book it. Manage it from Host Dashboard.
             </div>
           )}
           {!isOwn && (
