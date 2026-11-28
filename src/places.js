@@ -77,36 +77,52 @@ function fallbackPlaces(south, west, north, east) {
   return FALLBACK.filter((p) => p.lat >= south && p.lat <= north && p.lng >= west && p.lng <= east);
 }
 
-// Preferred source: OpenStreetMap Overpass (made for map-area lookups, far more complete than a text search)
-async function overpassPlaces(south, west, north, east) {
-  const q = `[out:json][timeout:15];(node["railway"~"^(station|halt)$"](${south},${west},${north},${east});node["station"="subway"](${south},${west},${north},${east}););out body 80;`;
-  for (const url of MIRRORS) {
+// Preferred source: OpenStreetMap Overpass (made for map-area lookups, far more complete than a text search).
+// All servers are asked at the same time and the first good answer wins, so one slow server can't hold things up.
+function overpassOne(url, q) {
+  return new Promise((resolve, reject) => {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 10000);
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        signal: ctrl.signal,
-        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-        body: "data=" + encodeURIComponent(q),
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    fetch(url, {
+      method: "POST",
+      signal: ctrl.signal,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "data=" + encodeURIComponent(q),
+    })
+      .then((res) => {
+        clearTimeout(timer);
+        if (!res.ok) throw new Error("bad status");
+        return res.json();
+      })
+      .then((data) => {
+        const seen = {};
+        const list = [];
+        (data.elements || []).forEach((p) => {
+          const name = p.tags && p.tags.name;
+          if (!name || seen[name + Math.round(p.lat * 500)]) return;
+          seen[name + Math.round(p.lat * 500)] = true;
+          list.push({ id: `n${p.id}`, name, kind: "train", lat: p.lat, lng: p.lon });
+        });
+        resolve(list);
+      })
+      .catch((e) => {
+        clearTimeout(timer);
+        reject(e);
       });
-      clearTimeout(timer);
-      if (!res.ok) continue;
-      const data = await res.json();
-      const seen = {};
-      const list = [];
-      (data.elements || []).forEach((p) => {
-        const name = p.tags && p.tags.name;
-        if (!name || seen[name + Math.round(p.lat * 500)]) return;
-        seen[name + Math.round(p.lat * 500)] = true;
-        list.push({ id: `n${p.id}`, name, kind: "train", lat: p.lat, lng: p.lon });
+  });
+}
+
+function overpassPlaces(south, west, north, east) {
+  const q = `[out:json][timeout:15];(node["railway"~"^(station|halt)$"](${south},${west},${north},${east});node["station"="subway"](${south},${west},${north},${east}););out body 80;`;
+  return new Promise((resolve) => {
+    let failed = 0;
+    MIRRORS.forEach((url) => {
+      overpassOne(url, q).then(resolve, () => {
+        failed += 1;
+        if (failed === MIRRORS.length) resolve(null);
       });
-      return list;
-    } catch (e) {
-      clearTimeout(timer);
-    }
-  }
-  return null;
+    });
+  });
 }
 
 export async function fetchPlaces(south, west, north, east, onPartial) {
