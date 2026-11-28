@@ -349,13 +349,13 @@ export default function HostDashboard({ onBack }) {
                       <div style={{ textAlign: "center", textDecoration: "underline", fontWeight: 700, fontSize: 14, color: "#FFFFFF", marginBottom: 8 }}>Booking Types</div>
                       <div style={{ display: "flex", background: "#FFFFFF", borderRadius: 14, padding: 4, gap: 4 }}>
                         {opts.map(([key, label]) => (
-                          <button key={key} aria-label={`${label} bookings`} onClick={() => setBookingTypes(s, key)} style={{ flex: 1, minHeight: 44, borderRadius: 11, border: "none", cursor: "pointer", background: current === key ? "#1D6FD0" : "transparent", color: current === key ? "#FFFFFF" : "#000000", fontWeight: current === key ? 700 : 400, fontSize: 13 }}>{label}</button>
+                          <button key={key} aria-label={`${label} bookings`} onClick={() => setBookingTypes(s, key)} style={{ flex: 1, minHeight: 44, borderRadius: 11, border: "none", cursor: "pointer", background: current === key ? "#0B6FB8" : "transparent", color: current === key ? "#FFFFFF" : "#000000", fontWeight: current === key ? 700 : 400, fontSize: 13 }}>{label}</button>
                         ))}
                       </div>
                     </div>
                   );
                 })()}
-                <button onClick={() => startEditing(s)} style={{ width: "100%", marginTop: 12, background: "#1D6FD0", border: "none", color: "#FFFFFF", minHeight: 40, borderRadius: 20, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>✏️ Edit Space</button>
+                <button onClick={() => startEditing(s)} style={{ width: "100%", marginTop: 12, background: "#1E3A8A", border: "none", color: "#FFFFFF", minHeight: 40, borderRadius: 20, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>✏️ Edit Space</button>
                 <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                   <button
                     onClick={async () => {
