@@ -34,8 +34,9 @@ export default async function handler(req, res) {
     return;
   }
   const q = `[out:json][timeout:15];(node["railway"~"^(station|halt)$"](${s},${w},${n},${e});node["station"="subway"](${s},${w},${n},${e}););out body 80;`;
+  const problems = [];
   try {
-    const data = await Promise.any(MIRRORS.map((u) => ask(u, q)));
+    const data = await Promise.any(MIRRORS.map((u) => ask(u, q).catch((err) => { problems.push(u.split("/")[2] + ": " + err.message); throw err; })));
     const seen = {};
     const list = [];
     (data.elements || []).forEach((p) => {
@@ -47,6 +48,32 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
     res.status(200).json(list);
   } catch (err) {
-    res.status(502).json({ error: "stations unavailable" });
+    // Backup: OpenStreetMap's place search, which accepts server requests that identify themselves
+    try {
+      const seen = {};
+      const list = [];
+      for (const term of ["railway station", "train station", "station"]) {
+        const r = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(term)}&viewbox=${w},${n},${e},${s}&bounded=1&limit=40`,
+          { headers: { "User-Agent": "ParkAura/1.0 (parkauraapp@gmail.com)", Accept: "application/json" } }
+        );
+        if (!r.ok) { problems.push("nominatim: " + r.status); continue; }
+        const rows = await r.json();
+        rows.forEach((p) => {
+          const isTrain = p.category === "railway" && (p.type === "station" || p.type === "halt");
+          if (!p.name || !isTrain || seen[p.name]) return;
+          seen[p.name] = true;
+          list.push({ id: `${p.osm_type}${p.osm_id}`, name: p.name, kind: "train", lat: parseFloat(p.lat), lng: parseFloat(p.lon) });
+        });
+      }
+      if (list.length > 0) {
+        res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
+        res.status(200).json(list);
+        return;
+      }
+    } catch (e2) {
+      problems.push("nominatim: " + e2.message);
+    }
+    res.status(502).json({ error: "stations unavailable", problems });
   }
 }
