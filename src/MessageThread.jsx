@@ -120,9 +120,9 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
     return (
       <button
         onClick={() => setOpen(true)}
-        style={{ marginTop: 10, background: "#E8ECFB", color: "#2A4FA0", border: "none", padding: "6px 12px", minHeight: 44, borderRadius: 6, fontSize: 12, cursor: "pointer" }}
+        style={{ display: "block", width: "100%", marginTop: 10, background: "#FFD60A", color: "#000000", border: "none", padding: "6px 12px", minHeight: 44, borderRadius: 8, fontSize: 14, fontWeight: 700, textAlign: "center", cursor: "pointer" }}
       >
-        💬 Messages{unread > 0 && <span style={{ color: "#D92D20", fontWeight: 800 }}>{`  ·  ${unread} New`}</span>}
+        💬 Messages{unread > 0 && <span style={{ color: "#B42318", fontWeight: 800 }}>{`  ·  ${unread} New`}</span>}
       </button>
     );
   }
@@ -131,7 +131,7 @@ export default function MessageThread({ reservationId, recipientId, recipientEma
     <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE" }}>
       <div style={{ maxHeight: 280, overflowY: "auto", marginBottom: 8, display: "flex", flexDirection: "column" }}>
         {messages.length === 0 && (
-          <div style={{ fontSize: 12, color: "#000000" }}>No messages yet.</div>
+          <div style={{ fontSize: 12, color: "#000000", textAlign: "center" }}>No messages yet.</div>
         )}
         {messages.filter((m) => !blocked.includes(m.sender_id)).map((m) => {
           const mine = m.sender_id === myId;

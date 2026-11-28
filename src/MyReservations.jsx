@@ -288,7 +288,7 @@ export default function MyReservations({ onBack }) {
                   </div>
                 ) : ratingId === r.id ? (
                   <div style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #EEE" }}>
-                    <div style={{ display: "flex", gap: 4, marginBottom: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "center", gap: 4, marginBottom: 8 }}>
                       {[1, 2, 3, 4, 5].map((n) => (
                         <span
                           key={n}
@@ -303,7 +303,7 @@ export default function MyReservations({ onBack }) {
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       placeholder="Optional comment..."
-                      style={{ width: "100%", padding: 8, border: "1px solid #DDD", borderRadius: 6, fontSize: 12, resize: "none", minHeight: 50 }}
+                      style={{ textAlign: "center", width: "100%", padding: 8, border: "1px solid #DDD", borderRadius: 6, fontSize: 12, resize: "none", minHeight: 50 }}
                     />
                     <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                       <button
