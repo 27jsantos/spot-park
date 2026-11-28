@@ -11,6 +11,7 @@ import Auth from "./Auth";
 import AddSpace from "./AddSpace";
 import HostDashboard from "./HostDashboard";
 import MyReservations from "./MyReservations";
+import Notifications from "./Notifications";
 import AdminDashboard from "./AdminDashboard";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
@@ -158,6 +159,7 @@ export default function App() {
   const [addingSpace, setAddingSpace] = useState(false);
   const [viewingDashboard, setViewingDashboard] = useState(false);
   const [viewingReservations, setViewingReservations] = useState(false);
+  const [viewingNotifications, setViewingNotifications] = useState(false);
   const [newHost, setNewHost] = useState(0);
   const [newDriver, setNewDriver] = useState(0);
   const [newReviews, setNewReviews] = useState(0);
@@ -176,7 +178,7 @@ export default function App() {
     check();
     const t = setInterval(check, 8000);
     return () => { alive = false; clearInterval(t); };
-  }, [user, viewingDashboard, viewingReservations]);
+  }, [user, viewingDashboard, viewingReservations, viewingNotifications]);
   const [viewingAdmin, setViewingAdmin] = useState(false);
   const [viewingPrivacy, setViewingPrivacy] = useState(false);
   const [viewingTerms, setViewingTerms] = useState(false);
@@ -312,6 +314,7 @@ export default function App() {
     );
   }
 
+  if (viewingNotifications) return <Notifications onBack={() => setViewingNotifications(false)} onOpenReservations={() => { setViewingNotifications(false); setViewingReservations(true); }} onOpenHost={() => { setViewingNotifications(false); setViewingDashboard(true); }} />;
   if (viewingDashboard) return <HostDashboard onBack={() => setViewingDashboard(false)} />;
   if (viewingReservations) return <MyReservations onBack={() => setViewingReservations(false)} />;
   if (viewingAdmin) return <AdminDashboard onBack={() => setViewingAdmin(false)} />;
@@ -457,6 +460,16 @@ export default function App() {
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginBottom: 4 }}>
             <span style={{ fontSize: 32, fontWeight: 700, fontStyle: "italic", fontFamily: "'Playfair Display', serif" }}>Park Aura</span>
+            <button
+              onClick={() => setViewingNotifications(true)}
+              aria-label={`Notifications${newHost + newDriver + newRequests + toPay > 0 ? `, ${newHost + newDriver + newRequests + toPay} new` : ""}`}
+              style={{ position: "absolute", right: 0, width: 44, height: 44, borderRadius: 22, background: "#FFFFFF", border: "none", cursor: "pointer", fontSize: 20 }}
+            >
+              🔔
+              {newHost + newDriver + newRequests + toPay > 0 && (
+                <span style={{ position: "absolute", top: -3, right: -3, minWidth: 20, height: 20, borderRadius: 10, background: "#E24B4A", color: "#FFFFFF", fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 4px", border: "2px solid #0d2c64", boxSizing: "border-box" }}>{newHost + newDriver + newRequests + toPay}</span>
+              )}
+            </button>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "10px 0 14px" }}>
