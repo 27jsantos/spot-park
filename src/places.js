@@ -51,16 +51,45 @@ async function nominatimPlaces(south, west, north, east, onPartial) {
   return list;
 }
 
-const MIRRORS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
+const MIRRORS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+];
+
+// Big stations in and around New York, used only if every online lookup is down
+const FALLBACK = [
+  { name: "Penn Station", lat: 40.7506, lng: -73.9935 },
+  { name: "Grand Central Terminal", lat: 40.7527, lng: -73.9772 },
+  { name: "Jamaica Station", lat: 40.6998, lng: -73.8081 },
+  { name: "Atlantic Terminal", lat: 40.6840, lng: -73.9776 },
+  { name: "Woodside", lat: 40.7458, lng: -73.9030 },
+  { name: "Flushing-Main St", lat: 40.7596, lng: -73.8301 },
+  { name: "Long Island City", lat: 40.7414, lng: -73.9577 },
+  { name: "Yankees-E 153 St", lat: 40.8250, lng: -73.9296 },
+  { name: "Hoboken Terminal", lat: 40.7359, lng: -74.0290 },
+  { name: "Secaucus Junction", lat: 40.7613, lng: -74.0758 },
+  { name: "Newark Penn Station", lat: 40.7345, lng: -74.1645 },
+  { name: "Stamford", lat: 41.0465, lng: -73.5426 },
+].map((p) => ({ ...p, id: "fb" + p.name, kind: "train" }));
+
+function fallbackPlaces(south, west, north, east) {
+  return FALLBACK.filter((p) => p.lat >= south && p.lat <= north && p.lng >= west && p.lng <= east);
+}
 
 // Preferred source: OpenStreetMap Overpass (made for map-area lookups, far more complete than a text search)
 async function overpassPlaces(south, west, north, east) {
   const q = `[out:json][timeout:15];(node["railway"~"^(station|halt)$"](${south},${west},${north},${east});node["station"="subway"](${south},${west},${north},${east}););out body 80;`;
   for (const url of MIRRORS) {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 9000);
+    const timer = setTimeout(() => ctrl.abort(), 10000);
     try {
-      const res = await fetch(`${url}?data=${encodeURIComponent(q)}`, { signal: ctrl.signal });
+      const res = await fetch(url, {
+        method: "POST",
+        signal: ctrl.signal,
+        headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
+        body: "data=" + encodeURIComponent(q),
+      });
       clearTimeout(timer);
       if (!res.ok) continue;
       const data = await res.json();
@@ -90,5 +119,10 @@ export async function fetchPlaces(south, west, north, east, onPartial) {
     cache[key] = fast;
     return fast;
   }
-  return nominatimPlaces(south, west, north, east, onPartial);
+  const slow = await nominatimPlaces(south, west, north, east, onPartial);
+  if (slow === "error") {
+    const local = fallbackPlaces(south, west, north, east);
+    return local.length > 0 ? local : "error";
+  }
+  return slow;
 }
