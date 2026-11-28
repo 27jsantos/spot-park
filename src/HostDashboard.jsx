@@ -347,7 +347,7 @@ export default function HostDashboard({ onBack }) {
                   return (
                     <div style={{ marginTop: 12 }}>
                       <div style={{ textAlign: "center", textDecoration: "underline", fontWeight: 700, fontSize: 14, color: "#FFFFFF", marginBottom: 8 }}>Booking Types</div>
-                      <div style={{ display: "flex", background: "#FFFFFF", borderRadius: 14, padding: 4, gap: 4 }}>
+                      <div style={{ display: "flex", background: "#E3DAFB", borderRadius: 14, padding: 4, gap: 4 }}>
                         {opts.map(([key, label]) => (
                           <button key={key} aria-label={`${label} bookings`} onClick={() => setBookingTypes(s, key)} style={{ flex: 1, minHeight: 44, borderRadius: 11, border: "none", cursor: "pointer", background: current === key ? "#0B6FB8" : "transparent", color: current === key ? "#FFFFFF" : "#000000", fontWeight: current === key ? 700 : 400, fontSize: 13 }}>{label}</button>
                         ))}
