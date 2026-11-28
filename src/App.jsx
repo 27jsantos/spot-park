@@ -60,6 +60,14 @@ const blueDot = L.divIcon({
 const DEFAULT_VEHICLE = { id: "suv", label: "SUV", width: 6.5, length: 16.8 };
 const DEFAULT_CENTER = [40.6546, -73.5594];
 
+function distanceMiles(lat1, lng1, lat2, lng2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 function fitStatus(space, vehicle) {
   const wClear = space.width - vehicle.width;
   const lClear = space.length - vehicle.length;
@@ -194,6 +202,13 @@ export default function App() {
   const [showPlaces, setShowPlaces] = useState(true);
   const [placesStatus, setPlacesStatus] = useState("");
   const [userPos, setUserPos] = useState(null);
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserPos([pos.coords.latitude, pos.coords.longitude]),
+      () => {}
+    );
+  }, []);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -356,7 +371,9 @@ export default function App() {
     );
   }
 
-  const visibleSpaces = spaces;
+  const visibleSpaces = spaces
+    .map((sp) => ({ ...sp, distance: userPos && sp.latitude && sp.longitude ? Math.round(distanceMiles(userPos[0], userPos[1], sp.latitude, sp.longitude) * 10) / 10 : null }))
+    .sort((a, b) => (a.distance == null ? 1 : b.distance == null ? -1 : a.distance - b.distance));
   const spacesWithLocation = visibleSpaces.filter((s) => s.latitude && s.longitude);
   const isAdmin = user.id === ADMIN_USER_ID;
 

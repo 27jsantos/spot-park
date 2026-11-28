@@ -336,7 +336,7 @@ export default function SpaceDetail({ space, vehicle, onBack, ratingInfo }) {
         <div style={{ padding: 16, color: "#FFFFFF" }}>
           <h1 style={{ fontSize: 19, margin: "0 0 4px", fontWeight: 800, color: "#FFFFFF", textAlign: "center", fontFamily: "'Playfair Display', serif", textDecoration: "underline" }}>{space.name}</h1>
           <div style={{ fontSize: 13, color: "#B7C4DC", marginBottom: 12, textAlign: "center" }}>
-            {space.distance} mi away · ⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
+            {space.distance != null ? `${space.distance} mi away · ` : ""}⭐ {ratingInfo ? `${ratingInfo.avg} (${ratingInfo.count} review${ratingInfo.count === 1 ? "" : "s"})` : "No ratings yet"}
           </div>
 
           {!isOwn && !!space.owner_id && (

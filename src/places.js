@@ -125,12 +125,29 @@ function overpassPlaces(south, west, north, east) {
   });
 }
 
+
+// Best source: our own relay on Vercel (no browser blocks, results are cached)
+async function relayPlaces(south, west, north, east) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
+  try {
+    const res = await fetch(`/api/stations?s=${south}&w=${west}&n=${north}&e=${east}`, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const list = await res.json();
+    return Array.isArray(list) ? list : null;
+  } catch (e) {
+    clearTimeout(timer);
+    return null;
+  }
+}
+
 export async function fetchPlaces(south, west, north, east, onPartial) {
   if (north - south > 0.2 || east - west > 0.2) return null;
   const r4 = (n) => Math.round(n * 400) / 400;
   const key = [r4(south), r4(west), r4(north), r4(east)].join(",");
   if (cache[key]) return cache[key];
-  const fast = await overpassPlaces(south, west, north, east);
+  const fast = (await relayPlaces(south, west, north, east)) || (await overpassPlaces(south, west, north, east));
   if (fast) {
     cache[key] = fast;
     return fast;
